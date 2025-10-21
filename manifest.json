@@ -1,11 +1,9 @@
 {
-	"id": "bmo-chatbot",
-	"name": "BMO Chatbot",
-	"version": "2.3.3",
-	"minAppVersion": "1.0.0",
-	"description": "Generate and brainstorm ideas while creating your notes using Large Language Models (LLMs) from Ollama, LM Studio, Anthropic, Google Gemini, Mistral AI, OpenAI, and more for Obsidian.",
-	"author": "Longy2k",
-	"authorUrl": "https://github.com/longy2k",
-	"fundingUrl": "https://ko-fi.com/longy2k",
-	"isDesktopOnly": false
+  "id": "docscribe",
+  "name": "DocScribe",
+  "version": "1.0.0",
+  "description": "Generate and brainstorm ideas while creating your notes using LLMs.",
+  "author": "Colin Klich",
+  "authorUrl": "https://github.com/ColinKlich",
+  "isDesktopOnly": false
 }
