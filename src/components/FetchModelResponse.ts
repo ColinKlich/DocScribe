@@ -1,5 +1,5 @@
 import { MarkdownRenderer, Notice, requestUrl, setIcon } from 'obsidian';
-import BMOGPT, { BMOSettings } from '../main';
+import BMOGPT, { DocscribeSettings } from '../main';
 import { messageHistory } from '../view';
 import { addMessage, addParagraphBreaks, updateUnresolvedInternalLinks } from './chat/Message';
 import { displayErrorBotMessage, displayLoadingBotMessage } from './chat/BotMessage';
@@ -10,7 +10,7 @@ let abortController: AbortController | null = null;
 
 // Fetch response from Ollama
 // NOTE: Abort does not work for requestUrl
-export async function fetchOllamaResponse(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const ollamaRESTAPIURL = settings.OllamaConnection.RESTAPIURL;
 
     if (!ollamaRESTAPIURL) {
@@ -150,7 +150,7 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: BMOSettings,
 }
 
 // Fetch response from Ollama (stream)
-export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const ollamaRESTAPIURL = settings.OllamaConnection.RESTAPIURL;
 
     if (!ollamaRESTAPIURL) {
@@ -363,7 +363,7 @@ export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: BMOSet
 }
 
 // Fetch response from openai-based rest api url
-export async function fetchRESTAPIURLResponse(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchRESTAPIURLResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const prompt = await getPrompt(plugin, settings);
     const noImageMessageHistory = messageHistory.map(({ role, content }) => ({ role, content }));
     const filteredMessageHistory = filterMessageHistory(noImageMessageHistory);
@@ -458,7 +458,7 @@ export async function fetchRESTAPIURLResponse(plugin: BMOGPT, settings: BMOSetti
 }
 
 // Fetch response from openai-based rest api url (stream)
-export async function fetchRESTAPIURLResponseStream(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchRESTAPIURLResponseStream(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const RESTAPIURL = settings.RESTAPIURLConnection.RESTAPIURL;
 
     if (!RESTAPIURL) {
@@ -686,7 +686,7 @@ export async function fetchRESTAPIURLResponseStream(plugin: BMOGPT, settings: BM
 }
 
 // Fetch response from Anthropic
-export async function fetchAnthropicResponse(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchAnthropicResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const prompt = await getPrompt(plugin, settings);
 
     const noImageMessageHistory = messageHistory.map(({ role, content }) => ({ role, content }));
@@ -800,7 +800,7 @@ export async function fetchAnthropicResponse(plugin: BMOGPT, settings: BMOSettin
 }
 
 // Fetch response from Google Gemini
-export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const prompt = await getPrompt(plugin, settings);
     const filteredMessageHistory = filterMessageHistory(messageHistory);
     const messageHistoryAtIndex = removeConsecutiveUserRoles(filteredMessageHistory);
@@ -855,9 +855,9 @@ export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: BMOSet
 
     try {        
         const API_KEY = settings.APIConnections.googleGemini.APIKey;
-        const MODEL = settings.general.model;
+        const MODEL = settings.general.model.replace('models/', '');
     
-        const url = 'https://generativelanguage.googleapis.com/v1beta/' + MODEL + ':generateContent?key=' + API_KEY;
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + MODEL + ':generateContent?key=' + API_KEY;
         
         const response = await fetch(url, {
             method: 'POST',
@@ -877,7 +877,7 @@ export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: BMOSet
                 ...convertedMessageHistory.contents,
               ],
               generationConfig: {
-                stopSequences: '',
+                stopSequences: [],
                 temperature: parseInt(settings.general.temperature),
                 maxOutputTokens: settings.general.max_tokens || 4096,
                 topP: 0.8,
@@ -892,6 +892,7 @@ export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: BMOSet
           }
           
           const responseData = await response.json();
+          console.log('Gemini Response:', responseData);
           let message = responseData.candidates[0].content.parts[0].text;
 
         const messageContainerEl = document.querySelector('#messageContainer');
@@ -974,7 +975,7 @@ export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: BMOSet
     }
 }
 
-export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const prompt = await getPrompt(plugin, settings);
 
     abortController = new AbortController();
@@ -1035,9 +1036,9 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
 
     try {
         const API_KEY = settings.APIConnections.googleGemini.APIKey;
-        const MODEL = settings.general.model;
+        const MODEL = settings.general.model.replace('models/', '');
     
-        const url = 'https://generativelanguage.googleapis.com/v1beta/' + MODEL + ':streamGenerateContent?alt=sse&key=' + API_KEY;
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + MODEL + ':streamGenerateContent?alt=sse&key=' + API_KEY;
         
         const response = await fetch(url, {
             method: 'POST',
@@ -1057,7 +1058,7 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
                 ...convertedMessageHistory.contents,
               ],
               generationConfig: {
-                stopSequences: '',
+                stopSequences: [],
                 temperature: parseInt(settings.general.temperature),
                 maxOutputTokens: settings.general.max_tokens || 4096,
                 topP: 0.8,
@@ -1098,6 +1099,7 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
                     let parsedChunk;
                     try {
                         parsedChunk = JSON.parse(jsonData);
+                        console.log('Gemini Stream Chunk:', parsedChunk);
                         if (parsedChunk.done !== true) {
                             const content = parsedChunk.candidates[0].content.parts[0].text;
                             message += content;
@@ -1220,7 +1222,7 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
 }
 
 // Fetch response from Mistral
-export async function fetchMistralResponse(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const prompt = await getPrompt(plugin, settings);
     const noImageMessageHistory = messageHistory.map(({ role, content }) => ({ role, content }));
     const filteredMessageHistory = filterMessageHistory(noImageMessageHistory);
@@ -1360,7 +1362,7 @@ export async function fetchMistralResponse(plugin: BMOGPT, settings: BMOSettings
 }
 
 // Fetch response Mistral (stream)
-export async function fetchMistralResponseStream(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchMistralResponseStream(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     abortController = new AbortController();
     const prompt = await getPrompt(plugin, settings);
 
@@ -1585,7 +1587,7 @@ export async function fetchMistralResponseStream(plugin: BMOGPT, settings: BMOSe
 }
 
 // Fetch OpenAI-Based API
-export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     abortController = new AbortController();
 
     const prompt = await getPrompt(plugin, settings);
@@ -1722,7 +1724,7 @@ export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: BMOSettin
 }
 
 // Fetch OpenAI-Based API Stream
-export async function fetchOpenAIAPIResponseStream(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchOpenAIAPIResponseStream(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     abortController = new AbortController();
 
     const prompt = await getPrompt(plugin, settings);
@@ -1938,7 +1940,7 @@ export async function fetchOpenAIAPIResponseStream(plugin: BMOGPT, settings: BMO
 }
 
 // Fetch response from OpenRouter
-export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     abortController = new AbortController();
     const prompt = await getPrompt(plugin, settings);  
     const filteredMessageHistory = filterMessageHistory(messageHistory);
@@ -2074,7 +2076,7 @@ export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: BMOSetti
 }
 
 // Fetch response from openai-based rest api url (stream)
-export async function fetchOpenRouterResponseStream(plugin: BMOGPT, settings: BMOSettings, index: number) {
+export async function fetchOpenRouterResponseStream(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
     const url = 'https://openrouter.ai/api/v1/chat/completions';
 
     abortController = new AbortController();
@@ -2264,7 +2266,7 @@ export function getAbortController() {
     return abortController;
 }
 
-function ollamaParametersOptions(settings: BMOSettings) {
+function ollamaParametersOptions(settings: DocscribeSettings) {
     return {
         mirostat: parseInt(settings.OllamaConnection.ollamaParameters.mirostat),
         mirostat_eta: parseFloat(settings.OllamaConnection.ollamaParameters.mirostat_eta),

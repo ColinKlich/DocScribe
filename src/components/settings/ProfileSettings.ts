@@ -1,9 +1,9 @@
 import { Setting, SettingTab, TFile, TFolder, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS, updateSettingsFromFrontMatter } from 'src/main';
+import DocscribeGPT, { DEFAULT_SETTINGS, updateSettingsFromFrontMatter } from 'src/main';
 
 
 // Profile Settings
-export function addProfileSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'Profiles'});
 
@@ -43,7 +43,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: BMOGPT, Set
             // Sorting the files array alphabetically by file name
             files.sort((a, b) => a.name.localeCompare(b.name));
         
-            const dataFolderPath = './.obsidian/plugins/bmo-chatbot/data/';
+            const dataFolderPath = './.obsidian/plugins/Docscribe-chatbot/data/';
             
             if (!plugin.app.vault.getAbstractFileByPath(dataFolderPath)) {
                 plugin.app.vault.adapter.mkdir(dataFolderPath);
@@ -91,7 +91,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: BMOGPT, Set
         .setName('Profile Folder Path')
         .setDesc('Select a profile from a specified folder.')
         .addText(text => text
-            .setPlaceholder('BMO/Profiles')
+            .setPlaceholder('Docscribe/Profiles')
             .setValue(plugin.settings.profiles.profileFolderPath || DEFAULT_SETTINGS.profiles.profileFolderPath)
             .onChange(async (value) => {
                 plugin.settings.profiles.profileFolderPath = value ? value : DEFAULT_SETTINGS.profiles.profileFolderPath;

@@ -1,10 +1,10 @@
 import { Setting, SettingTab, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 import { fetchOllamaModels } from '../FetchModelList';
 import { addDescriptionLink } from 'src/utils/DescriptionLink';
 
 // Ollama Settings
-export function addOllamaSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'Ollama Connection'});
 

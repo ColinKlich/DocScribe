@@ -1,14 +1,14 @@
 import { Modal, Notice, TFile } from 'obsidian';
-import { BMOSettings, DEFAULT_SETTINGS, updateSettingsFromFrontMatter } from '../../main';
+import { DocscribeSettings, DEFAULT_SETTINGS, updateSettingsFromFrontMatter } from '../../main';
 import { colorToHex } from '../../utils/ColorConverter';
 import { fileNameMessageHistoryJson, messageHistory } from '../../view';
-import BMOGPT from '../../main';
+import DocscribeGPT from '../../main';
 import { getAbortController } from '../FetchModelResponse';
 import { fetchModelRenameTitle } from '../editor/FetchRenameNoteTitle';
 import { displayCommandBotMessage } from './BotMessage';
 import { addMessage } from './Message';
 // Define handler function signatures
-type CommandHandler = (input: string, settings: BMOSettings, plugin: BMOGPT) => void | Promise<void>;
+type CommandHandler = (input: string, settings: DocscribeSettings, plugin: DocscribeGPT) => void | Promise<void>;
 
 export let lastLoadedChatHistoryFile: TFile | null = null;
 
@@ -45,7 +45,7 @@ Object.entries(aliases).forEach(([command, aliasList]) => {
 });
 
 // Command execution function with correct typing
-export function executeCommand(input: string, settings: BMOSettings, plugin: BMOGPT): void | Promise<void> {
+export function executeCommand(input: string, settings: DocscribeSettings, plugin: DocscribeGPT): void | Promise<void> {
   const command = input.split(' ')[0];
   const handler = commandMap[command] || (() => commandFalse());
   return handler(input, settings, plugin);
@@ -53,7 +53,7 @@ export function executeCommand(input: string, settings: BMOSettings, plugin: BMO
 
 
 // Function to create and append a bot message
-export function createBotMessage(settings: BMOSettings): HTMLDivElement {
+export function createBotMessage(settings: DocscribeSettings): HTMLDivElement {
   const messageContainer = document.querySelector('#messageContainer');
   const botMessage = document.createElement('div');
   botMessage.classList.add('botMessage');
@@ -86,7 +86,7 @@ export async function commandFalse() {
 // =================== COMMAND FUNCTIONS ===================
 
 // `/help` for help commands
-export function commandHelp(plugin: BMOGPT, settings: BMOSettings) {
+export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
   const botMessageDiv = document.createElement('div');
   botMessageDiv.className = 'botMessage';
@@ -218,7 +218,7 @@ export function commandHelp(plugin: BMOGPT, settings: BMOSettings) {
 }
 
 // `/model "[VALUE]"` to change model.
-export async function commandModel(input: string, settings: BMOSettings, plugin: BMOGPT) {
+export async function commandModel(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
 
     // Get models as arrays
@@ -355,7 +355,7 @@ export async function commandModel(input: string, settings: BMOSettings, plugin:
 }
 
 // `/profile "[VALUE]"` to change profile.
-export async function commandProfile(input: string, settings: BMOSettings, plugin: BMOGPT) {
+export async function commandProfile(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
 
   if (!settings.profiles.profileFolderPath) {
@@ -467,7 +467,7 @@ export async function commandProfile(input: string, settings: BMOSettings, plugi
 }
 
 // `/prompt "[VALUE]"` to change prompt.
-export async function commandPrompt(input: string, settings: BMOSettings, plugin: BMOGPT) {
+export async function commandPrompt(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
 
   if (!settings.prompts.promptFolderPath) {
@@ -565,7 +565,7 @@ export async function commandPrompt(input: string, settings: BMOSettings, plugin
 }
 
 // `/ref` to turn on/off referenceCurrentNote.
-export async function commandReference(input: string, settings: BMOSettings, plugin: BMOGPT) {
+export async function commandReference(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const referenceCurrentNoteElement = document.getElementById('referenceCurrentNote');
   const inputValue = input.split(' ')[1]?.toLowerCase();
 
@@ -589,7 +589,7 @@ export async function commandReference(input: string, settings: BMOSettings, plu
 }
 
 // `/temp "VALUE"` to change the temperature.
-export async function commandTemperature(input: string, settings: BMOSettings, plugin: BMOGPT) {
+export async function commandTemperature(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const inputValue = input.split(' ')[1];
   const floatValue = parseFloat(inputValue);
 
@@ -610,7 +610,7 @@ export async function commandTemperature(input: string, settings: BMOSettings, p
 }
 
 // `/maxtokens` to change max_tokens.
-export async function commandMaxTokens(input: string, settings: BMOSettings, plugin: BMOGPT) {
+export async function commandMaxTokens(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   // let commandBotMessage = '';
   const commandParts = input.split(' ');
   const commandAction = commandParts[1] ? commandParts[1].toLowerCase() : '';
@@ -644,7 +644,7 @@ export async function commandMaxTokens(input: string, settings: BMOSettings, plu
 }
 
 // `/append` to append current chat history to current active note.
-export async function commandAppend(plugin: BMOGPT, settings: BMOSettings) {
+export async function commandAppend(plugin: DocscribeGPT, settings: DocscribeSettings) {
   let markdownContent = '';
 
   const activeFile = plugin.app.workspace.getActiveFile();
@@ -719,7 +719,7 @@ export async function commandAppend(plugin: BMOGPT, settings: BMOSettings) {
 
 
 // `/save` to save current chat history to a note.
-export async function commandSave(plugin: BMOGPT, settings: BMOSettings) {
+export async function commandSave(plugin: DocscribeGPT, settings: DocscribeSettings) {
   new Notice('Saving conversation...')
 
   let folderName = settings.chatHistory.chatHistoryPath;
@@ -906,7 +906,7 @@ export async function commandSave(plugin: BMOGPT, settings: BMOSettings) {
 }
 
 // `/load` to load chat history.
-export async function commandLoad(input: string, plugin: BMOGPT, settings: BMOSettings) {
+export async function commandLoad(input: string, plugin: DocscribeGPT, settings: DocscribeSettings) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
   const folderPath = plugin.settings.chatHistory.chatHistoryPath.trim() || DEFAULT_SETTINGS.chatHistory.chatHistoryPath;      
 
@@ -1255,7 +1255,7 @@ export function commandStop() {
   }
 }
 
-export async function removeMessageThread(plugin: BMOGPT, index: number) {
+export async function removeMessageThread(plugin: DocscribeGPT, index: number) {
   const messageContainer = document.querySelector('#messageContainer');
 
   const divElements = messageContainer?.querySelectorAll('div.botMessage, div.userMessage');

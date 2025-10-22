@@ -1,9 +1,9 @@
 {
-  "id": "docscribe",
-  "name": "DocScribe",
-  "version": "1.0.0",
-  "description": "Generate and brainstorm ideas while creating your notes using LLMs.",
-  "author": "Colin Klich",
-  "authorUrl": "https://github.com/ColinKlich",
-  "isDesktopOnly": false
+	"id": "obsidian-docscribe",
+	"name": "DocScribe",
+	"version": "1.0.0",
+	"description": "Generate and brainstorm ideas while creating your notes using LLMs.",
+	"author": "Colin Klich",
+	"authorUrl": "https://github.com/ColinKlich",
+	"isDesktopOnly": false
 }

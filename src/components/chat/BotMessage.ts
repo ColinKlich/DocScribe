@@ -1,10 +1,10 @@
-import BMOGPT, { BMOSettings, DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DocscribeSettings, DEFAULT_SETTINGS } from 'src/main';
 import { colorToHex } from 'src/utils/ColorConverter';
 import { displayAppendButton, displayBotCopyButton, displayBotEditButton } from './Buttons';
 import { addMessage, addParagraphBreaks } from './Message';
 import { MarkdownRenderer, setIcon } from 'obsidian';
 
-export function displayBotMessage(plugin: BMOGPT, settings: BMOSettings, messageHistory: { role: string; content: string }[], message: string) {
+export function displayBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], message: string) {
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
 
@@ -62,7 +62,7 @@ export function displayBotMessage(plugin: BMOGPT, settings: BMOSettings, message
     return botMessageDiv;
 }
 
-export function displayLoadingBotMessage(settings: BMOSettings) {
+export function displayLoadingBotMessage(settings: DocscribeSettings) {
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
     botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||
@@ -98,7 +98,7 @@ export function displayLoadingBotMessage(settings: BMOSettings) {
     return botMessageDiv;
 }
 
-export function displayCommandBotMessage(plugin: BMOGPT, settings: BMOSettings, messageHistory: { role: string; content: string }[], message: string){
+export function displayCommandBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], message: string){
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
     botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||
@@ -130,7 +130,7 @@ export function displayCommandBotMessage(plugin: BMOGPT, settings: BMOSettings, 
     return botMessageDiv;
 }
 
-export function displayErrorBotMessage(plugin: BMOGPT, settings: BMOSettings, messageHistory: { role: string; content: string }[], message: string){
+export function displayErrorBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], message: string){
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
     botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||

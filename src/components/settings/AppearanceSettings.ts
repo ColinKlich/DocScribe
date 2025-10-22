@@ -1,8 +1,8 @@
 import { ColorComponent, Setting, SettingTab, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 import { colorToHex } from 'src/utils/ColorConverter';
 
-export function addAppearanceSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addAppearanceSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'Appearance'});
 
@@ -522,25 +522,25 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: BMOGPT, 
     settingsContainer.createEl('h6', {text: 'Generate View'});
 
     let colorPicker9: ColorComponent;
-    // const defaultBMOGenerateBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.bmoGenerateBackgroundColor).trim();
+    // const defaultDocscribeGenerateBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor).trim();
 
     let colorPicker10: ColorComponent;
-    const defaultBMOGenerateFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.bmoGenerateFontColor).trim();
+    const defaultDocscribeGenerateFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor).trim();
 
     new Setting(settingsContainer)
-    .setName('BMO Generate Background Color')
-    .setDesc('Modify the background color of BMO Generate.')
+    .setName('Docscribe Generate Background Color')
+    .setDesc('Modify the background color of Docscribe Generate.')
     .addButton(button => button
         .setButtonText('Restore Default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
         .onClick(async () => {
-            colorPicker9.setValue(DEFAULT_SETTINGS.appearance.bmoGenerateBackgroundColor);
+            colorPicker9.setValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
             
-            const containers = document.querySelectorAll('.bmoCodeBlockContainer');
+            const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
             containers.forEach((container) => {
                 const element = container as HTMLElement;
-                element.style.backgroundColor = DEFAULT_SETTINGS.appearance.bmoGenerateBackgroundColor;
+                element.style.backgroundColor = DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor;
             });
             await plugin.saveSettings();
         })
@@ -548,14 +548,14 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: BMOGPT, 
     .addColorPicker(async (color) => {
         colorPicker9 = color;
         
-        const defaultValue = plugin.settings.appearance.bmoGenerateBackgroundColor;
+        const defaultValue = plugin.settings.appearance.DocscribeGenerateBackgroundColor;
         
         color.setValue(defaultValue)
             .onChange(async (value) => {
                 const hexValue = colorToHex(value);
-                plugin.settings.appearance.bmoGenerateBackgroundColor = hexValue;
+                plugin.settings.appearance.DocscribeGenerateBackgroundColor = hexValue;
                 
-                const containers = document.querySelectorAll('.bmoCodeBlockContainer');
+                const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
                 containers.forEach((container) => {
                     const element = container as HTMLElement;
                     element.style.backgroundColor = hexValue;
@@ -565,18 +565,18 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: BMOGPT, 
     });
 
     new Setting(settingsContainer)
-    .setName('BMO Generate Font Color')
-    .setDesc('Modify the font color of BMO Generate.')
+    .setName('Docscribe Generate Font Color')
+    .setDesc('Modify the font color of Docscribe Generate.')
     .addButton(button => button
         .setButtonText('Restore Default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
         .onClick(async () => {
-            const defaultValue = colorToHex(defaultBMOGenerateFontColor);
+            const defaultValue = colorToHex(defaultDocscribeGenerateFontColor);
             colorPicker10.setValue(defaultValue);
             
-            const bmoCodeBlockContents = document.querySelectorAll('.bmoCodeBlockContent');
-            bmoCodeBlockContents.forEach((content) => {
+            const DocscribeCodeBlockContents = document.querySelectorAll('.DocscribeCodeBlockContent');
+            DocscribeCodeBlockContents.forEach((content) => {
                 const element = content as HTMLElement;
                 element.style.color = defaultValue;
             });
@@ -587,19 +587,19 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: BMOGPT, 
     .addColorPicker(async (color) => {
         colorPicker10 = color;
         
-        let defaultValue = plugin.settings.appearance.bmoGenerateFontColor;
+        let defaultValue = plugin.settings.appearance.DocscribeGenerateFontColor;
         
         if (defaultValue == '--text-normal') {
-            defaultValue = colorToHex(defaultBMOGenerateFontColor);
+            defaultValue = colorToHex(defaultDocscribeGenerateFontColor);
         }
         
         color.setValue(defaultValue)
             .onChange(async (value) => {
                 const hexValue = colorToHex(value);
-                plugin.settings.appearance.bmoGenerateFontColor = hexValue;
+                plugin.settings.appearance.DocscribeGenerateFontColor = hexValue;
                 
-                const bmoCodeBlockContents = document.querySelectorAll('.bmoCodeBlockContent');
-                bmoCodeBlockContents.forEach((content) => {
+                const DocscribeCodeBlockContents = document.querySelectorAll('.DocscribeCodeBlockContent');
+                DocscribeCodeBlockContents.forEach((content) => {
                     const element = content as HTMLElement;
                     element.style.color = hexValue;
                 });
@@ -607,9 +607,9 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: BMOGPT, 
                 await plugin.saveSettings();
             });
         
-        // Set the initial font color of .bmoCodeBlockContent elements
-        const bmoCodeBlockContents = document.querySelectorAll('.bmoCodeBlockContent');
-        bmoCodeBlockContents.forEach((content) => {
+        // Set the initial font color of .DocscribeCodeBlockContent elements
+        const DocscribeCodeBlockContents = document.querySelectorAll('.DocscribeCodeBlockContent');
+        DocscribeCodeBlockContents.forEach((content) => {
             const element = content as HTMLElement;
             element.style.color = defaultValue;
         });

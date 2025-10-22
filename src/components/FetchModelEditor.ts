@@ -1,8 +1,8 @@
 import { requestUrl } from 'obsidian';
-import { BMOSettings } from 'src/main';
+import { DocscribeSettings } from 'src/main';
 
 // Request response from Ollama REST API URL (editor)
-export async function fetchOllamaResponseEditor(settings: BMOSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
+export async function fetchOllamaResponseEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     const ollamaRESTAPIURL = settings.OllamaConnection.RESTAPIURL;
 
     if (!ollamaRESTAPIURL) {
@@ -66,7 +66,7 @@ export async function fetchOllamaResponseEditor(settings: BMOSettings, prompt: s
 }
 
 // Request response from openai-based rest api url (editor)
-export async function fetchRESTAPIURLDataEditor(settings: BMOSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
+export async function fetchRESTAPIURLDataEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
         const response = await fetch(settings.RESTAPIURLConnection.RESTAPIURL + '/chat/completions', {
             method: 'POST',
@@ -101,7 +101,7 @@ export async function fetchRESTAPIURLDataEditor(settings: BMOSettings, prompt: s
 }
 
 // Fetch Anthropic API Editor
-export async function fetchAnthropicResponseEditor(settings: BMOSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
+export async function fetchAnthropicResponseEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
         const response = await requestUrl({
             url: 'https://api.anthropic.com/v1/messages',
@@ -131,9 +131,9 @@ export async function fetchAnthropicResponseEditor(settings: BMOSettings, prompt
 }
 
 // Fetch Google Gemini API Editor
-export async function fetchGoogleGeminiDataEditor(settings: BMOSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
+export async function fetchGoogleGeminiDataEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${settings.APIConnections.googleGemini.APIKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model || settings.general.model}:generateContent?key=${settings.APIConnections.googleGemini.APIKey}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ export async function fetchGoogleGeminiDataEditor(settings: BMOSettings, prompt:
 }
 
 // Fetch Mistral API Editor
-export async function fetchMistralDataEditor(settings: BMOSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
+export async function fetchMistralDataEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
         const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
             method: 'POST',
@@ -194,7 +194,7 @@ export async function fetchMistralDataEditor(settings: BMOSettings, prompt: stri
 }
 
 // Fetch OpenAI-Based API Editor
-export async function fetchOpenAIBaseAPIResponseEditor(settings: BMOSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
+export async function fetchOpenAIBaseAPIResponseEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     const response = await fetch(`${settings.APIConnections.openAI.openAIBaseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -221,7 +221,7 @@ export async function fetchOpenAIBaseAPIResponseEditor(settings: BMOSettings, pr
 }
 
 // Request response from openai-based rest api url (editor)
-export async function fetchOpenRouterEditor(settings: BMOSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
+export async function fetchOpenRouterEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',

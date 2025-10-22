@@ -1,10 +1,10 @@
 import { Setting, SettingTab, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 import { addDescriptionLink } from 'src/utils/DescriptionLink';
 import { fetchRESTAPIURLModels } from '../FetchModelList';
 
 // OpenAI-Based REST API URL Connection Settings
-export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'REST API Connection'});
 
@@ -50,7 +50,7 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: BMOGPT, 
 
     new Setting(settingsContainer)
     .setName('REST API URL')
-    .setDesc(addDescriptionLink('ENTER YOUR REST API URL.', 'https://github.com/longy2k/obsidian-bmo-chatbot/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
+    .setDesc(addDescriptionLink('ENTER YOUR REST API URL.', 'https://github.com/longy2k/obsidian-Docscribe-chatbot/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
     .addText(text => text
         .setPlaceholder('http://localhost:1234/v1')
         .setValue(plugin.settings.RESTAPIURLConnection.RESTAPIURL || DEFAULT_SETTINGS.RESTAPIURLConnection.RESTAPIURL)

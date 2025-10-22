@@ -1,9 +1,9 @@
-import BMOGPT, { BMOSettings } from 'src/main';
+import DocscribeGPT, { DocscribeSettings } from 'src/main';
 
 let referenceCurrentNoteContent = '';
 
 // Reference Current Note Indicator
-export async function getActiveFileContent(plugin: BMOGPT, settings: BMOSettings) {
+export async function getActiveFileContent(plugin: DocscribeGPT, settings: DocscribeSettings) {
     const dotElement = document.querySelector('.dotIndicator');
     referenceCurrentNoteContent = '';
     if (settings.general.enableReferenceCurrentNote === true) {

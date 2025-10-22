@@ -1,10 +1,10 @@
-import BMOGPT, { BMOSettings, DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DocscribeSettings, DEFAULT_SETTINGS } from 'src/main';
 import { fetchModelRenameTitle } from './FetchRenameNoteTitle';
 import { MarkdownView, Notice } from 'obsidian';
 import { ANTHROPIC_MODELS, OPENAI_MODELS } from 'src/view';
 import { fetchOpenAIBaseAPIResponseEditor, fetchOllamaResponseEditor, fetchRESTAPIURLDataEditor, fetchAnthropicResponseEditor, fetchMistralDataEditor, fetchGoogleGeminiDataEditor, fetchOpenRouterEditor } from '../FetchModelEditor';
 
-export async function renameTitleCommand(plugin: BMOGPT, settings: BMOSettings) {
+export async function renameTitleCommand(plugin: DocscribeGPT, settings: DocscribeSettings) {
     let uniqueNameFound = false;
     let modelRenameTitle;
     let folderName = plugin.app.vault.getAbstractFileByPath(plugin.app.workspace.getActiveFile()?.path || '')?.parent?.path || '';
@@ -50,7 +50,7 @@ export async function renameTitleCommand(plugin: BMOGPT, settings: BMOSettings) 
 }
 
 // Prompt + Select + Generate command
-export async function promptSelectGenerateCommand(plugin: BMOGPT, settings: BMOSettings) {
+export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings: DocscribeSettings) {
     const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const select = view?.editor.getSelection();
     if (view && select && select.trim() !== '') {

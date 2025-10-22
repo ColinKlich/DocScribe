@@ -1,6 +1,6 @@
-import BMOGPT, { BMOSettings } from 'src/main';
+import DocscribeGPT, { DocscribeSettings } from 'src/main';
 
-export async function getPrompt(plugin: BMOGPT, settings: BMOSettings) {
+export async function getPrompt(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
     if (settings.prompts.prompt.trim() === '') {
         return '';

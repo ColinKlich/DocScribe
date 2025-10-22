@@ -1,7 +1,7 @@
 {
-	"name": "bmo-chatbot",
-	"version": "2.3.3",
-	"description": "Generate and brainstorm ideas while creating your notes using Large Language Models (LLMs) from Ollama, LM Studio, Anthropic, Google Gemini, Mistral AI, OpenAI, and more for Obsidian.",
+	"name": "Docscribe",
+	"version": "1.0.0",
+	"description": "An Obsidian plugin to generate, summarize, and refine notes using AI language models.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",

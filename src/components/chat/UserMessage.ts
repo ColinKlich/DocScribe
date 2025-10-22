@@ -1,8 +1,8 @@
-import BMOGPT, { BMOSettings, DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DocscribeSettings, DEFAULT_SETTINGS } from 'src/main';
 import { colorToHex } from 'src/utils/ColorConverter';
 import { displayUserEditButton, displayTrashButton, displayUserCopyButton, regenerateUserButton } from './Buttons';
 
-export function displayUserMessage(plugin: BMOGPT, settings: BMOSettings, message: string) {
+export function displayUserMessage(plugin: DocscribeGPT, settings: DocscribeSettings, message: string) {
     let trimmedMessage = message.trim();
 
     const userMessageDiv = document.createElement('div');

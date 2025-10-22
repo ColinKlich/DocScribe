@@ -1,4 +1,4 @@
-# BMO Chatbot for Obsidian
+# Docscribe Chatbot for Obsidian
 
 Generate and brainstorm ideas while creating your notes using Large Language Models (LLMs) from Ollama, LM Studio, Anthropic, Google Gemini, Mistral AI, OpenAI, and more for Obsidian.
 
@@ -16,12 +16,12 @@ Create chatbots with specific knowledge, personalities, and presets.
   <img src="README_images/profiles.gif" alt="profiles_example">
 </p>
 
-### BMO Generate
+### Docscribe Generate
 
 Generate a response from the editor using your connected LLMs.
 
 <p align="center">
-  <img src="README_images/bmo-generate.gif" alt="bmo_generate_example">
+  <img src="README_images/Docscribe-generate.gif" alt="Docscribe_generate_example">
 </p>
 
 ### 'Prompt Select Generate' Command
@@ -55,7 +55,7 @@ If you want to interact with self-hosted Large Language Models (LLMs) using [Oll
 
 Access to other models may require an API key.
 
-Please see [instructions](https://github.com/longy2k/obsidian-bmo-chatbot/wiki) to setup with other LLMs providers.
+Please see [instructions](https://github.com/longy2k/obsidian-Docscribe-chatbot/wiki) to setup with other LLMs providers.
 
 Explore some models at [GPT4ALL](https://gpt4all.io/index.html) under the "Model Explorer" section or [Ollama's Library](https://ollama.ai/library).
 
@@ -65,8 +65,8 @@ Three methods:
 
 Obsidian Community plugins (**Recommended**):
 
-1. Search for "BMO Chatbot" in the Obsidian Community plugins.
-2. Enable "BMO Chatbot" in the settings.
+1. Search for "Docscribe Chatbot" in the Obsidian Community plugins.
+2. Enable "Docscribe Chatbot" in the settings.
 
 To activate the plugin from this repo:
 
@@ -79,7 +79,7 @@ Install using Beta Reviewers Auto-update Tester ([BRAT](https://github.com/TfTHa
 
 1. Search for "Obsidian42 - BRAT" in the Obsidian Community plugins.
 2. Open the command palette and run the command `BRAT: Add a beta plugin for testing` (If you want the plugin version to be frozen, use the command `BRAT: Add a beta plugin with frozen version based on a release tag`.)
-3. Paste "https://github.com/longy2k/obsidian-bmo-chatbot".
+3. Paste "https://github.com/longy2k/obsidian-Docscribe-chatbot".
 4. Click on "Add Plugin".
 5. After BRAT confirms the installation, in Settings go to the Community plugins tab.
 6. Refresh the list of plugins.
@@ -111,7 +111,7 @@ To start using the plugin, enable it in your settings menu and insert an API key
 ## Supported Models
 
 -   Any self-hosted models using [Ollama](https://ollama.ai).
-    -   See [instructions](https://github.com/longy2k/obsidian-bmo-chatbot/wiki) to setup Ollama with Obsidian.
+    -   See [instructions](https://github.com/longy2k/obsidian-Docscribe-chatbot/wiki) to setup Ollama with Obsidian.
 -   Any self-hosted models using OpenAI-based endpoints.
     -   [LM Studio](https://lmstudio.ai/)
     -   [LocalAI](https://github.com/mudler/LocalAI)
@@ -135,7 +135,7 @@ To start using the plugin, enable it in your settings menu and insert an API key
 
 ## Other Notes
 
-"BMO" is a tag name for this project. Inspired by the character "BMO" from Adventure Time.
+"Docscribe" is a tag name for this project. Inspired by the character "Docscribe" from Adventure Time.
 
 Be MOre!
 

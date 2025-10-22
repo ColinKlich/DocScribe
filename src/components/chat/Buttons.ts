@@ -1,11 +1,11 @@
 import { MarkdownRenderer, Modal, Notice, TFile, setIcon } from 'obsidian';
-import BMOGPT, { BMOSettings, checkActiveFile } from 'src/main';
+import DocscribeGPT, { DocscribeSettings, checkActiveFile } from 'src/main';
 import { ANTHROPIC_MODELS, OPENAI_MODELS, activeEditor, fileNameMessageHistoryJson, lastCursorPosition, lastCursorPositionFile, messageHistory } from 'src/view';
 import { fetchOpenAIAPIResponseStream, fetchOpenAIAPIResponse, fetchOllamaResponse, fetchOllamaResponseStream, fetchAnthropicResponse, fetchRESTAPIURLResponse, fetchRESTAPIURLResponseStream, fetchMistralResponseStream, fetchMistralResponse, fetchGoogleGeminiResponse, fetchOpenRouterResponseStream, fetchOpenRouterResponse, fetchGoogleGeminiResponseStream } from '../FetchModelResponse';
 import { getActiveFileContent } from '../editor/ReferenceCurrentNote';
 import { addParagraphBreaks } from './Message';
 
-export function regenerateUserButton(plugin: BMOGPT, settings: BMOSettings) {
+export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSettings) {
     const regenerateButton = document.createElement('button');
     regenerateButton.textContent = 'regenerate';
     setIcon(regenerateButton, 'refresh-ccw');
@@ -110,7 +110,7 @@ export function regenerateUserButton(plugin: BMOGPT, settings: BMOSettings) {
     return regenerateButton;
 }
 
-export function displayUserEditButton (plugin: BMOGPT, settings: BMOSettings, userPre: HTMLPreElement) {
+export function displayUserEditButton (plugin: DocscribeGPT, settings: DocscribeSettings, userPre: HTMLPreElement) {
     const editButton = document.createElement('button');
     editButton.textContent = 'edit';
     setIcon(editButton, 'edit'); // Assuming setIcon is defined elsewhere
@@ -346,7 +346,7 @@ export function displayUserEditButton (plugin: BMOGPT, settings: BMOSettings, us
     return editButton;
 }
 
-export function displayBotEditButton (plugin: BMOGPT, message: string) {
+export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
     const editButton = document.createElement('button');
     editButton.textContent = 'edit';
     setIcon(editButton, 'edit');
@@ -577,7 +577,7 @@ export function displayUserCopyButton (userPre: HTMLPreElement) {
     return copyButton;
 }
 
-export function displayBotCopyButton (settings: BMOSettings, message: string) {
+export function displayBotCopyButton (settings: DocscribeSettings, message: string) {
     const copyButton = document.createElement('button');
     copyButton.textContent = 'copy';
     setIcon(copyButton, 'copy');
@@ -603,7 +603,7 @@ export function copyMessageToClipboard(message: string) {
 }
 
 // Append button to editor
-export function displayAppendButton(plugin: BMOGPT, settings: BMOSettings, message: string) {
+export function displayAppendButton(plugin: DocscribeGPT, settings: DocscribeSettings, message: string) {
     const appendButton = document.createElement('button');
     appendButton.textContent = 'append';
     setIcon(appendButton, 'plus-square');
@@ -637,7 +637,7 @@ export function displayAppendButton(plugin: BMOGPT, settings: BMOSettings, messa
     return appendButton;
 }
 
-export function displayTrashButton (plugin: BMOGPT) {
+export function displayTrashButton (plugin: DocscribeGPT) {
     const trashButton = document.createElement('button');
     trashButton.textContent = 'trash';
     setIcon(trashButton, 'trash');
@@ -686,7 +686,7 @@ export function displayTrashButton (plugin: BMOGPT) {
     return trashButton;
 }
 
-export async function deleteMessage(plugin: BMOGPT, index: number) {
+export async function deleteMessage(plugin: DocscribeGPT, index: number) {
     const messageContainer = document.querySelector('#messageContainer');
 
     const divElements = messageContainer?.querySelectorAll('div.botMessage, div.userMessage');

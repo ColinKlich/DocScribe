@@ -1,10 +1,10 @@
 import { requestUrl } from 'obsidian';
 import { Ollama } from 'ollama'
 import OpenAI from 'openai';
-import BMOGPT from 'src/main';
+import DocscribeGPT from 'src/main';
 import { OPENAI_MODELS } from 'src/view';
 
-export async function fetchOllamaModels(plugin: BMOGPT) {
+export async function fetchOllamaModels(plugin: DocscribeGPT) {
         const ollamaRESTAPIURL = plugin.settings.OllamaConnection.RESTAPIURL;
 
         // Log the list of models using ollama.list()
@@ -24,7 +24,7 @@ export async function fetchOllamaModels(plugin: BMOGPT) {
         }
 }
 
-export async function fetchRESTAPIURLModels(plugin: BMOGPT) {
+export async function fetchRESTAPIURLModels(plugin: DocscribeGPT) {
     const RESTAPIURL = plugin.settings.RESTAPIURLConnection.RESTAPIURL;
 
     // URL Validation
@@ -66,7 +66,7 @@ export async function fetchRESTAPIURLModels(plugin: BMOGPT) {
 
 // Anthropic API models are static. No need to fetch them.
 
-export async function fetchGoogleGeminiModels(plugin: BMOGPT) {
+export async function fetchGoogleGeminiModels(plugin: DocscribeGPT) {
     try {
         const API_KEY = plugin.settings.APIConnections.googleGemini.APIKey;
 
@@ -80,7 +80,7 @@ export async function fetchGoogleGeminiModels(plugin: BMOGPT) {
 
         // Check if the response is valid and has data
         if (response.json && response.json.models) {
-            const models = response.json.models.map((model: { name: string; }) => model.name).filter((model: string) => model.startsWith('models/gemini'));
+                        const models = response.json.models.map((model: { name: string; }) => model.name).filter((model: string) => model.startsWith('models/gemini') && !model.includes('1.0') && !model.includes('1.5'));
             
             // Store the models in your plugin's settings or handle them as needed
             plugin.settings.APIConnections.googleGemini.geminiModels = models;
@@ -91,7 +91,7 @@ export async function fetchGoogleGeminiModels(plugin: BMOGPT) {
     }
 }
 
-export async function fetchMistralModels(plugin: BMOGPT) {
+export async function fetchMistralModels(plugin: DocscribeGPT) {
     try {
         const response = await requestUrl({
             url: 'https://api.mistral.ai/v1/models',
@@ -115,7 +115,7 @@ export async function fetchMistralModels(plugin: BMOGPT) {
     }
 }
 
-export async function fetchOpenAIBaseModels(plugin: BMOGPT) {
+export async function fetchOpenAIBaseModels(plugin: DocscribeGPT) {
     const openai = new OpenAI({
         apiKey: plugin.settings.APIConnections.openAI.APIKey,
         baseURL: plugin.settings.APIConnections.openAI.openAIBaseUrl,
@@ -136,7 +136,7 @@ export async function fetchOpenAIBaseModels(plugin: BMOGPT) {
 
 }
 
-export async function fetchOpenRouterModels(plugin: BMOGPT) {
+export async function fetchOpenRouterModels(plugin: DocscribeGPT) {
     try {
         const response = await requestUrl({
             url: 'https://openrouter.ai/api/v1/models',

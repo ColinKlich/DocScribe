@@ -1,8 +1,8 @@
 import { Setting, SettingTab, setIcon } from 'obsidian';
 import { fetchMistralModels } from 'src/components/FetchModelList';
-import BMOGPT from 'src/main';
+import DocscribeGPT from 'src/main';
 
-export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', { text: 'Mistral AI' });
 

@@ -1,12 +1,12 @@
 import { MarkdownPostProcessorContext, MarkdownRenderer, Plugin } from 'obsidian';
-import { BMOSettings } from 'src/main';
+import { DocscribeSettings } from 'src/main';
 import { fetchAnthropicResponseEditor, fetchOllamaResponseEditor, fetchRESTAPIURLDataEditor, fetchGoogleGeminiDataEditor, fetchMistralDataEditor, fetchOpenAIBaseAPIResponseEditor, fetchOpenRouterEditor } from '../FetchModelEditor';
 
-export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
+export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeSettings) {
     let previousPrompt = '';
     let abortController: AbortController | null = null;
     
-    return plugin.registerMarkdownCodeBlockProcessor('bmo', async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {                
+    return plugin.registerMarkdownCodeBlockProcessor('Docscribe', async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {                
         // Abort any existing processes
         if (abortController) {
             abortController.abort();
@@ -23,7 +23,7 @@ export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
             const fileContent = await plugin.app.vault.read(file);
             
             // Find all the code blocks in the file content
-            const codeBlockRegex = /```bmo\n([\s\S]*?)```/g;
+            const codeBlockRegex = /```Docscribe\n([\s\S]*?)```/g;
             let match;
             let updatedFileContent = fileContent;
 
@@ -35,7 +35,7 @@ export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
                     const updatedSource = 'MODEL ' + settings.general.model + '\n' + codeBlockContent;
                     
                     // Replace the code block in the file content
-                    updatedFileContent = updatedFileContent.replace(originalCodeBlock, '```bmo\n' + updatedSource + '```');
+                    updatedFileContent = updatedFileContent.replace(originalCodeBlock, '```Docscribe\n' + updatedSource + '```');
                 }
             }
 
@@ -90,17 +90,17 @@ export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
         const container = el.createEl('div');
         container.style.position = 'relative';
 
-        const bmoCodeBlockContainer = container.createEl('div', { cls: 'bmoCodeBlockContainer' });
-        bmoCodeBlockContainer.dataset.callout = 'chat';
-        bmoCodeBlockContainer.style.backgroundColor = settings.appearance.bmoGenerateBackgroundColor;
-        bmoCodeBlockContainer.style.border = '1px solid #0a0f0a';
-        bmoCodeBlockContainer.style.borderRadius = '5px';
-        bmoCodeBlockContainer.style.padding = '10px';
-        bmoCodeBlockContainer.style.marginBottom = '10px';
+        const DocscribeCodeBlockContainer = container.createEl('div', { cls: 'DocscribeCodeBlockContainer' });
+        DocscribeCodeBlockContainer.dataset.callout = 'chat';
+        DocscribeCodeBlockContainer.style.backgroundColor = settings.appearance.DocscribeGenerateBackgroundColor;
+        DocscribeCodeBlockContainer.style.border = '1px solid #0a0f0a';
+        DocscribeCodeBlockContainer.style.borderRadius = '5px';
+        DocscribeCodeBlockContainer.style.padding = '10px';
+        DocscribeCodeBlockContainer.style.marginBottom = '10px';
 
-        const bmoCodeBlockContent = bmoCodeBlockContainer.createEl('div', { cls: 'bmoCodeBlockContent' });
-        bmoCodeBlockContent.style.color = settings.appearance.bmoGenerateFontColor;
-        bmoCodeBlockContent.style.whiteSpace = 'normal';
+        const DocscribeCodeBlockContent = DocscribeCodeBlockContainer.createEl('div', { cls: 'DocscribeCodeBlockContent' });
+        DocscribeCodeBlockContent.style.color = settings.appearance.DocscribeGenerateFontColor;
+        DocscribeCodeBlockContent.style.whiteSpace = 'normal';
 
         const bottomContainer = container.createEl('div');
         bottomContainer.style.display = 'flex';
@@ -124,11 +124,11 @@ export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
         loaderCircle.style.animation = 'spin 1s linear infinite';
         loaderCircle.style.display = 'none';
 
-        const bmoGenerationNotice = bottomContainer.createEl('span');
-        bmoGenerationNotice.textContent = 'Done!';
-        bmoGenerationNotice.style.fontSize = '0.9em';
-        bmoGenerationNotice.style.color = '#4caf50'; // Light green color
-        bmoGenerationNotice.style.display = 'none';
+        const DocscribeGenerationNotice = bottomContainer.createEl('span');
+        DocscribeGenerationNotice.textContent = 'Done!';
+        DocscribeGenerationNotice.style.fontSize = '0.9em';
+        DocscribeGenerationNotice.style.color = '#4caf50'; // Light green color
+        DocscribeGenerationNotice.style.display = 'none';
 
         const button = bottomContainer.createEl('button');
         button.textContent = 'Generate';
@@ -141,11 +141,11 @@ export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
                 }
                 button.textContent = 'Generate';
                 loaderCircle.style.display = 'none';
-                bmoGenerationNotice.textContent = 'Aborted.';
-                bmoGenerationNotice.style.color = '#ff6666';
-                bmoGenerationNotice.style.display = 'inline';
+                DocscribeGenerationNotice.textContent = 'Aborted.';
+                DocscribeGenerationNotice.style.color = '#ff6666';
+                DocscribeGenerationNotice.style.display = 'inline';
                 setTimeout(() => {
-                    bmoGenerationNotice.style.display = 'none';
+                    DocscribeGenerationNotice.style.display = 'none';
                 }, 2000);
                 return;
             }
@@ -182,11 +182,11 @@ export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
                 } else if (settings.APIConnections.openRouter.openRouterModels.includes(modelName)) {
                     modelResponse = await fetchOpenRouterEditor(settings, prompt, modelName, temperature, maxTokens, signal) || contentToRender;
                 } else {
-                    bmoGenerationNotice.textContent = 'Model not found.';
-                    bmoGenerationNotice.style.color = '#ff6666';
-                    bmoGenerationNotice.style.display = 'inline';
+                    DocscribeGenerationNotice.textContent = 'Model not found.';
+                    DocscribeGenerationNotice.style.color = '#ff6666';
+                    DocscribeGenerationNotice.style.display = 'inline';
                     setTimeout(() => {
-                        bmoGenerationNotice.style.display = 'none';
+                        DocscribeGenerationNotice.style.display = 'none';
                         button.textContent = 'Generate';
                     }, 2000);
                 }
@@ -237,23 +237,23 @@ export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
 
             } catch (error) {
                 if (error.name === 'AbortError') {
-                    console.log('BMO Generate Aborted.');
+                    console.log('Docscribe Generate Aborted.');
                     button.textContent = 'Generate';
                     loaderCircle.style.display = 'none';
-                    bmoGenerationNotice.textContent = 'Aborted.';
-                    bmoGenerationNotice.style.color = '#ff6666';
-                    bmoGenerationNotice.style.display = 'inline';
+                    DocscribeGenerationNotice.textContent = 'Aborted.';
+                    DocscribeGenerationNotice.style.color = '#ff6666';
+                    DocscribeGenerationNotice.style.display = 'inline';
                     setTimeout(() => {
-                        bmoGenerationNotice.style.display = 'none';
+                        DocscribeGenerationNotice.style.display = 'none';
                     }, 2000);
                     return;
                 } else {
                     console.error('Generation error:', error);
-                    bmoGenerationNotice.textContent = 'Error occurred.';
-                    bmoGenerationNotice.style.color = '#ff6666';
-                    bmoGenerationNotice.style.display = 'inline';
+                    DocscribeGenerationNotice.textContent = 'Error occurred.';
+                    DocscribeGenerationNotice.style.color = '#ff6666';
+                    DocscribeGenerationNotice.style.display = 'inline';
                     setTimeout(() => {
-                        bmoGenerationNotice.style.display = 'none';
+                        DocscribeGenerationNotice.style.display = 'none';
                     }, 2000);
                 }
             }
@@ -262,9 +262,9 @@ export function bmoCodeBlockProcessor(plugin: Plugin, settings: BMOSettings) {
 
         // Render the filtered content as Markdown
         if (source.includes('<response>') && source.includes('</response>')) {
-            await MarkdownRenderer.render(plugin.app, contentToRender, bmoCodeBlockContent, '/', plugin);
+            await MarkdownRenderer.render(plugin.app, contentToRender, DocscribeCodeBlockContent, '/', plugin);
         } else {
-            await MarkdownRenderer.render(plugin.app, prompt, bmoCodeBlockContent, '/', plugin);
+            await MarkdownRenderer.render(plugin.app, prompt, DocscribeCodeBlockContent, '/', plugin);
         }
     });
 }

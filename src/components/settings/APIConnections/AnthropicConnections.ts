@@ -1,8 +1,8 @@
 import { Setting, SettingTab, setIcon } from 'obsidian';
-import BMOGPT from 'src/main';
+import DocscribeGPT from 'src/main';
 import { ANTHROPIC_MODELS } from 'src/view';
 
-export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', { text: 'Anthropic' });
 

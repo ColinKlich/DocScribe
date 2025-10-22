@@ -1,9 +1,9 @@
 import { Setting, SettingTab, TFile, TFolder, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 
 
 // Prompt Settings
-export function addPromptSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'Prompts'});
 
@@ -72,7 +72,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: BMOGPT, Sett
         .setName('Prompt Folder Path')
         .setDesc('Select a prompt from a specified folder.')
         .addText(text => text
-            .setPlaceholder('BMO/Prompts')
+            .setPlaceholder('Docscribe/Prompts')
             .setValue(plugin.settings.prompts.promptFolderPath || DEFAULT_SETTINGS.prompts.promptFolderPath)
             .onChange(async (value) => {
                 plugin.settings.prompts.promptFolderPath = value ? value : DEFAULT_SETTINGS.prompts.promptFolderPath;

@@ -1,8 +1,8 @@
 import { Setting, SettingTab, setIcon } from 'obsidian';
 import { fetchOpenAIBaseModels } from 'src/components/FetchModelList';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 
-export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', { text: 'OpenAI' });
 

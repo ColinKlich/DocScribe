@@ -1,6 +1,6 @@
 import { ItemView, WorkspaceLeaf, TFile, MarkdownView, Editor, EditorPosition, setIcon } from 'obsidian';
-import {DEFAULT_SETTINGS, BMOSettings} from './main';
-import BMOGPT from './main';
+import {DEFAULT_SETTINGS, DocscribeSettings} from './main';
+import DocscribeGPT from './main';
 import { commandMap, executeCommand } from './components/chat/Commands';
 import { getActiveFileContent } from './components/editor/ReferenceCurrentNote';
 import { addMessage, updateUnresolvedInternalLinks } from './components/chat/Message';
@@ -22,10 +22,11 @@ import { fetchOpenAIAPIResponseStream,
 
 export const VIEW_TYPE_CHATBOT = 'chatbot-view';
 export const ANTHROPIC_MODELS = ['claude-instant-1.2', 'claude-2.0', 'claude-2.1', 'claude-3-haiku-20240307', 'claude-3-sonnet-20240229', 'claude-3-5-sonnet-20240620', 'claude-3-opus-20240229'];
+export const GOOGLE_GEMINI_MODELS = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash'];
 export const OPENAI_MODELS = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'];
 
-export function fileNameMessageHistoryJson(plugin: BMOGPT) {
-    const filenameMessageHistoryPath = './.obsidian/plugins/bmo-chatbot/data/';
+export function fileNameMessageHistoryJson(plugin: DocscribeGPT) {
+    const filenameMessageHistoryPath = './.obsidian/plugins/Docscribe-chatbot/data/';
     const currentProfileMessageHistory = 'messageHistory_' + plugin.settings.profiles.profile.replace('.md', '.json');
 
     return filenameMessageHistoryPath + currentProfileMessageHistory;
@@ -41,13 +42,13 @@ export let lastCursorPosition: EditorPosition = {
 export let lastCursorPositionFile: TFile | null = null;
 export let activeEditor: Editor | null | undefined = null;
 
-export class BMOView extends ItemView {
-    private settings: BMOSettings;
+export class DocscribeView extends ItemView {
+    private settings: DocscribeSettings;
     private textareaElement: HTMLTextAreaElement;
     private preventEnter = false;
-    private plugin: BMOGPT;
+    private plugin: DocscribeGPT;
 
-    constructor(leaf: WorkspaceLeaf, settings: BMOSettings, plugin: BMOGPT) {
+    constructor(leaf: WorkspaceLeaf, settings: DocscribeSettings, plugin: DocscribeGPT) {
         super(leaf);
         this.settings = settings;
         this.plugin = plugin;
@@ -60,7 +61,7 @@ export class BMOView extends ItemView {
     }
 
     getDisplayText() {
-        return 'BMO Chatbot';
+        return 'Docscribe Chatbot';
     }
     
     async onOpen(): Promise<void> {
@@ -426,7 +427,7 @@ export class BMOView extends ItemView {
                     this.preventEnter = true;
 
                     // Call the chatbot function with the user's input
-                    this.BMOchatbot()
+                    this.Docscribechatbot()
                         .then(() => {
                             this.preventEnter = false;
                         })
@@ -494,7 +495,7 @@ export class BMOView extends ItemView {
         this.textareaElement.removeEventListener('blur', this.handleBlur.bind(this));
     }
 
-    async BMOchatbot() {      
+    async Docscribechatbot() {      
         await getActiveFileContent(this.plugin, this.settings);
         const index = messageHistory.length - 1;
 
@@ -575,7 +576,7 @@ export class BMOView extends ItemView {
             }
 
         }
-        // console.log('BMO settings:', this.settings);
+        // console.log('Docscribe settings:', this.settings);
     }
 
     async onClose() {
@@ -585,9 +586,9 @@ export class BMOView extends ItemView {
 }
 
 // Create data folder and load JSON file
-async function loadData(plugin: BMOGPT) {
-    if (!await plugin.app.vault.adapter.exists('./.obsidian/plugins/bmo-chatbot/data/')) {
-        plugin.app.vault.adapter.mkdir('./.obsidian/plugins/bmo-chatbot/data/');
+async function loadData(plugin: DocscribeGPT) {
+    if (!await plugin.app.vault.adapter.exists('./.obsidian/plugins/Docscribe-chatbot/data/')) {
+        plugin.app.vault.adapter.mkdir('./.obsidian/plugins/Docscribe-chatbot/data/');
     }
 
     if (await plugin.app.vault.adapter.exists(fileNameMessageHistoryJson(plugin))) {
@@ -608,7 +609,7 @@ async function loadData(plugin: BMOGPT) {
 }
 
 // Delete all messages from the messageContainer and the messageHistory array
-export async function deleteAllMessages(plugin: BMOGPT) {
+export async function deleteAllMessages(plugin: DocscribeGPT) {
     const messageContainer = document.querySelector('#messageContainer');
 
     // Remove all child nodes from the messageContainer
@@ -631,7 +632,7 @@ export async function deleteAllMessages(plugin: BMOGPT) {
     }
 }
 
-export function populateModelDropdown(plugin: BMOGPT, settings: BMOSettings): HTMLSelectElement {
+export function populateModelDropdown(plugin: DocscribeGPT, settings: DocscribeSettings): HTMLSelectElement {
     const modelOptions = document.createElement('select');
     modelOptions.id = 'modelOptions';
 

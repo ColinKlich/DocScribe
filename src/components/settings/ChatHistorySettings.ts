@@ -1,7 +1,7 @@
 import { Setting, SettingTab, TFolder, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 
-export function addChatHistorySettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addChatHistorySettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'Chat History'});
 
@@ -33,7 +33,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: BMOGPT,
         .setName('Chat History Folder Path')
         .setDesc('Save your chat history in a specified folder.')
         .addText(text => text
-            .setPlaceholder('BMO/History')
+            .setPlaceholder('Docscribe/History')
             .setValue(plugin.settings.chatHistory.chatHistoryPath || DEFAULT_SETTINGS.chatHistory.chatHistoryPath)
             .onChange(async (value) => {
                 plugin.settings.chatHistory.chatHistoryPath = value ? value : DEFAULT_SETTINGS.chatHistory.chatHistoryPath;
@@ -65,7 +65,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: BMOGPT,
         .setName('Template File Path')
         .setDesc('Insert your template file path.')
         .addText(text => text
-            .setPlaceholder('templates/bmo.md')
+            .setPlaceholder('templates/Docscribe.md')
             .setValue(plugin.settings.chatHistory.templateFilePath || DEFAULT_SETTINGS.chatHistory.templateFilePath)
             .onChange(async (value) => {
                 plugin.settings.chatHistory.templateFilePath = value ? value : DEFAULT_SETTINGS.chatHistory.templateFilePath;

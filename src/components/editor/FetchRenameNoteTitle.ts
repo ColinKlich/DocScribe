@@ -1,11 +1,11 @@
 import { Notice, requestUrl } from 'obsidian';
 import { Ollama } from 'ollama';
 import OpenAI from 'openai';
-import { BMOSettings } from 'src/main';
+import { DocscribeSettings } from 'src/main';
 import { ANTHROPIC_MODELS, OPENAI_MODELS } from 'src/view';
 
 // Rename note title based on specified model
-export async function fetchModelRenameTitle(settings: BMOSettings, referenceCurrentNoteContent: string) {
+export async function fetchModelRenameTitle(settings: DocscribeSettings, referenceCurrentNoteContent: string) {
     const clearYamlContent = referenceCurrentNoteContent.replace(/---[\s\S]+?---/, '').trim();
     
     const prompt = `You are a title generator. You will give succinct titles that does not contain backslashes,
@@ -120,7 +120,7 @@ export async function fetchModelRenameTitle(settings: BMOSettings, referenceCurr
                 }
                 
                 const response = await requestUrl({
-                    url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`,
+                    url: `https://generativelanguage.googleapis.com/v1beta/models/${settings.general.model}:generateContent?key=${API_KEY}`,
                     method: 'POST',
                     headers: {
                     'Content-Type': 'application/json',

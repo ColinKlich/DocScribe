@@ -1,8 +1,8 @@
 import { Setting, SettingTab, setIcon } from 'obsidian';
 import { fetchGoogleGeminiModels } from 'src/components/FetchModelList';
-import BMOGPT from 'src/main';
+import DocscribeGPT from 'src/main';
 
-export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', { text: 'Google Gemini' });
 

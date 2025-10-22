@@ -1,11 +1,11 @@
 import { fileNameMessageHistoryJson, messageHistory } from 'src/view';
 import { displayAppendButton, displayBotCopyButton, displayBotEditButton } from './Buttons';
-import BMOGPT, { BMOSettings } from 'src/main';
+import DocscribeGPT, { DocscribeSettings } from 'src/main';
 import { getCurrentNoteContent } from '../editor/ReferenceCurrentNote';
 import {htmlToMarkdown, setIcon } from 'obsidian';
 
 // Add a new message to the messageHistory array and save it to the file
-export async function addMessage(plugin: BMOGPT, input: string, messageType: 'userMessage' | 'botMessage', settings: BMOSettings, index: number) {
+export async function addMessage(plugin: DocscribeGPT, input: string, messageType: 'userMessage' | 'botMessage', settings: DocscribeSettings, index: number) {
     const messageObj: { role: string; content: string; images: Uint8Array[] | string[] } = {
         role: '',
         content: '',
@@ -231,7 +231,7 @@ export function addParagraphBreaks(messageBlock: { querySelectorAll: (arg0: stri
     }
 }
 
-export function updateUnresolvedInternalLinks(plugin: BMOGPT, divBlock: Element) {
+export function updateUnresolvedInternalLinks(plugin: DocscribeGPT, divBlock: Element) {
     const internalLinks = divBlock.querySelectorAll('a');
 
     internalLinks.forEach(link => {

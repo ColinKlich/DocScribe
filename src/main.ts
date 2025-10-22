@@ -1,11 +1,11 @@
 import { DataWriteOptions, Plugin, TFile} from 'obsidian';
-import { BMOView, VIEW_TYPE_CHATBOT, populateModelDropdown } from './view';
-import { BMOSettingTab } from './settings';
+import { DocscribeView, VIEW_TYPE_CHATBOT, populateModelDropdown } from './view';
+import { DocscribeSettingTab } from './settings';
 import { promptSelectGenerateCommand, renameTitleCommand } from './components/editor/EditorCommands';
 import { colorToHex, isValidHexColor } from './utils/ColorConverter';
-import { bmoCodeBlockProcessor } from './components/editor/BMOCodeBlockProcessor';
+import { DocscribeCodeBlockProcessor } from './components/editor/DocscribeCodeBlockProcessor';
 
-export interface BMOSettings {
+export interface DocscribeSettings {
 	profiles: {
 		profile: string,
 		profileFolderPath: string,
@@ -32,8 +32,8 @@ export interface BMOSettings {
 		chatBoxBackgroundColor: string,
 		enableHeader: boolean,
 		enableScrollBar: boolean,
-		bmoGenerateBackgroundColor: string,
-		bmoGenerateFontColor: string,
+		DocscribeGenerateBackgroundColor: string,
+		DocscribeGenerateFontColor: string,
 	},
 	prompts: {
 		prompt: string,
@@ -119,15 +119,15 @@ export interface BMOSettings {
 	toggleAdvancedSettings: boolean,
 }
 
-export const DEFAULT_SETTINGS: BMOSettings = {
+export const DEFAULT_SETTINGS: DocscribeSettings = {
 	profiles: {
-		profile: 'BMO.md',
-		profileFolderPath: 'BMO/Profiles',
+		profile: 'Docscribe.md',
+		profileFolderPath: 'Docscribe/Profiles',
 		lastLoadedChatHistoryPath: null,
 		lastLoadedChatHistory: [],
 	},
 	general: {
-		model: '',
+		model: 'gemini-2.5-pro',
 		system_role: 'You are a helpful assistant.',
 		max_tokens: '',
 		temperature: '1.00',
@@ -135,7 +135,7 @@ export const DEFAULT_SETTINGS: BMOSettings = {
 	},
 	appearance: {
 		userName: 'YOU',
-		chatbotName: 'BMO',
+		chatbotName: 'Docscribe',
 		chatbotContainerBackgroundColor: '--background-secondary',
 		messageContainerBackgroundColor: '--background-secondary',
 		userMessageFontColor: '--text-normal',
@@ -146,18 +146,18 @@ export const DEFAULT_SETTINGS: BMOSettings = {
 		chatBoxBackgroundColor: '--interactive-accent',
 		enableHeader: true,
 		enableScrollBar: false,
-		bmoGenerateBackgroundColor: '#0c0a12',
-		bmoGenerateFontColor: '--text-normal',
+		DocscribeGenerateBackgroundColor: '#0c0a12',
+		DocscribeGenerateFontColor: '--text-normal',
 	},
 	prompts: {
 		prompt: '',
-		promptFolderPath: 'BMO/Prompts',
+		promptFolderPath: 'Docscribe/Prompts',
 	},
 	editor: {
 		systen_role: 'You are a helpful assistant.',
 	},
 	chatHistory: {
-		chatHistoryPath: 'BMO/History',
+		chatHistoryPath: 'Docscribe/History',
 		templateFilePath: '',
 		allowRenameNoteTitle: false,
 	},
@@ -235,8 +235,8 @@ export const DEFAULT_SETTINGS: BMOSettings = {
 
 export let checkActiveFile: TFile | null = null;
 
-export default class BMOGPT extends Plugin {
-	settings: BMOSettings;
+export default class DocscribeGPT extends Plugin {
+	settings: DocscribeSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -323,7 +323,7 @@ export default class BMOGPT extends Plugin {
 				}
 
 				if (file instanceof TFile && file.path.startsWith(folderPath)) {
-					const filenameMessageHistory = './.obsidian/plugins/bmo-chatbot/data/' + 'messageHistory_' + file.name.replace('.md', '.json');
+					const filenameMessageHistory = './.obsidian/plugins/Docscribe-chatbot/data/' + 'messageHistory_' + file.name.replace('.md', '.json');
 					this.app.vault.adapter.remove(filenameMessageHistory);
 
 					const profileIndex = profileFiles.findIndex((profileFile) => profileFile.name > file.name);
@@ -388,7 +388,7 @@ export default class BMOGPT extends Plugin {
 					}
 
 					if (file instanceof TFile && file.path.startsWith(folderPath)) {
-						const filenameMessageHistoryPath = './.obsidian/plugins/bmo-chatbot/data/';
+						const filenameMessageHistoryPath = './.obsidian/plugins/Docscribe-chatbot/data/';
 						const oldProfileMessageHistory = 'messageHistory_' + oldPath.replace(folderPath + '/', '').replace('.md', '.json');
 					
 						await this.app.vault.adapter.rename(filenameMessageHistoryPath + oldProfileMessageHistory, filenameMessageHistoryPath + 'messageHistory_' + file.name.replace('.md', '.json'))
@@ -465,16 +465,16 @@ export default class BMOGPT extends Plugin {
 
 		this.registerView(
 			VIEW_TYPE_CHATBOT,
-			(leaf) => new BMOView(leaf, this.settings, this)
+			(leaf) => new DocscribeView(leaf, this.settings, this)
 		);
 
-		this.addRibbonIcon('bot', 'BMO Chatbot', () => {
+		this.addRibbonIcon('bot', 'Docscribe Chatbot', () => {
 			this.activateView();
 		});
 
 		this.addCommand({
-            id: 'open-bmo-chatbot',
-            name: 'Open BMO Chatbot',
+            id: 'open-Docscribe-chatbot',
+            name: 'Open Docscribe Chatbot',
             callback: () => {
                 this.activateView();
             },
@@ -508,7 +508,7 @@ export default class BMOGPT extends Plugin {
 	
 				menu.addItem((item) => {
 					item
-						.setTitle('BMO Chatbot: Generate new title')
+						.setTitle('Docscribe Chatbot: Generate new title')
 						.onClick(() => renameTitleCommand(this, this.settings));
 				});
 			})
@@ -528,10 +528,10 @@ export default class BMOGPT extends Plugin {
             ],
         });
 
-		// Register BMO code block processor
-		bmoCodeBlockProcessor(this, this.settings);
+		// Register Docscribe code block processor
+		DocscribeCodeBlockProcessor(this, this.settings);
 
-		this.addSettingTab(new BMOSettingTab(this.app, this));
+		this.addSettingTab(new DocscribeSettingTab(this.app, this));
 	}
 
 	handleFileSwitch() {
@@ -540,9 +540,9 @@ export default class BMOGPT extends Plugin {
 
 	async onunload() {
 		this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT).forEach((leaf) => {
-			const bmoView = leaf.view as BMOView;
+			const DocscribeView = leaf.view as DocscribeView;
 	
-			if (bmoView) {
+			if (DocscribeView) {
 				this.saveSettings();
 			}
 			
@@ -613,7 +613,7 @@ export default class BMOGPT extends Plugin {
 	}
 }
 
-export async function defaultFrontMatter(plugin: BMOGPT, file: TFile) {
+export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
     // Define a callback function to modify the frontmatter
     const setDefaultFrontMatter = async (frontmatter: any) => {
         // Add or modify properties in the frontmatter
@@ -633,8 +633,8 @@ export async function defaultFrontMatter(plugin: BMOGPT, file: TFile) {
 		frontmatter.chatbot_message_background_color = DEFAULT_SETTINGS.appearance.botMessageBackgroundColor.replace(/^#/, '');
 		frontmatter.chatbox_font_color = DEFAULT_SETTINGS.appearance.chatBoxFontColor.replace(/^#/, '');
 		frontmatter.chatbox_background_color = DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor.replace(/^#/, '');
-		frontmatter.bmo_generate_background_color = DEFAULT_SETTINGS.appearance.bmoGenerateBackgroundColor.replace(/^#/, '');
-		frontmatter.bmo_generate_font_color = DEFAULT_SETTINGS.appearance.bmoGenerateFontColor.replace(/^#/, '');
+		frontmatter.Docscribe_generate_background_color = DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor.replace(/^#/, '');
+		frontmatter.Docscribe_generate_font_color = DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor.replace(/^#/, '');
 		frontmatter.systen_role = DEFAULT_SETTINGS.editor.systen_role;
 		frontmatter.ollama_mirostat = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat);
 		frontmatter.ollama_mirostat_eta = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta);
@@ -668,7 +668,7 @@ export async function defaultFrontMatter(plugin: BMOGPT, file: TFile) {
 	plugin.app.vault.append(file, DEFAULT_SETTINGS.general.system_role);
 }
 
-export async function updateSettingsFromFrontMatter(plugin: BMOGPT, file: TFile){
+export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: TFile){
     // Define a callback function to modify the frontmatter
     const updateSettings = async (frontmatter: any) => {
         // Add or modify properties in the frontmatter
@@ -688,8 +688,8 @@ export async function updateSettingsFromFrontMatter(plugin: BMOGPT, file: TFile)
 		plugin.settings.appearance.botMessageBackgroundColor = '#' + frontmatter.chatbot_message_background_color;
 		plugin.settings.appearance.chatBoxFontColor = '#' + frontmatter.chatbox_font_color;
 		plugin.settings.appearance.chatBoxBackgroundColor = '#' + frontmatter.chatbox_background_color;
-		plugin.settings.appearance.bmoGenerateBackgroundColor = '#' + frontmatter.bmo_generate_background_color;
-		plugin.settings.appearance.bmoGenerateFontColor = '#' + frontmatter.bmo_generate_font_color;
+		plugin.settings.appearance.DocscribeGenerateBackgroundColor = '#' + frontmatter.Docscribe_generate_background_color;
+		plugin.settings.appearance.DocscribeGenerateFontColor = '#' + frontmatter.Docscribe_generate_font_color;
 		plugin.settings.editor.systen_role = frontmatter.systen_role;
 		plugin.settings.OllamaConnection.ollamaParameters.mirostat = frontmatter.ollama_mirostat;
 		plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta = frontmatter.ollama_mirostat_eta;
@@ -724,7 +724,7 @@ export async function updateSettingsFromFrontMatter(plugin: BMOGPT, file: TFile)
     }
 }
 
-export async function updateFrontMatter(plugin: BMOGPT, file: TFile){
+export async function updateFrontMatter(plugin: DocscribeGPT, file: TFile){
     // Define a callback function to modify the frontmatter
     const modifyFrontMatter = async (frontmatter: any) => {
         // Add or modify properties in the frontmatter
@@ -744,8 +744,8 @@ export async function updateFrontMatter(plugin: BMOGPT, file: TFile){
 		frontmatter.chatbot_message_background_color = plugin.settings.appearance.botMessageBackgroundColor.replace(/^#/, '');
 		frontmatter.chatbox_font_color = plugin.settings.appearance.chatBoxFontColor.replace(/^#/, '');
 		frontmatter.chatbox_background_color = plugin.settings.appearance.chatBoxBackgroundColor.replace(/^#/, '');
-		frontmatter.bmo_generate_background_color = plugin.settings.appearance.bmoGenerateBackgroundColor.replace(/^#/, '');
-		frontmatter.bmo_generate_font_color = plugin.settings.appearance.bmoGenerateFontColor.replace(/^#/, '');
+		frontmatter.Docscribe_generate_background_color = plugin.settings.appearance.DocscribeGenerateBackgroundColor.replace(/^#/, '');
+		frontmatter.Docscribe_generate_font_color = plugin.settings.appearance.DocscribeGenerateFontColor.replace(/^#/, '');
 		frontmatter.systen_role = plugin.settings.editor.systen_role;
 		frontmatter.ollama_mirostat = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat);
 		frontmatter.ollama_mirostat_eta = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta);
@@ -778,7 +778,7 @@ export async function updateFrontMatter(plugin: BMOGPT, file: TFile){
     }
 }
 
-export async function updateProfile(plugin: BMOGPT, file: TFile) {
+export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 	try {
 		await plugin.app.fileManager.processFrontMatter(file, (frontmatter: any) => {
 
@@ -1061,43 +1061,43 @@ export async function updateProfile(plugin: BMOGPT, file: TFile) {
 				}
 			}
 
-			if (isValidHexColor(frontmatter.bmo_generate_background_color)) {
-				plugin.settings.appearance.bmoGenerateBackgroundColor = '#' + frontmatter.bmo_generate_background_color.substring(0, 6);
+			if (isValidHexColor(frontmatter.Docscribe_generate_background_color)) {
+				plugin.settings.appearance.DocscribeGenerateBackgroundColor = '#' + frontmatter.Docscribe_generate_background_color.substring(0, 6);
 				
-				const containers = document.querySelectorAll('.bmoCodeBlockContainer');
+				const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
 				containers.forEach((container) => {
 					const element = container as HTMLElement;
-					element.style.backgroundColor = plugin.settings.appearance.bmoGenerateBackgroundColor;
+					element.style.backgroundColor = plugin.settings.appearance.DocscribeGenerateBackgroundColor;
 				});
 			} else {
-				plugin.settings.appearance.bmoGenerateBackgroundColor = colorToHex(DEFAULT_SETTINGS.appearance.bmoGenerateBackgroundColor);
-				frontmatter.bmo_generate_background_color = plugin.settings.appearance.bmoGenerateBackgroundColor.replace(/^#/, '');
+				plugin.settings.appearance.DocscribeGenerateBackgroundColor = colorToHex(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
+				frontmatter.Docscribe_generate_background_color = plugin.settings.appearance.DocscribeGenerateBackgroundColor.replace(/^#/, '');
 				
-				const containers = document.querySelectorAll('.bmoCodeBlockContainer');
+				const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
 				containers.forEach((container) => {
 					const element = container as HTMLElement;
-					const defaultBMOGenerateBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.bmoGenerateBackgroundColor).trim();
-					element.style.backgroundColor = defaultBMOGenerateBackgroundColor;
+					const defaultDocscribeGenerateBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor).trim();
+					element.style.backgroundColor = defaultDocscribeGenerateBackgroundColor;
 				});
 			}
 
-			if (isValidHexColor(frontmatter.bmo_generate_font_color)) {
-				plugin.settings.appearance.bmoGenerateFontColor = '#' + frontmatter.bmo_generate_font_color.substring(0, 6);
+			if (isValidHexColor(frontmatter.Docscribe_generate_font_color)) {
+				plugin.settings.appearance.DocscribeGenerateFontColor = '#' + frontmatter.Docscribe_generate_font_color.substring(0, 6);
 				
-				const containers = document.querySelectorAll('.bmoCodeBlockContent');
+				const containers = document.querySelectorAll('.DocscribeCodeBlockContent');
 				containers.forEach((container) => {
 					const element = container as HTMLElement;
-					element.style.color = plugin.settings.appearance.bmoGenerateFontColor;
+					element.style.color = plugin.settings.appearance.DocscribeGenerateFontColor;
 				});
 			} else {
-				plugin.settings.appearance.bmoGenerateFontColor = colorToHex(DEFAULT_SETTINGS.appearance.bmoGenerateFontColor);
-				frontmatter.bmo_generate_font_color = plugin.settings.appearance.bmoGenerateFontColor.replace(/^#/, '');
+				plugin.settings.appearance.DocscribeGenerateFontColor = colorToHex(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor);
+				frontmatter.Docscribe_generate_font_color = plugin.settings.appearance.DocscribeGenerateFontColor.replace(/^#/, '');
 				
-				const containers = document.querySelectorAll('.bmoCodeBlockContent');
+				const containers = document.querySelectorAll('.DocscribeCodeBlockContent');
 				containers.forEach((container) => {
 					const element = container as HTMLElement;
-					const defaultBMOGenerateFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.bmoGenerateFontColor).trim();
-					element.style.color = defaultBMOGenerateFontColor;
+					const defaultDocscribeGenerateFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor).trim();
+					element.style.color = defaultDocscribeGenerateFontColor;
 				});
 			}
 

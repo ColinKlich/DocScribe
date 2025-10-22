@@ -1,8 +1,8 @@
 import { Setting, SettingTab, setIcon } from 'obsidian';
-import BMOGPT, { DEFAULT_SETTINGS } from 'src/main';
+import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 
 
-export async function addEditorSettings(containerEl: HTMLElement, plugin: BMOGPT, SettingTab: SettingTab) {
+export async function addEditorSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'Editor'});
 
@@ -32,7 +32,7 @@ export async function addEditorSettings(containerEl: HTMLElement, plugin: BMOGPT
 
     new Setting(settingsContainer)
         .setName('Editor System Role')
-        .setDesc('System role for BMO Generate and \'Prompt Select Generate\' command.')
+        .setDesc('System role for Docscribe Generate and \'Prompt Select Generate\' command.')
         .addTextArea(text => text
             .setPlaceholder('You are a helpful assistant.')
             .setValue(plugin.settings.editor.systen_role !== undefined ? plugin.settings.editor.systen_role : DEFAULT_SETTINGS.editor.systen_role)
