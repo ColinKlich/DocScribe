@@ -74,3 +74,11 @@ We are constantly working to improve DocScribe. Here's what's coming soon:
 ## Contributing
 
 Contributions are welcome! If you have a bug fix or an improvement, please feel free to open a pull request. For bugs or feature requests, please create an issue on the GitHub repository.
+
+## Original Source Code
+This plugin was originally forked from [BMO Chatbot](https://github.com/longy2k/obsidian-bmo-chatbot). This project is not intended to be a copy of BMO Chatbot. Instead, BMO is the base with which we will build a new tool, one that accomplishes a similar, yet different function.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
