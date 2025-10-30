@@ -510,7 +510,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pptx') {
 					menu.addItem((item) => {
 						item
-							.setTitle('Extract notes from PPTX')
+							.setTitle('Docscribe: Extract notes from PPTX')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractStructuredText(arrayBuffer);

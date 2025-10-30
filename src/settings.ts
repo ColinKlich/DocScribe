@@ -30,10 +30,10 @@ export class DocscribeSettingTab extends PluginSettingTab {
 
 		// Define link data
 		const links = [
-			{ text: 'Changelog', href: 'https://github.com/longy2k/obsidian-obsidian-docscribe/releases' },
-			{ text: 'Wiki', href: 'https://github.com/longy2k/obsidian-obsidian-docscribe/wiki' },
-			{ text: 'Report a Bug', href: 'https://github.com/longy2k/obsidian-obsidian-docscribe/issues' },
-			{ text: 'Support Me', href: 'https://ko-fi.com/longy2k' }
+			{ text: 'Changelog', href: 'https://github.com/colinklich/obsidian-obsidian-docscribe/releases' },
+			{ text: 'Wiki', href: 'https://github.com/colinklich/obsidian-obsidian-docscribe/wiki' },
+			{ text: 'Report a Bug', href: 'https://github.com/colinklich/obsidian-obsidian-docscribe/issues' },
+			{ text: 'Support Me', href: 'https://ko-fi.com/colinklich' }
 		];
 
 		// Create links and separators
