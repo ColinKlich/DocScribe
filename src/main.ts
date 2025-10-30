@@ -4,6 +4,7 @@ import { DocscribeSettingTab } from './settings';
 import { promptSelectGenerateCommand, renameTitleCommand } from './components/editor/EditorCommands';
 import { colorToHex, isValidHexColor } from './utils/ColorConverter';
 import { DocscribeCodeBlockProcessor } from './components/editor/DocscribeCodeBlockProcessor';
+import { extractStructuredText } from './utils/PptxExtractor';
 
 export interface DocscribeSettings {
 	profiles: {
@@ -239,7 +240,7 @@ export default class DocscribeGPT extends Plugin {
 	settings: DocscribeSettings;
 
 	async onload() {
-		await this.loadSettings();
+	await this.loadSettings();
 
 		const folderPath = this.settings.profiles.profileFolderPath || DEFAULT_SETTINGS.profiles.profileFolderPath;
 
@@ -261,7 +262,7 @@ export default class DocscribeGPT extends Plugin {
 			this.app.vault.on('create', async (file: TFile) => {
 			if (file instanceof TFile && file.path.startsWith(folderPath)) {
 				const fileContent = await this.app.vault.read(file);
-		
+				
 				// Check if the file content is empty
 				if (fileContent.trim() === '') {
 					// File content is empty, proceed with default front matter and appending content
@@ -319,11 +320,11 @@ export default class DocscribeGPT extends Plugin {
 
 					if (profileIndex === currentIndex) {
 						this.settings.profiles.lastLoadedChatHistoryPath = null;
-					} 
+					}
 				}
 
 				if (file instanceof TFile && file.path.startsWith(folderPath)) {
-					const filenameMessageHistory = './.obsidian/plugins/Docscribe-chatbot/data/' + 'messageHistory_' + file.name.replace('.md', '.json');
+					const filenameMessageHistory = './.obsidian/plugins/obsidian-docscribe/data/' + 'messageHistory_' + file.name.replace('.md', '.json');
 					this.app.vault.adapter.remove(filenameMessageHistory);
 
 					const profileIndex = profileFiles.findIndex((profileFile) => profileFile.name > file.name);
@@ -388,13 +389,13 @@ export default class DocscribeGPT extends Plugin {
 					}
 
 					if (file instanceof TFile && file.path.startsWith(folderPath)) {
-						const filenameMessageHistoryPath = './.obsidian/plugins/Docscribe-chatbot/data/';
+						const filenameMessageHistoryPath = './.obsidian/plugins/obsidian-docscribe/data/';
 						const oldProfileMessageHistory = 'messageHistory_' + oldPath.replace(folderPath + '/', '').replace('.md', '.json');
 					
 						await this.app.vault.adapter.rename(filenameMessageHistoryPath + oldProfileMessageHistory, filenameMessageHistoryPath + 'messageHistory_' + file.name.replace('.md', '.json'))
-						.catch((error) => {
-							console.error('Error handling rename event:', error);
-						});
+							.catch((error) => {
+								console.error('Error handling rename event:', error);
+							});
 					
 						await this.app.vault.adapter.remove(filenameMessageHistoryPath + oldProfileMessageHistory);
 					}
@@ -427,7 +428,7 @@ export default class DocscribeGPT extends Plugin {
 				// Remove the currentIndex from the updated array
 				if (fileIndex !== -1) {
 					updatedProfileFiles.splice(fileIndex, 1);
-				} 
+				}
 
 				const prevIndex = updatedProfileFiles.findIndex((profileFile) => profileFile.name === prevFileName);
 
@@ -473,7 +474,7 @@ export default class DocscribeGPT extends Plugin {
 		});
 
 		this.addCommand({
-            id: 'open-Docscribe-chatbot',
+            id: 'open-obsidian-docscribe',
             name: 'Open Docscribe Chatbot',
             callback: () => {
                 this.activateView();
@@ -505,10 +506,25 @@ export default class DocscribeGPT extends Plugin {
 				if (!(file instanceof TFile)) {
 					return;
 				}
+
+				if (file.extension === 'pptx') {
+					menu.addItem((item) => {
+						item
+							.setTitle('Extract notes from PPTX')
+							.onClick(async () => {
+								const arrayBuffer = await this.app.vault.readBinary(file);
+								const extractedText = await extractStructuredText(arrayBuffer);
+								const prompt = "Please output the topics from the following text in well-formatted markdown:\n\n" + extractedText;
+								await this.activateView();
+								const view = this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0].view as DocscribeView;
+								view.sendSystemMessage(prompt);
+							});
+					});
+				}
 	
 				menu.addItem((item) => {
 					item
-						.setTitle('Docscribe Chatbot: Generate new title')
+						.setTitle('Docscribe: Generate new title')
 						.onClick(() => renameTitleCommand(this, this.settings));
 				});
 			})
@@ -555,9 +571,9 @@ export default class DocscribeGPT extends Plugin {
 	
 		const rightLeaf = this.app.workspace.getRightLeaf(false);
 		await rightLeaf?.setViewState({
-			type: VIEW_TYPE_CHATBOT,
-			active: true,
-		});
+				type: VIEW_TYPE_CHATBOT,
+				active: true,
+			});
 
 		this.app.workspace.revealLeaf(
 			this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0]
@@ -573,7 +589,7 @@ export default class DocscribeGPT extends Plugin {
 			setTimeout(() => {
 				textarea.focus();
 				textarea.style.opacity = '1';
-			}, 50); 
+			}, 50);
 		}
 	
 		this.app.workspace.revealLeaf(
@@ -602,10 +618,10 @@ export default class DocscribeGPT extends Plugin {
 		// Update the model dropdown in the header
 		const header = document.querySelector('#header') as HTMLElement;
 		const modelOptions = header?.querySelector('#modelOptions');
-		if (modelOptions) {
-			modelOptions.remove();
-		}
-		const populateModelOptions = populateModelDropdown(this, this.settings);
+			if (modelOptions) {
+				modelOptions.remove();
+			}
+			const populateModelOptions = populateModelDropdown(this, this.settings);
 		header?.appendChild(populateModelOptions);
 
 		// Save the settings

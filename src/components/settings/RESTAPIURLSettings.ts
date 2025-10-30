@@ -50,7 +50,7 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
 
     new Setting(settingsContainer)
     .setName('REST API URL')
-    .setDesc(addDescriptionLink('ENTER YOUR REST API URL.', 'https://github.com/longy2k/obsidian-Docscribe-chatbot/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
+    .setDesc(addDescriptionLink('ENTER YOUR REST API URL.', 'https://github.com/longy2k/obsidian-obsidian-docscribe/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
     .addText(text => text
         .setPlaceholder('http://localhost:1234/v1')
         .setValue(plugin.settings.RESTAPIURLConnection.RESTAPIURL || DEFAULT_SETTINGS.RESTAPIURLConnection.RESTAPIURL)

@@ -19,6 +19,7 @@ import { fetchOpenAIAPIResponseStream,
         fetchOpenRouterResponseStream,
         fetchOpenRouterResponse,
         fetchGoogleGeminiResponseStream} from './components/FetchModelResponse';
+import { extractStructuredText } from './utils/PptxExtractor';
 
 export const VIEW_TYPE_CHATBOT = 'chatbot-view';
 export const ANTHROPIC_MODELS = ['claude-instant-1.2', 'claude-2.0', 'claude-2.1', 'claude-3-haiku-20240307', 'claude-3-sonnet-20240229', 'claude-3-5-sonnet-20240620', 'claude-3-opus-20240229'];
@@ -26,7 +27,7 @@ export const GOOGLE_GEMINI_MODELS = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemi
 export const OPENAI_MODELS = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'];
 
 export function fileNameMessageHistoryJson(plugin: DocscribeGPT) {
-    const filenameMessageHistoryPath = './.obsidian/plugins/Docscribe-chatbot/data/';
+    const filenameMessageHistoryPath = './.obsidian/plugins/obsidian-docscribe/data/';
     const currentProfileMessageHistory = 'messageHistory_' + plugin.settings.profiles.profile.replace('.md', '.json');
 
     return filenameMessageHistoryPath + currentProfileMessageHistory;
@@ -262,7 +263,7 @@ export class DocscribeView extends ItemView {
         }
 
         // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
-        const regex = /(!?)\[\[(.*?)\]\]/g;
+        const regex = /(!?)!!\[\[(.*?)\]\]/g;
         let matches;
         let inputModified = input;
 
@@ -281,6 +282,14 @@ export class DocscribeView extends ItemView {
                 try {
                     const filePath = file.path; // Assuming file object has a path property
                     const fileExtension = filePath.split('.').pop();
+
+                    if (fileExtension === 'pptx') {
+                        const arrayBuffer = await this.app.vault.readBinary(file);
+                        const extractedText = await extractStructuredText(arrayBuffer);
+                        const prompt = "Please output the topics from the following text in well-formatted markdown:\n\n" + extractedText;
+                        replacements.set(matches[0], prompt);
+                        continue;
+                    }
                 
                     // Check if the file extension is .md
                     if (fileExtension !== 'md') {
@@ -370,16 +379,16 @@ export class DocscribeView extends ItemView {
                     '/stop', 
                     '/save', 
                     '/load ',
-                    '/m ', 
-                    '/model ', 
-                    '/models ', 
-                    '/p ', 
-                    '/profile ', 
-                    '/prof ', 
-                    '/profiles ', 
-                    '/prompt ', 
-                    '/prompts ', 
-                    '/append', 
+                    '/m ',
+                    '/model ',
+                    '/models ',
+                    '/p ',
+                    '/profile ',
+                    '/prof ',
+                    '/profiles ',
+                    '/prompt ',
+                    '/prompts ',
+                    '/append',
                     '/reference ',
                     '/ref ',
                     '/maxtokens',
@@ -583,12 +592,27 @@ export class DocscribeView extends ItemView {
         // Nothing to clean up.
     }
 
+    setChatboxContent(text: string) {
+        this.textareaElement.value += `<context>${text}</context>`;
+        this.textareaElement.style.height = this.textareaElement.scrollHeight + 'px';
+    }
+
+    public async sendSystemMessage(message: string) {
+        const messageContainer = document.querySelector('#messageContainer');
+        if (messageContainer) {
+            const index = messageHistory.length - 1;
+            addMessage(this.plugin, message, 'userMessage', this.settings, index);
+            const userMessageDiv = displayUserMessage(this.plugin, this.settings, message);
+            messageContainer.appendChild(userMessageDiv);
+            await this.Docscribechatbot();
+        }
+    }
 }
 
 // Create data folder and load JSON file
 async function loadData(plugin: DocscribeGPT) {
-    if (!await plugin.app.vault.adapter.exists('./.obsidian/plugins/Docscribe-chatbot/data/')) {
-        plugin.app.vault.adapter.mkdir('./.obsidian/plugins/Docscribe-chatbot/data/');
+    if (!await plugin.app.vault.adapter.exists('./.obsidian/plugins/obsidian-docscribe/data/')) {
+        plugin.app.vault.adapter.mkdir('./.obsidian/plugins/obsidian-docscribe/data/');
     }
 
     if (await plugin.app.vault.adapter.exists(fileNameMessageHistoryJson(plugin))) {
