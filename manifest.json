@@ -1,8 +1,8 @@
 {
-	"id": "obsidian-docscribe",
+	"id": "docscribe",
 	"name": "DocScribe",
 	"version": "1.0.0",
-	"description": "Generate and brainstorm ideas while creating your notes using LLMs.",
+	"description": "Generate notes from PPTX and PDF files using LLMs.",
 	"author": "Colin Klich",
 	"authorUrl": "https://github.com/ColinKlich",
 	"isDesktopOnly": false
