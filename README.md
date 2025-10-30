@@ -50,7 +50,6 @@ We are constantly working to improve DocScribe. Here's what's coming soon:
 ## Core Features
 
 *   **Wide LLM Support:** Connect to models from Ollama, OpenAI, Google Gemini, Anthropic, Mistral, and any OpenAI-compatible REST API.
-*   **Custom Profiles:** Create unique chatbot personalities with specific knowledge, prompts, and presets.
 *   **Editor Integration:** Generate ideas, draft content, and rewrite text directly within the Obsidian editor.
 *   **Full Markdown Support:** Chat messages are rendered in Obsidian's Markdown, including code blocks, links, and more.
 
