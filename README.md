@@ -1,20 +1,58 @@
-# Docscribe for Obsidian
+# DocScribe for Obsidian
 
-Your intelligent companion for brainstorming and note creation in Obsidian, powered by a variety of Large Language Models.
+DocScribe is an intelligent assistant for Obsidian that helps you create notes from your documents. It's powered by a variety of Large Language Models and is designed to streamline your note-taking process, starting with PowerPoint files.
+
+## How to Use DocScribe
+
+Getting started with DocScribe is a simple process.
+
+### 1. Install and Configure
+
+First, you need to install DocScribe from the Obsidian Community Plugins browser. Once installed, you'll need to configure it to use your preferred Large Language Model (LLM).
+
+1.  Go to **Settings** > **Community Plugins** and find **DocScribe**.
+2.  Enable the plugin.
+3.  Go to the **DocScribe** settings tab.
+4.  Select your LLM provider (e.g., OpenAI, Google Gemini, Anthropic).
+5.  Enter your API key.
+
+### 2. Generate Notes from a PowerPoint
+
+Once you have DocScribe configured, you can start generating notes from your `.pptx` files.
+
+There are two ways to do this:
+
+*   **Command Menu:** Right-click on a `.pptx` file in the file explorer and select "Generate Notes from PowerPoint".
+*   **In-Chat Command:** In any chat window, you can use the following command to generate notes from a PowerPoint file:
+
+    ```
+    !![[path/to/your/file.pptx]]
+    ```
+
+    Replace `path/to/your/file.pptx` with the relative path to your PowerPoint file.
+
+DocScribe will then extract the text from the PowerPoint, send it to the LLM, and display the generated notes in the chat window.
+
+## Upcoming Features
+
+We are constantly working to improve DocScribe. Here's what's coming soon:
+
+*   **PDF Support:** We are actively working on adding support for `.pdf` files. This feature will be available in a future release.
+
+## Screenshots
+
+**Chat Command:**
+![Chat Command](README_images/chat%20insert.png)
+
+**Command Menu:**
+![Command Menu](README_images/command%20menu.png)
 
 ## Core Features
 
 *   **Wide LLM Support:** Connect to models from Ollama, OpenAI, Google Gemini, Anthropic, Mistral, and any OpenAI-compatible REST API.
 *   **Custom Profiles:** Create unique chatbot personalities with specific knowledge, prompts, and presets.
 *   **Editor Integration:** Generate ideas, draft content, and rewrite text directly within the Obsidian editor.
-*   **PowerPoint Text Extraction:** Use the `!![[filename.pptx]]` command or the context menu to extract slide content and analyze it with your chosen LLM.
 *   **Full Markdown Support:** Chat messages are rendered in Obsidian's Markdown, including code blocks, links, and more.
-
-## Getting Started
-
-1.  **Install:** Find "Docscribe" in the Obsidian Community Plugins browser and install it.
-2.  **Configure:** Open the plugin settings and add your API key or the REST API URL for your model provider.
-3.  **Chat:** Click the bot icon in the left ribbon to open the chat panel and start a conversation.
 
 <details>
 <summary>Available Commands</summary>
@@ -33,10 +71,6 @@ Your intelligent companion for brainstorming and note creation in Obsidian, powe
 *   `/stop` or `/s` - Stop the model from generating a response.
 
 </details>
-
-## Future Improvements
-
-We are actively working on improving Docscribe. A key priority is to update the integration with all model providers to use their latest and most capable APIs. This will bring enhanced performance, new features, and broader model support.
 
 ## Contributing
 
