@@ -478,13 +478,13 @@ export default class DocscribeGPT extends Plugin {
             name: 'Open Docscribe Chatbot',
             callback: () => {
                 this.activateView();
-            },
-            hotkeys: [
-				{
-					modifiers: ['Mod'],
-					key: '0',
-				},
-            ],
+            }
+            // hotkeys: [
+			// 	{
+			// 		modifiers: ['Mod'],
+			// 		key: '0',
+			// 	},
+            // ],
         });
 
 		this.addCommand({
@@ -492,13 +492,13 @@ export default class DocscribeGPT extends Plugin {
             name: 'Rename Note Title',
             callback: () => {
 				renameTitleCommand(this, this.settings);
-            },
-            hotkeys: [
-				{
-					modifiers: ['Mod'],
-					key: '\'',
-				},
-            ],
+            }
+            // hotkeys: [
+			// 	{
+			// 		modifiers: ['Mod'],
+			// 		key: '\'',
+			// 	},
+            // ],
         });
 
 		this.registerEvent(
@@ -535,13 +535,13 @@ export default class DocscribeGPT extends Plugin {
             name: 'Prompt Select Generate',
             callback: () => {
 				promptSelectGenerateCommand(this, this.settings);
-            },
-            hotkeys: [
-				{
-					modifiers: ['Mod', 'Shift'],
-					key: '=',
-				},
-            ],
+            }
+            // hotkeys: [
+			// 	{
+			// 		modifiers: ['Mod', 'Shift'],
+			// 		key: '=',
+			// 	},
+            // ],
         });
 
 		// Register Docscribe code block processor

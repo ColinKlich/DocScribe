@@ -113,7 +113,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 					else {
 						const filenameMessageHistory = './.obsidian/plugins/obsidian-docscribe/data/' + 'messageHistory_' + defaultProfilePath.name.replace('.md', '.json');
 						this.app.vault.adapter.remove(filenameMessageHistory);
-						this.plugin.app.vault.delete(profilePath);
+						this.plugin.app.fileManager.trashFile(profilePath);
 						this.plugin.settings.profiles.profile = DEFAULT_SETTINGS.profiles.profile;
 						await updateSettingsFromFrontMatter(this.plugin, defaultProfilePath);
 						await this.plugin.saveSettings();
