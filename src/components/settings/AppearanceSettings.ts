@@ -44,16 +44,17 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const header = document.querySelector('#header') as HTMLElement;
 
                 if (header) {
-                    header.style.display = 'block';
-                    referenceCurrentNoteElement.style.margin = '-0.5rem 0 0.5rem 0';
+                    header.removeClass('hidden');
+                    document.body.addClass('header-visible');
+                    document.body.removeClass('header-hidden');
                 }
             } else {
                 const header = document.querySelector('#header') as HTMLElement;
                 const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
                 if (header) {
-                    header.style.display = 'none';
-                    messageContainer.style.maxHeight = 'calc(100% - 60px)';
-                    referenceCurrentNoteElement.style.margin = '0.5rem 0 0.5rem 0';
+                    header.addClass('hidden');
+                    document.body.removeClass('header-visible');
+                    document.body.addClass('header-hidden');
                 }
             }
             plugin.saveSettings();
@@ -116,7 +117,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
                 if (chatbotContainer) {
                     // Modify the background color of the chatbot container
-                    chatbotContainer.style.backgroundColor = defaultValue;
+                    chatbotContainer.style.setProperty('--docscribe-chatbot-container-background-color', defaultValue);
                     messageContainer.style.backgroundColor = colorPicker2.getValue();
                     await plugin.saveSettings();
                 }
@@ -138,7 +139,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const chatbotContainer = document.querySelector('.chatbotContainer') as HTMLElement;
                 const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
                 if (chatbotContainer) {
-                    chatbotContainer.style.backgroundColor = hexValue;
+                    chatbotContainer.style.setProperty('--docscribe-chatbot-container-background-color', hexValue);
                     messageContainer.style.backgroundColor = colorPicker2.getValue();
                 }
                 await plugin.saveSettings();
@@ -159,7 +160,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
             if (messageContainer) {
                 // Modify the background color of the chatbot container
-                messageContainer.style.backgroundColor = defaultValue;
+                messageContainer.style.setProperty('--docscribe-message-container-background-color', defaultValue);
                 await plugin.saveSettings();
             }
         })
@@ -179,7 +180,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             plugin.settings.appearance.messageContainerBackgroundColor = hexValue;
             const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
             if (messageContainer) {
-                messageContainer.style.backgroundColor = hexValue;
+                messageContainer.style.setProperty('--docscribe-message-container-background-color', hexValue);
             }
             await plugin.saveSettings();
         });
@@ -201,7 +202,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     const userMessages = messageContainer.querySelectorAll('.userMessage');
                     userMessages.forEach((userMessage) => {
                         const element = userMessage as HTMLElement;
-                        element.style.color = defaultValue;
+                        element.style.setProperty('--docscribe-user-message-font-color', defaultValue);
                     });
                     await plugin.saveSettings();
                 }
@@ -225,7 +226,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     const userMessages = messageContainer.querySelectorAll('.userMessage');
                     userMessages.forEach((userMessage) => {
                         const element = userMessage as HTMLElement;
-                        element.style.color = hexValue;
+                        element.style.setProperty('--docscribe-user-message-font-color', hexValue);
                     });
                 }
 
@@ -249,7 +250,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     const userMessages = messageContainer.querySelectorAll('.userMessage');
                     userMessages.forEach((userMessage) => {
                         const element = userMessage as HTMLElement;
-                        element.style.backgroundColor = defaultValue;
+                        element.style.setProperty('--docscribe-user-message-background-color', defaultValue);
                     });
                     await plugin.saveSettings();
                 }
@@ -273,7 +274,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     const userMessages = messageContainer.querySelectorAll('.userMessage');
                     userMessages.forEach((userMessage) => {
                         const element = userMessage as HTMLElement;
-                        element.style.backgroundColor = hexValue;
+                        element.style.setProperty('--docscribe-user-message-background-color', hexValue);
                     });
                 }
 
@@ -297,7 +298,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const botMessages = messageContainer.querySelectorAll('.botMessage');
                 botMessages.forEach((botMessage) => {
                     const element = botMessage as HTMLElement;
-                    element.style.color = defaultValue;
+                    element.style.setProperty('--docscribe-bot-message-font-color', defaultValue);
                 });
                 await plugin.saveSettings();
             }
@@ -321,7 +322,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const botMessages = messageContainer.querySelectorAll('.botMessage');
                 botMessages.forEach((botMessage) => {
                     const element = botMessage as HTMLElement;
-                    element.style.color = hexValue;
+                    element.style.setProperty('--docscribe-bot-message-font-color', hexValue);
                 });
             }
 
@@ -345,7 +346,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     const botMessages = messageContainer.querySelectorAll('.botMessage');
                     botMessages.forEach((botMessage) => {
                         const element = botMessage as HTMLElement;
-                        element.style.backgroundColor = defaultValue;
+                        element.style.setProperty('--docscribe-bot-message-background-color', defaultValue);
                     });
                     await plugin.saveSettings();
                 }
@@ -369,7 +370,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                         const botMessages = messageContainer.querySelectorAll('.botMessage');
                         botMessages.forEach((botMessage) => {
                             const element = botMessage as HTMLElement;
-                            element.style.backgroundColor = hexValue;
+                            element.style.setProperty('--docscribe-bot-message-background-color', hexValue);
                         });
                     }
                 await plugin.saveSettings();
@@ -389,16 +390,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             
             const textarea = document.querySelector('.chatbox textarea') as HTMLElement;
             if (textarea) {
-                textarea.style.color = defaultValue;
-                
-                // Set the placeholder color to the default value
-                const style = document.createElement('style');
-                style.textContent = `
-                    .chatbox textarea::placeholder {
-                        color: ${defaultValue} !important;
-                    }
-                `;
-                textarea.appendChild(style);
+                textarea.style.setProperty('--docscribe-chatbox-font-color', defaultValue);
                 
                 await plugin.saveSettings();
             }
@@ -421,16 +413,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const textarea = document.querySelector('.chatbox textarea') as HTMLTextAreaElement;
                 
                 if (textarea) {
-                    textarea.style.color = hexValue;
-                    
-                    // Set the placeholder color to the selected value
-                    const style = document.createElement('style');
-                    style.textContent = `
-                        .chatbox textarea::placeholder {
-                            color: ${hexValue} !important;
-                        }
-                    `;
-                    textarea.appendChild(style);
+                    textarea.style.setProperty('--docscribe-chatbox-font-color', hexValue);
                 }
                 await plugin.saveSettings();
             });
@@ -473,22 +456,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const chatbox = document.querySelector('.chatbox');
                 if (chatbox) {
                     const element = chatbox as HTMLElement;
-                    element.style.backgroundColor = hexValue;
-                    element.style.borderColor = hexValue;
-                }
-                
-                const textarea = document.querySelector('.chatbox textarea');
-                if (textarea) {
-                    const element = textarea as HTMLElement;
-                    element.style.backgroundColor = hexValue;
-                    element.style.borderColor = hexValue;
-                }
-
-                const submitButton = document.querySelector('.chatbox .submit-button');
-                if (submitButton) {
-                    const element = submitButton as HTMLElement;
-                    element.style.backgroundColor = hexValue;
-                    element.style.borderColor = hexValue;
+                    element.style.setProperty('--docscribe-chatbox-background-color', hexValue);
                 }
 
                 await plugin.saveSettings();
@@ -505,13 +473,13 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             if (value === true) {
                 const chatbox = document.querySelector('.chatbox textarea') as HTMLElement;
                 if (chatbox) {
-                    chatbox.style.overflowY = 'auto';
+                    chatbox.removeClass('scrollbar-hidden');
                 }
             }
             else {
                 const chatbox = document.querySelector('.chatbox textarea') as HTMLElement;
                 if (chatbox) {
-                    chatbox.style.overflowY = 'hidden';
+                    chatbox.addClass('scrollbar-hidden');
                 }
             }
             
@@ -538,11 +506,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             colorPicker9.setValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
             
             const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
-            containers.forEach((container) => {
-                const element = container as HTMLElement;
-                element.style.backgroundColor = DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor;
-            });
-            await plugin.saveSettings();
+                            containers.forEach((container) => {
+                                const element = container as HTMLElement;
+                                element.style.setProperty('--docscribe-generate-background-color', DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
+                            });            await plugin.saveSettings();
         })
     )
     .addColorPicker(async (color) => {
@@ -558,7 +525,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
                 containers.forEach((container) => {
                     const element = container as HTMLElement;
-                    element.style.backgroundColor = hexValue;
+                    element.style.setProperty('--docscribe-generate-background-color', hexValue);
                 });
                 await plugin.saveSettings();
             });
@@ -601,17 +568,12 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const DocscribeCodeBlockContents = document.querySelectorAll('.DocscribeCodeBlockContent');
                 DocscribeCodeBlockContents.forEach((content) => {
                     const element = content as HTMLElement;
-                    element.style.color = hexValue;
+                    element.style.setProperty('--docscribe-generate-font-color', hexValue);
                 });
                 
                 await plugin.saveSettings();
             });
         
-        // Set the initial font color of .DocscribeCodeBlockContent elements
-        const DocscribeCodeBlockContents = document.querySelectorAll('.DocscribeCodeBlockContent');
-        DocscribeCodeBlockContents.forEach((content) => {
-            const element = content as HTMLElement;
-            element.style.color = defaultValue;
-        });
+
     });
 }

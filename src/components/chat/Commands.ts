@@ -57,10 +57,7 @@ export function createBotMessage(settings: DocscribeSettings): HTMLDivElement {
   const messageContainer = document.querySelector('#messageContainer');
   const botMessage = document.createElement('div');
   botMessage.classList.add('botMessage');
-  botMessage.style.backgroundColor = colorToHex(
-    settings.appearance.botMessageBackgroundColor ||
-      getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim()
-  );
+  botMessage.style.setProperty('--docscribe-bot-message-background-color', colorToHex(settings.appearance.botMessageBackgroundColor || getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim()));
   messageContainer?.appendChild(botMessage);
 
   const botNameSpan = document.createElement('span');
@@ -90,8 +87,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
   const botMessageDiv = document.createElement('div');
   botMessageDiv.className = 'botMessage';
-  botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||
-      getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim());
+
 
   const botMessageToolBarDiv = document.createElement('div');
   botMessageToolBarDiv.className = 'botMessageToolBar';
@@ -108,12 +104,12 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
   const header = document.createElement('h3');
   header.textContent = 'Manual';
-  header.style.textAlign = 'center';
+  header.addClass('text-align-center');
   displayCommandBotMessageDiv.appendChild(header);
 
   const generalCommandHeader = document.createElement('h4');
   generalCommandHeader.textContent = 'General Commands';
-  generalCommandHeader.style.textAlign = 'left';
+  generalCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(generalCommandHeader);
 
   const commandClearP = document.createElement('p');
@@ -138,7 +134,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
   const profileCommandHeader = document.createElement('h4');
   profileCommandHeader.textContent = 'Profile Commands';
-  profileCommandHeader.style.textAlign = 'left';
+  profileCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(profileCommandHeader);
 
   const commandProfileListP = document.createElement('p');
@@ -151,7 +147,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
   const modelCommandHeader = document.createElement('h4');
   modelCommandHeader.textContent = 'Model Commands';
-  modelCommandHeader.style.textAlign = 'left';
+  modelCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(modelCommandHeader);
 
   const commandModelListP = document.createElement('p');
@@ -164,7 +160,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
   const promptCommandHeader = document.createElement('h4');
   promptCommandHeader.textContent = 'Prompt Commands';
-  promptCommandHeader.style.textAlign = 'left';
+  promptCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(promptCommandHeader);
 
   const commandPromptListP = document.createElement('p');
@@ -181,7 +177,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
   const editorCommandHeader = document.createElement('h4');
   editorCommandHeader.textContent = 'Editor Commands';
-  editorCommandHeader.style.textAlign = 'left';
+  editorCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(editorCommandHeader);
 
   const commandAppendP = document.createElement('p');
@@ -198,7 +194,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
   const streamCommandHeader = document.createElement('h4');
   streamCommandHeader.textContent = 'Response Commands';
-  streamCommandHeader.style.textAlign = 'left';
+  streamCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(streamCommandHeader);
 
   const commandStopP = document.createElement('p');
@@ -253,8 +249,7 @@ export async function commandModel(input: string, settings: DocscribeSettings, p
 
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
-    botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||
-        getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim());
+    botMessageDiv.style.setProperty('--docscribe-bot-message-background-color', colorToHex(settings.appearance.botMessageBackgroundColor || getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim()));
 
     const botMessageToolBarDiv = document.createElement('div');
     botMessageToolBarDiv.className = 'botMessageToolBar';
@@ -271,12 +266,12 @@ export async function commandModel(input: string, settings: DocscribeSettings, p
 
     const header = document.createElement('h3');
     header.textContent = 'Model List';
-    header.style.textAlign = 'center';
+    header.addClass('text-align-center');
     displayCommandBotMessageDiv.appendChild(header);
 
     const currentModelP = document.createElement('p');
     currentModelP.innerHTML = `<b>Current Model:</b> ${currentModel}`;
-    currentModelP.style.textAlign = 'center';
+    currentModelP.addClass('text-align-center');
     displayCommandBotMessageDiv.appendChild(currentModelP);
 
     const apiLists = [
@@ -390,8 +385,8 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
     }
 
     const commandBotMessage = 
-    `<h2 style="text-align: center;">Profiles</h2>
-      <p style="text-align: center;"><b>Current profile:</b> ${currentProfile}</p>
+    `<h2 class="text-align-center">Profiles</h2>
+      <p class="text-align-center"><b>Current profile:</b> ${currentProfile}</p>
       <ol>${fileListItems}</ol>`;
 
     const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessage);
@@ -502,8 +497,8 @@ export async function commandPrompt(input: string, settings: DocscribeSettings, 
     }
 
     const commandBotMessage = 
-    `<h2 style="text-align: center;">Prompts</h2>
-      <p style="text-align: center;"><b>Current prompt:</b> ${currentPrompt.replace('.md', '') }</p>
+    `<h2 class="text-align-center">Prompts</h2>
+      <p class="text-align-center"><b>Current prompt:</b> ${currentPrompt.replace('.md', '') }</p>
       <ol>${fileListItems}</ol>`;
 
     const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessage);
@@ -572,13 +567,13 @@ export async function commandReference(input: string, settings: DocscribeSetting
   if (inputValue === 'true' || inputValue === 'on') {
     settings.general.enableReferenceCurrentNote = true;
       if (referenceCurrentNoteElement) {
-          referenceCurrentNoteElement.style.display = 'block';
+          referenceCurrentNoteElement.removeClass('hidden');
       }
       new Notice('Reference current note: on.');
   } else if (inputValue === 'false' || inputValue === 'off') {
     settings.general.enableReferenceCurrentNote = false;
       if (referenceCurrentNoteElement) {
-          referenceCurrentNoteElement.style.display = 'none';
+          referenceCurrentNoteElement.addClass('hidden');
       }
       new Notice ('Reference current note: off.');
   } else {
@@ -948,8 +943,8 @@ if (!input.split(' ')[1]) {
     .join('');
 
   const commandBotMessage = 
-  `<h2 style="text-align: center;">Chat History</h2>
-   <p style="text-align: center;"><b>Current Chat History:</b> ${settings.profiles.lastLoadedChatHistory[profileIndex] ? settings.profiles.lastLoadedChatHistory[profileIndex] : 'Empty'}</p>
+  `<h2 class="text-align-center">Chat History</h2>
+   <p class="text-align-center"><b>Current Chat History:</b> ${settings.profiles.lastLoadedChatHistory[profileIndex] ? settings.profiles.lastLoadedChatHistory[profileIndex] : 'Empty'}</p>
     <ol>${fileListItems}</ol>`;
 
   const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessage);
@@ -1080,7 +1075,7 @@ if (input.startsWith('/load')) {
         // Create a container for file options
         const optionsContainer = document.createElement('div');
         optionsContainer.classList.add('file-options');
-        optionsContainer.style.marginBottom = '16px';
+        optionsContainer.addClass('margin-bottom-16');
     
         // Create a radio button and label for each matching file
         matchingFiles.forEach((file, index) => {
@@ -1187,7 +1182,7 @@ if (input.startsWith('/load')) {
           // Create a container for file options
           const optionsContainer = document.createElement('div');
           optionsContainer.classList.add('file-options');
-          optionsContainer.style.marginBottom = '16px';
+          optionsContainer.addClass('margin-bottom-16');
     
           // Create a radio button and label for each matching file
           matchingFiles.forEach((file, index) => {

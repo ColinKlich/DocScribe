@@ -8,13 +8,14 @@ export async function getActiveFileContent(plugin: DocscribeGPT, settings: Docsc
     referenceCurrentNoteContent = '';
     if (settings.general.enableReferenceCurrentNote === true) {
         if (dotElement) {
-            (dotElement as HTMLElement).style.backgroundColor = '#da2c2c';
+            (dotElement as HTMLElement).addClass('dot-red');
             referenceCurrentNoteContent = '';
         }
         const activeFile = plugin.app.workspace.getActiveFile();
         if (activeFile?.extension === 'md') {
             if (dotElement) {
-                (dotElement as HTMLElement).style.backgroundColor = 'green';
+                (dotElement as HTMLElement).removeClass('dot-red');
+            (dotElement as HTMLElement).addClass('dot-green');
             }
             const content = await plugin.app.vault.read(activeFile);
             const clearYamlContent = content.replace(/---[\s\S]+?---/, '').trim();

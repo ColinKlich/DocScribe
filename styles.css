@@ -1,3 +1,16 @@
+:root {
+    --docscribe-bot-message-background-color: var(--background-secondary);
+    --docscribe-bot-message-font-color: var(--text-normal);
+    --docscribe-user-message-background-color: var(--background-primary);
+    --docscribe-user-message-font-color: var(--text-normal);
+    --docscribe-chatbot-container-background-color: var(--background-secondary);
+    --docscribe-message-container-background-color: var(--background-secondary);
+    --docscribe-chatbox-font-color: var(--text-normal);
+    --docscribe-chatbox-background-color: var(--interactive-accent);
+    --docscribe-generate-background-color: #F7F7F7;
+    --docscribe-generate-font-color: var(--text-normal);
+}
+
 /*
 
 This CSS file will be included with your plugin, and
@@ -26,6 +39,7 @@ If your plugin does not need CSS, delete this file.
 	flex-direction: column;
 	max-width: 800px;
 	margin: auto;
+    background-color: var(--docscribe-chatbot-container-background-color);
 }
 
 #header {
@@ -71,6 +85,7 @@ If your plugin does not need CSS, delete this file.
 	user-select: text;
 	max-height: calc(100% - 120px);
 	word-wrap: break-word;
+    background-color: var(--docscribe-message-container-background-color);
 }
 
 /* User & Bot Messages */
@@ -93,8 +108,14 @@ If your plugin does not need CSS, delete this file.
 }
 
 .userMessage {
-	background-color: var(--background-primary);
+	background-color: var(--docscribe-user-message-background-color);
+    color: var(--docscribe-user-message-font-color);
 	position: relative;
+}
+
+.botMessage {
+    background-color: var(--docscribe-bot-message-background-color);
+    color: var(--docscribe-bot-message-font-color);
 }
 
 .userMessage p,
@@ -276,15 +297,15 @@ button.copy-code-button:hover,
 	justify-content: center;
 	margin: 13px 3.5%;
 	padding: 3px;
-	background-color: var(--interactive-accent);
+	background-color: var(--docscribe-chatbox-background-color);
 	border-radius: 5px;
 }
 
 .chatbox textarea {
-	color: var(--text-normal);
+	color: var(--docscribe-chatbox-font-color);
 	font-weight: 500;
-	background-color: var(--interactive-accent);
-	border-color: var(--interactive-accent);
+	background-color: var(--docscribe-chatbox-background-color);
+	border-color: var(--docscribe-chatbox-background-color);
 	width: 100%;
 	height: 29px;
 	max-height: 150px;
@@ -294,7 +315,7 @@ button.copy-code-button:hover,
 }
 
 .chatbox textarea::placeholder {
-	color: var(--text-normal);
+	color: var(--docscribe-chatbox-font-color);
 	font-weight: 500;
 }
 
@@ -310,7 +331,7 @@ button.copy-code-button:hover,
 /* Send Button */
 
 .chatbox .submit-button {
-	background-color: var(--interactive-accent);
+	background-color: var(--docscribe-chatbox-background-color);
 	filter: brightness(90%);
 	box-shadow: none !important;
 	color: white;
@@ -327,7 +348,7 @@ button.copy-code-button:hover,
 }
 
 .is-mobile .chatbox .submit-button {
-	background-color: var(--interactive-accent);
+	background-color: var(--docscribe-chatbox-background-color);
 	filter: brightness(90%);
 	color: white;
 	border: none;
@@ -545,4 +566,107 @@ ul#dropdownOptions li:hover {
 	justify-content: center;
 	align-items: center;
 	text-align: center;
+}
+
+/* Docscribe Code Block Processor */
+
+.docscribe-code-block-container {
+	border: 1px solid #0a0f0a;
+	border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 10px;
+    background-color: var(--docscribe-generate-background-color);
+}
+
+.docscribe-code-block-content {
+	white-space: normal;
+    color: var(--docscribe-generate-font-color);
+}
+
+.docscribe-bottom-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.docscribe-model-text {
+	font-size: 0.9em;
+	color: #666;
+	font-weight: bold;
+}
+
+.docscribe-loader-circle {
+	width: 20px;
+	height: 20px;
+	border: 2px solid #666;
+	border-top-color: transparent;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	display: none;
+}
+
+.docscribe-generation-notice {
+	font-size: 0.9em;
+	color: #4caf50; /* Light green color */
+	display: none;
+}
+
+.docscribe-generation-notice.error {
+	color: #ff6666;
+}
+
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.hidden {
+	display: none;
+}
+
+.visible {
+	display: inline;
+}
+
+.text-align-center {
+    text-align: center;
+}
+
+.text-align-left {
+    text-align: left;
+}
+
+.margin-bottom-16 {
+    margin-bottom: 16px;
+}
+
+.link-grey {
+    color: grey;
+}
+
+.dot-red {
+    background-color: #da2c2c;
+}
+
+.dot-green {
+    background-color: green;
+}
+
+.header-hidden #messageContainer {
+    max-height: calc(100% - 60px);
+}
+
+.header-hidden #referenceCurrentNote {
+    margin: 0.5rem 0 0.5rem 0;
+}
+
+.header-visible #referenceCurrentNote {
+    margin: -0.5rem 0 0.5rem 0;
+}
+
+.scrollbar-hidden {
+    overflow-y: hidden;
 }

@@ -92,43 +92,23 @@ export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeS
 
         const DocscribeCodeBlockContainer = container.createEl('div', { cls: 'DocscribeCodeBlockContainer' });
         DocscribeCodeBlockContainer.dataset.callout = 'chat';
+        DocscribeCodeBlockContainer.addClass('docscribe-code-block-container');
         DocscribeCodeBlockContainer.style.backgroundColor = settings.appearance.DocscribeGenerateBackgroundColor;
-        DocscribeCodeBlockContainer.style.border = '1px solid #0a0f0a';
-        DocscribeCodeBlockContainer.style.borderRadius = '5px';
-        DocscribeCodeBlockContainer.style.padding = '10px';
-        DocscribeCodeBlockContainer.style.marginBottom = '10px';
 
         const DocscribeCodeBlockContent = DocscribeCodeBlockContainer.createEl('div', { cls: 'DocscribeCodeBlockContent' });
+        DocscribeCodeBlockContent.addClass('docscribe-code-block-content');
         DocscribeCodeBlockContent.style.color = settings.appearance.DocscribeGenerateFontColor;
-        DocscribeCodeBlockContent.style.whiteSpace = 'normal';
 
-        const bottomContainer = container.createEl('div');
-        bottomContainer.style.display = 'flex';
-        bottomContainer.style.justifyContent = 'space-between';
-        bottomContainer.style.alignItems = 'center';
-        bottomContainer.style.marginTop = '10px';
+        const bottomContainer = container.createEl('div', { cls: 'docscribe-bottom-container' });
 
-        const modelText = bottomContainer.createEl('span');
+        const modelText = bottomContainer.createEl('span', { cls: 'docscribe-model-text' });
         modelText.textContent = modelName;
-        modelText.style.fontSize = '0.9em';
-        modelText.style.color = '#666';
-        modelText.style.fontWeight = 'bold';
 
         const loaderCircle = bottomContainer.createEl('div');
-        loaderCircle.classList.add('loader-circle');
-        loaderCircle.style.width = '20px';
-        loaderCircle.style.height = '20px';
-        loaderCircle.style.border = '2px solid #666';
-        loaderCircle.style.borderTopColor = 'transparent';
-        loaderCircle.style.borderRadius = '50%';
-        loaderCircle.style.animation = 'spin 1s linear infinite';
-        loaderCircle.style.display = 'none';
+        loaderCircle.classList.add('docscribe-loader-circle');
 
-        const DocscribeGenerationNotice = bottomContainer.createEl('span');
+        const DocscribeGenerationNotice = bottomContainer.createEl('span', { cls: 'docscribe-generation-notice' });
         DocscribeGenerationNotice.textContent = 'Done!';
-        DocscribeGenerationNotice.style.fontSize = '0.9em';
-        DocscribeGenerationNotice.style.color = '#4caf50'; // Light green color
-        DocscribeGenerationNotice.style.display = 'none';
 
         const button = bottomContainer.createEl('button');
         button.textContent = 'Generate';
@@ -140,12 +120,12 @@ export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeS
                     abortController = null;
                 }
                 button.textContent = 'Generate';
-                loaderCircle.style.display = 'none';
+                loaderCircle.addClass('hidden');
                 DocscribeGenerationNotice.textContent = 'Aborted.';
-                DocscribeGenerationNotice.style.color = '#ff6666';
-                DocscribeGenerationNotice.style.display = 'inline';
+                DocscribeGenerationNotice.addClass('error');
+                    DocscribeGenerationNotice.addClass('hidden');
                 setTimeout(() => {
-                    DocscribeGenerationNotice.style.display = 'none';
+                    DocscribeGenerationNotice.addClass('hidden');
                 }, 2000);
                 return;
             }
@@ -160,7 +140,7 @@ export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeS
             const signal = abortController.signal;
 
             // Show the loader circle
-            loaderCircle.style.display = 'block';
+            loaderCircle.removeClass('hidden');
 
             let modelResponse = '';
 
@@ -182,12 +162,11 @@ export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeS
                 } else if (settings.APIConnections.openRouter.openRouterModels.includes(modelName)) {
                     modelResponse = await fetchOpenRouterEditor(settings, prompt, modelName, temperature, maxTokens, signal) || contentToRender;
                 } else {
-                    DocscribeGenerationNotice.textContent = 'Model not found.';
-                    DocscribeGenerationNotice.style.color = '#ff6666';
-                    DocscribeGenerationNotice.style.display = 'inline';
+                    DocscribeGenerationNotice.addClass('error');
+                    DocscribeGenerationNotice.removeClass('hidden');
                     setTimeout(() => {
-                        DocscribeGenerationNotice.style.display = 'none';
-                        button.textContent = 'Generate';
+                        DocscribeGenerationNotice.addClass('hidden');
+                        DocscribeGenerationNotice.removeClass('error');
                     }, 2000);
                 }
 
@@ -232,28 +211,28 @@ export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeS
                     }
                 }
 
-                // Hide the loader circle
-                loaderCircle.style.display = 'none';   
-
+                                loaderCircle.addClass('hidden');
             } catch (error) {
                 if (error.name === 'AbortError') {
                     console.log('Docscribe Generate Aborted.');
                     button.textContent = 'Generate';
-                    loaderCircle.style.display = 'none';
+                    loaderCircle.addClass('hidden');
                     DocscribeGenerationNotice.textContent = 'Aborted.';
-                    DocscribeGenerationNotice.style.color = '#ff6666';
-                    DocscribeGenerationNotice.style.display = 'inline';
+                    DocscribeGenerationNotice.addClass('error');
+                    DocscribeGenerationNotice.removeClass('hidden');
                     setTimeout(() => {
-                        DocscribeGenerationNotice.style.display = 'none';
+                        DocscribeGenerationNotice.addClass('hidden');
+                        DocscribeGenerationNotice.removeClass('error');
                     }, 2000);
                     return;
                 } else {
                     console.error('Generation error:', error);
-                    DocscribeGenerationNotice.textContent = 'Error occurred.';
-                    DocscribeGenerationNotice.style.color = '#ff6666';
-                    DocscribeGenerationNotice.style.display = 'inline';
+                    DocscribeGenerationNotice.addClass('error');
+                    DocscribeGenerationNotice.addClass('hidden');
+                    DocscribeGenerationNotice.removeClass('error');
                     setTimeout(() => {
-                        DocscribeGenerationNotice.style.display = 'none';
+                        DocscribeGenerationNotice.addClass('hidden');
+                        DocscribeGenerationNotice.removeClass('error');
                     }, 2000);
                 }
             }

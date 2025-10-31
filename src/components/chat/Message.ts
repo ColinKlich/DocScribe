@@ -246,7 +246,7 @@ export function updateUnresolvedInternalLinks(plugin: DocscribeGPT, divBlock: El
             const linkExists = plugin.app.metadataCache.getFirstLinkpathDest(linkHref, '');
             
             if (!linkExists) {
-                link.style.color = 'grey';
+                link.addClass('link-grey');
             } 
         }
     });

@@ -7,10 +7,8 @@ export function displayUserMessage(plugin: DocscribeGPT, settings: DocscribeSett
 
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'userMessage';
-    userMessageDiv.style.backgroundColor = colorToHex(settings.appearance.userMessageBackgroundColor || 
-        getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.userMessageBackgroundColor).trim());
-
-    userMessageDiv.style.color = settings.appearance.userMessageFontColor || DEFAULT_SETTINGS.appearance.userMessageFontColor;
+    userMessageDiv.style.setProperty('--docscribe-user-message-background-color', colorToHex(settings.appearance.userMessageBackgroundColor || getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.userMessageBackgroundColor).trim()));
+    userMessageDiv.style.setProperty('--docscribe-user-message-font-color', settings.appearance.userMessageFontColor || DEFAULT_SETTINGS.appearance.userMessageFontColor);
 
     const userMessageToolBarDiv = document.createElement('div');
     userMessageToolBarDiv.className = 'userMessageToolBar';

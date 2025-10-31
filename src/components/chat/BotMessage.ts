@@ -8,10 +8,8 @@ export function displayBotMessage(plugin: DocscribeGPT, settings: DocscribeSetti
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
 
-    botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||
-        getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim());
-
-    botMessageDiv.style.color = settings.appearance.botMessageFontColor || DEFAULT_SETTINGS.appearance.botMessageFontColor;
+    botMessageDiv.style.setProperty('--docscribe-bot-message-background-color', colorToHex(settings.appearance.botMessageBackgroundColor || getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim()));
+    botMessageDiv.style.setProperty('--docscribe-bot-message-font-color', settings.appearance.botMessageFontColor || DEFAULT_SETTINGS.appearance.botMessageFontColor);
 
     const botMessageToolBarDiv = document.createElement('div');
     botMessageToolBarDiv.className = 'botMessageToolBar';
@@ -65,10 +63,8 @@ export function displayBotMessage(plugin: DocscribeGPT, settings: DocscribeSetti
 export function displayLoadingBotMessage(settings: DocscribeSettings) {
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
-    botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||
-        getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim());
-
-    botMessageDiv.style.color = settings.appearance.botMessageFontColor || DEFAULT_SETTINGS.appearance.botMessageFontColor;
+    botMessageDiv.style.setProperty('--docscribe-bot-message-background-color', colorToHex(settings.appearance.botMessageBackgroundColor || getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim()));
+    botMessageDiv.style.setProperty('--docscribe-bot-message-font-color', settings.appearance.botMessageFontColor || DEFAULT_SETTINGS.appearance.botMessageFontColor);
 
     const botMessageToolBarDiv = document.createElement('div');
     botMessageToolBarDiv.className = 'botMessageToolBar';
@@ -101,8 +97,7 @@ export function displayLoadingBotMessage(settings: DocscribeSettings) {
 export function displayCommandBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], message: string){
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
-    botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||
-        getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim());
+
 
     const botMessageToolBarDiv = document.createElement('div');
     botMessageToolBarDiv.className = 'botMessageToolBar';
@@ -133,8 +128,7 @@ export function displayCommandBotMessage(plugin: DocscribeGPT, settings: Docscri
 export function displayErrorBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], message: string){
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
-    botMessageDiv.style.backgroundColor = colorToHex(settings.appearance.botMessageBackgroundColor ||
-        getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim());
+    botMessageDiv.style.setProperty('--docscribe-bot-message-background-color', colorToHex(settings.appearance.botMessageBackgroundColor || getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim()));
 
     const botMessageToolBarDiv = document.createElement('div');
     botMessageToolBarDiv.className = 'botMessageToolBar';
