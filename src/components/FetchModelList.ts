@@ -106,7 +106,7 @@ export async function fetchMistralModels(plugin: DocscribeGPT) {
         if (response.json && response.json.data) {
             const models = response.json.data.map((model: { id: number; }) => model.id);
             plugin.settings.APIConnections.mistral.mistralModels = models;
-            console.log(models);
+            //console.log(models);
             return models;
         }
     } catch (error) {

@@ -115,7 +115,7 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
     } catch (error) {
         if (error.name === 'AbortError') {
             // Request was aborted, handle accordingly
-            console.log('Request aborted');
+            //console.log('Request aborted');
             setIcon(submitButton, 'arrow-up');
             submitButton.title = 'send';
 
@@ -248,7 +248,7 @@ export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: Docscr
                         }
                     } catch (err) {
                         console.error('Error parsing JSON:', err);
-                        console.log('Part with error:', part);
+                        //console.log('Part with error:', part);
                         parsedChunk = {response: '{_e_}'};
                     }
                 }
@@ -570,7 +570,7 @@ export async function fetchRESTAPIURLResponseStream(plugin: BMOGPT, settings: Do
                     }
                 } catch (err) {
                     console.error('Error parsing JSON:', err);
-                    console.log('Part with error:', part);
+                    //console.log('Part with error:', part);
                     parsedChunk = {response: '{_e_}'};
                 }
             }
@@ -892,7 +892,7 @@ export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: Docscr
           }
           
           const responseData = await response.json();
-          console.log('Gemini Response:', responseData);
+          //console.log('Gemini Response:', responseData);
           let message = responseData.candidates[0].content.parts[0].text;
 
         const messageContainerEl = document.querySelector('#messageContainer');
@@ -941,7 +941,7 @@ export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: Docscr
     } catch (error) {
         if (error.name === 'AbortError') {
             // Request was aborted, handle accordingly
-            console.log('Request aborted');
+            //console.log('Request aborted');
             setIcon(submitButton, 'arrow-up');
             submitButton.title = 'send';
 
@@ -1099,14 +1099,14 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
                     let parsedChunk;
                     try {
                         parsedChunk = JSON.parse(jsonData);
-                        console.log('Gemini Stream Chunk:', parsedChunk);
+                        //console.log('Gemini Stream Chunk:', parsedChunk);
                         if (parsedChunk.done !== true) {
                             const content = parsedChunk.candidates[0].content.parts[0].text;
                             message += content;
                         }
                     } catch (err) {
                         console.error('Error parsing JSON:', err);
-                        console.log('Part with error:', jsonData);
+                        //console.log('Part with error:', jsonData);
                         parsedChunk = { response: '{_e_}' };
                     }
                 }
@@ -1326,7 +1326,7 @@ export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSe
     } catch (error) {
         if (error.name === 'AbortError') {
             // Request was aborted, handle accordingly
-            console.log('Request aborted');
+            //console.log('Request aborted');
             setIcon(submitButton, 'arrow-up');
             submitButton.title = 'send';
 
@@ -1471,7 +1471,7 @@ export async function fetchMistralResponseStream(plugin: BMOGPT, settings: Docsc
                     }
                 } catch (err) {
                     console.error('Error parsing JSON:', err);
-                    console.log('Part with error:', part);
+                    //console.log('Part with error:', part);
                     parsedChunk = {response: '{_e_}'};
                 }
             }
@@ -1689,7 +1689,7 @@ export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: Docscribe
     } catch (error) {
         if (error.name === 'AbortError') {
             // Request was aborted, handle accordingly
-            console.log('Request aborted');
+            //console.log('Request aborted');
             setIcon(submitButton, 'arrow-up');
             submitButton.title = 'send';
 
@@ -1824,7 +1824,7 @@ export async function fetchOpenAIAPIResponseStream(plugin: BMOGPT, settings: Doc
                     }
                 } catch (err) {
                     console.error('Error parsing JSON:', err);
-                    console.log('Part with error:', part);
+                    //console.log('Part with error:', part);
                 }
             }
 
@@ -2041,7 +2041,7 @@ export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: Docscrib
     } catch (error) {
         if (error.name === 'AbortError') {
             // Request was aborted, handle accordingly
-            console.log('Request aborted');
+            //console.log('Request aborted');
             setIcon(submitButton, 'arrow-up');
             submitButton.title = 'send';
 
@@ -2178,7 +2178,7 @@ export async function fetchOpenRouterResponseStream(plugin: BMOGPT, settings: Do
                     }
                 } catch (err) {
                     console.error('Error parsing JSON:', err);
-                    console.log('Part with error:', part);
+                    //console.log('Part with error:', part);
                     parsedChunk = {response: '{_e_}'};
                 }
             }

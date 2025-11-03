@@ -214,7 +214,7 @@ export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeS
                                 loaderCircle.addClass('hidden');
             } catch (error) {
                 if (error.name === 'AbortError') {
-                    console.log('Docscribe Generate Aborted.');
+                    //console.log('Docscribe Generate Aborted.');
                     button.textContent = 'Generate';
                     loaderCircle.addClass('hidden');
                     DocscribeGenerationNotice.textContent = 'Aborted.';

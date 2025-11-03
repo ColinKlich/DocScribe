@@ -73,7 +73,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
-                console.log(error.message);
+                //console.log(error.message);
             }
         }
         else if (settings.RESTAPIURLConnection.RESTAPIURL && settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
@@ -94,7 +94,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
-                console.log(error.message);
+                //console.log(error.message);
             }
         }
         else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
@@ -104,7 +104,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
-                console.log(error.message);
+                //console.log(error.message);
             }
         }
         else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
@@ -125,7 +125,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
-                console.log(error.message);
+                //console.log(error.message);
             }
         }
         else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
@@ -146,7 +146,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
-                console.log(error.message);
+                //console.log(error.message);
             }
         }
         else if (OPENAI_MODELS.includes(settings.general.model)) {
@@ -167,7 +167,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
-                console.log(error.message);
+                //console.log(error.message);
             }
         }
         else if ((settings.APIConnections.openAI.openAIBaseUrl != DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl) && settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)){
@@ -188,7 +188,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
-                console.log(error.message);
+                //console.log(error.message);
             }
         }
         else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
@@ -209,7 +209,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
-                console.log(error.message);
+                //console.log(error.message);
             }
         }
         generatingNotice.hide();

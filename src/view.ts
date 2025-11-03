@@ -30,7 +30,7 @@ export function fileNameMessageHistoryJson(plugin: DocscribeGPT) {
     const filenameMessageHistoryPath = './.obsidian/plugins/obsidian-docscribe/data/';
     const currentProfileMessageHistory = 'messageHistory_' + plugin.settings.profiles.profile.replace('.md', '.json');
 
-    return filenameMessageHistoryPath + currentProfileMessageHistory;
+    return this.app.vault.adapter.getFullPath(filenameMessageHistoryPath + currentProfileMessageHistory);
 }
 
 export let messageHistory: { role: string; content: string; images: Uint8Array[] | string[] }[] = [];

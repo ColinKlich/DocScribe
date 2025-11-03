@@ -230,7 +230,7 @@ export async function fetchModelRenameTitle(settings: DocscribeSettings, referen
             throw new Error('Invalid model selected for renaming note title. Please check your settings.');
         }
     } catch (error) {
-        console.log('ERROR');
+        //console.log('ERROR');
         throw new Error(error.response?.data?.error || error.message);
     }
 }

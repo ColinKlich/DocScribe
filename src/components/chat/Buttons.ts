@@ -41,7 +41,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
                 }
                 catch (error) {
                     new Notice('Error occurred while fetching completion: ' + error.message);
-                    console.log(error.message);
+                    //console.log(error.message);
                 }
             }
             else if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
@@ -312,7 +312,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                         }
                         catch (error) {
                             new Notice('Error occurred while fetching completion: ' + error.message);
-                            console.log(error.message);
+                            //console.log(error.message);
                         }
                     }
                     else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
@@ -388,7 +388,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
             messageBlock.innerHTML = '';
             messageBlock.appendChild(editContainer);
         } else {
-            console.log('messageBlock not found.');
+            //console.log('messageBlock not found.');
         }
 
         textareaEditButton.addEventListener('click', async function () {
