@@ -43,7 +43,6 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
         ];
     
         const selectEl = dropdown.selectEl;
-        selectEl.innerHTML = ''; // Clear existing options
 
         // Add the default model option
         const defaultOption = selectEl.createEl('option', {

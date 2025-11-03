@@ -660,10 +660,6 @@ export function populateModelDropdown(plugin: DocscribeGPT, settings: DocscribeS
     const modelOptions = document.createElement('select');
     modelOptions.id = 'modelOptions';
 
-    if (modelOptions) {
-        modelOptions.innerHTML = ''; // Clear existing options
-    }
-
     const defaultModel = settings.general.model || DEFAULT_SETTINGS.general.model;
 
     // Get models as arrays

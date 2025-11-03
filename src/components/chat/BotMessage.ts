@@ -94,7 +94,7 @@ export function displayLoadingBotMessage(settings: DocscribeSettings) {
     return botMessageDiv;
 }
 
-export function displayCommandBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], message: string){
+export function displayCommandBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], messageEl: HTMLElement){
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
 
@@ -111,7 +111,7 @@ export function displayCommandBotMessage(plugin: DocscribeGPT, settings: Docscri
 
     const displayCommandBotMessageDiv = document.createElement('div');
     displayCommandBotMessageDiv.className = 'commandBotMessage';
-    displayCommandBotMessageDiv.innerHTML = message;
+    displayCommandBotMessageDiv.appendChild(messageEl);
 
     messageBlockDiv.appendChild(displayCommandBotMessageDiv);
     botMessageToolBarDiv.appendChild(botNameSpan);
@@ -120,7 +120,7 @@ export function displayCommandBotMessage(plugin: DocscribeGPT, settings: Docscri
 
     const index = messageHistory.length - 1;
 
-    addMessage(plugin, messageBlockDiv.innerHTML, 'botMessage', settings, index);
+    addMessage(plugin, messageBlockDiv, 'botMessage', settings, index);
 
     return botMessageDiv;
 }
@@ -156,7 +156,7 @@ export function displayErrorBotMessage(plugin: DocscribeGPT, settings: Docscribe
 
     const index = messageHistory.length - 1;
 
-    addMessage(plugin, messageBlockDiv.innerHTML, 'botMessage', this.settings, index);
+    addMessage(plugin, messageBlockDiv, 'botMessage', this.settings, index);
 
     return botMessageDiv;
 }

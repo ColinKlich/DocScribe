@@ -266,9 +266,6 @@ export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: Docscr
                         targetBotMessage?.removeChild(loadingEl);
                     }
         
-                    // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -587,10 +584,7 @@ export async function fetchRESTAPIURLResponseStream(plugin: BMOGPT, settings: Do
                     if (loadingEl) {
                         targetBotMessage?.removeChild(loadingEl);
                     }
-        
-                    // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
+
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -1125,9 +1119,6 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
                         targetBotMessage?.removeChild(loadingEl);
                     }
         
-                    // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -1489,9 +1480,6 @@ export async function fetchMistralResponseStream(plugin: BMOGPT, settings: Docsc
                         targetBotMessage?.removeChild(loadingEl);
                     }
         
-                    // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -1837,9 +1825,6 @@ export async function fetchOpenAIAPIResponseStream(plugin: BMOGPT, settings: Doc
                     if (loadingEl) {
                         targetBotMessage?.removeChild(loadingEl);
                     }
-        
-                    // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
         
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
@@ -2195,9 +2180,6 @@ export async function fetchOpenRouterResponseStream(plugin: BMOGPT, settings: Do
                     if (loadingEl) {
                         targetBotMessage?.removeChild(loadingEl);
                     }
-        
-                    // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
         
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();

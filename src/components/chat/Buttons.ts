@@ -385,7 +385,6 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
 
         let messageBlock = lastClickedElement?.querySelector('.messageBlock');
         if (messageBlock) {
-            messageBlock.innerHTML = '';
             messageBlock.appendChild(editContainer);
         } else {
             //console.log('messageBlock not found.');
@@ -662,13 +661,13 @@ export function displayTrashButton (plugin: DocscribeGPT) {
             if (index !== -1) {
                 const modal = new Modal(plugin.app);
                 
-                modal.contentEl.innerHTML = `
+                modal.contentEl.createEl('span', { text: `
                 <div class="modal-content">
                     <h2>Delete Message Block.</h2>
                     <p>Are you sure you want to delete this message block?</p>
                     <button id="confirmDelete">Confirm Delete</button>
                 </div>
-                `;
+                ` }); 
 
                 const confirmDeleteButton = modal.contentEl.querySelector('#confirmDelete');
                 confirmDeleteButton?.addEventListener('click', async function () {

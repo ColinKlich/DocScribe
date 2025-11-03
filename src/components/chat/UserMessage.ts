@@ -32,7 +32,9 @@ export function displayUserMessage(plugin: DocscribeGPT, settings: DocscribeSett
     const regexRenderedNote = /<note-rendered>[\s\S]*?<\/note-rendered>/g;
     trimmedMessage = trimmedMessage.replace(regexRenderedNote, '').trim();
 
-    preUserMessage.innerHTML = trimmedMessage;
+    // Use createEl to safely insert text
+    while (preUserMessage.firstChild) preUserMessage.removeChild(preUserMessage.firstChild);
+    preUserMessage.createEl('span', { text: trimmedMessage });
 
     const regenerateButton = regenerateUserButton(plugin, settings);
     const editButton = displayUserEditButton(plugin, settings, userPre);
