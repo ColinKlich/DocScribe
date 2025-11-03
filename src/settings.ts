@@ -95,13 +95,31 @@ export class DocscribeSettingTab extends PluginSettingTab {
 			const confirmReset = confirm('Are you sure you want to reset all settings to default?');
 			if (confirmReset) {
 				const profilePathFile = this.plugin.settings.profiles.profileFolderPath + '/' + this.plugin.settings.profiles.profile;
-				const profilePath = this.plugin.app.vault.getAbstractFileByPath(profilePathFile) as TFile;
+				const abstractProfilePath = this.plugin.app.vault.getAbstractFileByPath(profilePathFile);
+				let profilePath: TFile | null = null;
+				if (abstractProfilePath instanceof TFile) {
+					profilePath = abstractProfilePath;
+				}
 
 				const defaultProfilePathFile = DEFAULT_SETTINGS.profiles.profileFolderPath + '/' + DEFAULT_SETTINGS.profiles.profile;
-				const defaultProfilePath = this.plugin.app.vault.getAbstractFileByPath(defaultProfilePathFile) as TFile;
+				let defaultProfilePath: TFile | null = null;
+				const abstractDefaultProfile = this.plugin.app.vault.getAbstractFileByPath(defaultProfilePathFile);
+				if (abstractDefaultProfile instanceof TFile) {
+					defaultProfilePath = abstractDefaultProfile;
+				}
 
 				if (profilePath) {
-					if (profilePath.path === defaultProfilePath.path) {
+					if (!defaultProfilePath) {
+						// Default profile not found: reset to defaults and restart plugin
+						this.plugin.settings = DEFAULT_SETTINGS;
+						await this.plugin.saveSettings();
+
+						// @ts-ignore
+						await this.plugin.app.plugins.disablePlugin(this.plugin.manifest.id);
+						// @ts-ignore
+						await this.plugin.app.plugins.enablePlugin(this.plugin.manifest.id);
+					}
+					else if (profilePath.path === defaultProfilePath.path) {
 						this.plugin.settings = DEFAULT_SETTINGS;
 						await this.plugin.saveSettings();
 

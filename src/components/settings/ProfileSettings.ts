@@ -1,4 +1,4 @@
-import { Setting, SettingTab, TFile, TFolder, setIcon } from 'obsidian';
+import { Notice, Setting, SettingTab, TFile, TFolder, setIcon } from 'obsidian';
 import DocscribeGPT, { DEFAULT_SETTINGS, updateSettingsFromFrontMatter } from 'src/main';
 
 
@@ -78,7 +78,12 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
         .onChange(async (value) => {
             plugin.settings.profiles.profile = value ? value : DEFAULT_SETTINGS.profiles.profile;
             const profileFilePath = plugin.settings.profiles.profileFolderPath + '/' + plugin.settings.profiles.profile;
-            const currentProfile = plugin.app.vault.getAbstractFileByPath(profileFilePath) as TFile;
+            const abstractFile = plugin.app.vault.getAbstractFileByPath(profileFilePath);
+            if (!(abstractFile instanceof TFile)) {
+                new Notice(`Profile file not found: ${profileFilePath}`);
+                return;
+            }
+            const currentProfile = abstractFile;
             plugin.activateView();
             await updateSettingsFromFrontMatter(plugin, currentProfile);
             await plugin.saveSettings();
