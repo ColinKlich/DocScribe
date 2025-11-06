@@ -110,7 +110,9 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
             message = message.replace(pattern, '').trim();
         });
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index);
 
     } catch (error) {
         if (error.name === 'AbortError') {
@@ -130,7 +132,9 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
                             if (messageBlock && loadingEl) {
                                 targetBotMessage?.removeChild(loadingEl);
                                 messageBlock.textContent = 'SYSTEM: Response aborted.';
-                                addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index);
+                                const messageDiv = document.createElement('div');
+                                messageDiv.textContent = 'SYSTEM: Response aborted.';
+                                addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
                             }
                         }
         } else {
@@ -267,8 +271,9 @@ export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: Docscr
                     }
         
                     // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
+                    while (messageBlock.firstChild) {
+                        messageBlock.removeChild(messageBlock.firstChild);
+                    }
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -317,7 +322,9 @@ export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: Docscr
         });
         
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);   
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index); 
     } catch (error) {
         if (error.name === 'AbortError') {
             // Request was aborted
@@ -345,9 +352,12 @@ export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: Docscr
         }
 
         if (message.trim() === '') {
-            addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index); // This will save mid-stream conversation.
-        } else {
-            addMessage(plugin, message.trim(), 'botMessage', settings, index); // This will save mid-stream conversation.
+            const systemDiv = document.createElement('div');
+            systemDiv.textContent = 'SYSTEM: Response aborted.';
+            addMessage(plugin, systemDiv, 'botMessage', settings, index); // This will save mid-stream conversation.        } else {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message.trim();
+            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
         }
         new Notice('Stream stopped.');
         console.error('Error fetching chat response from Ollama:', error);
@@ -589,8 +599,9 @@ export async function fetchRESTAPIURLResponseStream(plugin: BMOGPT, settings: Do
                     }
         
                     // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
+                    while (messageBlock.firstChild) {
+                        messageBlock.removeChild(messageBlock.firstChild);
+                    }
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -639,7 +650,9 @@ export async function fetchRESTAPIURLResponseStream(plugin: BMOGPT, settings: Do
             message = message.replace(pattern, '').trim();
         });
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index);
         
     } catch (error) {
         if (error.name === 'AbortError') {
@@ -668,9 +681,13 @@ export async function fetchRESTAPIURLResponseStream(plugin: BMOGPT, settings: Do
         }
 
         if (message.trim() === '') {
-            addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index); // This will save mid-stream conversation.
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = 'SYSTEM: Response aborted.';
+            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
         } else {
-            addMessage(plugin, message.trim(), 'botMessage', settings, index); // This will save mid-stream conversation.
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message.trim();
+            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
         }
         new Notice('Stream stopped.');
         console.error('Error fetching chat response from Ollama:', error);
@@ -956,7 +973,9 @@ export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: Docscr
                             if (messageBlock && loadingEl) {
                                 targetBotMessage?.removeChild(loadingEl);
                                 messageBlock.textContent = 'SYSTEM: Response aborted.';
-                                addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index);
+                                const messageDiv = document.createElement('div');
+                                messageDiv.textContent = 'SYSTEM: Response aborted.';
+                                addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
                             }
                         }
         } else {
@@ -1126,8 +1145,9 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
                     }
         
                     // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
+                    while (messageBlock.firstChild) {
+                        messageBlock.removeChild(messageBlock.firstChild);
+                    }
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -1176,7 +1196,9 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
         });
         
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);   
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index);
     } catch (error) {
         if (error.name === 'AbortError') {
             // Request was aborted
@@ -1204,9 +1226,13 @@ export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: 
         }
 
         if (message.trim() === '') {
-            addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index); // This will save mid-stream conversation.
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = 'SYSTEM: Response aborted.';
+            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation./ This will save mid-stream conversation.
         } else {
-            addMessage(plugin, message.trim(), 'botMessage', settings, index); // This will save mid-stream conversation.
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message.trim();
+            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
         }
         new Notice('Stream stopped.');
         console.error('Error fetching chat response from Google Gemini:', error);
@@ -1341,7 +1367,9 @@ export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSe
                             if (messageBlock && loadingEl) {
                                 targetBotMessage?.removeChild(loadingEl);
                                 messageBlock.textContent = 'SYSTEM: Response aborted.';
-                                addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index);
+                                const messageDiv = document.createElement('div');
+                                messageDiv.textContent = 'SYSTEM: Response aborted.';
+                                addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
                             }
                         }
         } else {
@@ -1490,8 +1518,9 @@ export async function fetchMistralResponseStream(plugin: BMOGPT, settings: Docsc
                     }
         
                     // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
+                    while (messageBlock.firstChild) {
+                        messageBlock.removeChild(messageBlock.firstChild);
+                    }
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -1540,7 +1569,9 @@ export async function fetchMistralResponseStream(plugin: BMOGPT, settings: Docsc
             message = message.replace(pattern, '').trim();
         });
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index);
         
     } catch (error) {
         if (error.name === 'AbortError') {
@@ -1569,9 +1600,13 @@ export async function fetchMistralResponseStream(plugin: BMOGPT, settings: Docsc
         }
 
         if (message.trim() === '') {
-            addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index); // This will save mid-stream conversation.
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = 'SYSTEM: Response aborted.';
+            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
         } else {
-            addMessage(plugin, message.trim(), 'botMessage', settings, index); // This will save mid-stream conversation.
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message.trim();
+            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
         }
         new Notice('Stream stopped.');
         console.error('Error fetching chat response from Mistral:', error);
@@ -1704,7 +1739,9 @@ export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: Docscribe
                 if (messageBlock && loadingEl) {
                     targetBotMessage?.removeChild(loadingEl);
                     messageBlock.textContent = 'SYSTEM: Response aborted.';
-                    addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index);
+                    const messageDiv = document.createElement('div');
+                    messageDiv.textContent = 'SYSTEM: Response aborted.';
+                    addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
                 }
             }
         } else {
@@ -1839,8 +1876,9 @@ export async function fetchOpenAIAPIResponseStream(plugin: BMOGPT, settings: Doc
                     }
         
                     // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
+                    while (messageBlock.firstChild) {
+                        messageBlock.removeChild(messageBlock.firstChild);
+                    }
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -1893,7 +1931,9 @@ export async function fetchOpenAIAPIResponseStream(plugin: BMOGPT, settings: Doc
             message = message.replace(pattern, '').trim();
         });
         
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index);
 
     } catch (error) {
         if (error.name === 'AbortError') {
@@ -1922,9 +1962,13 @@ export async function fetchOpenAIAPIResponseStream(plugin: BMOGPT, settings: Doc
         }
 
         if (message.trim() === '') {
-            addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index); // This will save mid-stream conversation.
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = 'SYSTEM: Response aborted.';
+            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
         } else {
-            addMessage(plugin, message.trim(), 'botMessage', settings, index); // This will save mid-stream conversation.
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message.trim();
+            addMessage(plugin, messageDiv, 'botMessage', settings, index);// This will save mid-stream conversation.
         }
         new Notice('Stream stopped.');
         console.error('Error fetching chat response from OpenAI-Based Models:', error);
@@ -2056,7 +2100,9 @@ export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: Docscrib
                 if (messageBlock && loadingEl) {
                     targetBotMessage?.removeChild(loadingEl);
                     messageBlock.textContent = 'SYSTEM: Response aborted.';
-                    addMessage(plugin, 'SYSTEM: Response aborted.', 'botMessage', settings, index);
+                    const messageDiv = document.createElement('div');
+                    messageDiv.textContent = 'SYSTEM: Response aborted.';
+                    addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
                 }
             }
         } else {
@@ -2197,8 +2243,10 @@ export async function fetchOpenRouterResponseStream(plugin: BMOGPT, settings: Do
                     }
         
                     // Clear the messageBlock for re-rendering
-                    messageBlock.innerHTML = '';
-        
+                    while (messageBlock.firstChild) {
+                        messageBlock.removeChild(messageBlock.firstChild);
+                    }
+
                     // DocumentFragment to render markdown off-DOM
                     const fragment = document.createDocumentFragment();
                     const tempContainer = document.createElement('div');
@@ -2247,10 +2295,14 @@ export async function fetchOpenRouterResponseStream(plugin: BMOGPT, settings: Do
             message = message.replace(pattern, '').trim();
         });
         
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index);
         
     } catch (error) {
-        addMessage(plugin, message.trim(), 'botMessage', settings, index); // This will save mid-stream conversation.
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
         new Notice('Stream stopped.');
         console.error(error);
     }

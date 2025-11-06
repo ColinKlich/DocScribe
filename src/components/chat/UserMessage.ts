@@ -32,7 +32,7 @@ export function displayUserMessage(plugin: DocscribeGPT, settings: DocscribeSett
     const regexRenderedNote = /<note-rendered>[\s\S]*?<\/note-rendered>/g;
     trimmedMessage = trimmedMessage.replace(regexRenderedNote, '').trim();
 
-    preUserMessage.innerHTML = trimmedMessage;
+    preUserMessage.append(trimmedMessage);
 
     const regenerateButton = regenerateUserButton(plugin, settings);
     const editButton = displayUserEditButton(plugin, settings, userPre);

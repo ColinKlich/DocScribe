@@ -5,16 +5,18 @@ import { getCurrentNoteContent } from '../editor/ReferenceCurrentNote';
 import {htmlToMarkdown, setIcon } from 'obsidian';
 
 // Add a new message to the messageHistory array and save it to the file
-export async function addMessage(plugin: DocscribeGPT, input: string, messageType: 'userMessage' | 'botMessage', settings: DocscribeSettings, index: number) {
+export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messageType: 'userMessage' | 'botMessage', settings: DocscribeSettings, index: number) {
     const messageObj: { role: string; content: string; images: Uint8Array[] | string[] } = {
         role: '',
         content: '',
         images: [],
     };
 
+    const content = input.outerHTML;
+
 
     const referenceCurrentNoteContent = getCurrentNoteContent() || '';
-    const fullInput = referenceCurrentNoteContent + input;
+    const fullInput = referenceCurrentNoteContent + content;
 
     // // Initialize an array to hold the absolute URLs
     const imagesVaultPath: Uint8Array[] | string[] | null = [];
@@ -44,11 +46,11 @@ export async function addMessage(plugin: DocscribeGPT, input: string, messageTyp
 
     if (messageType === 'userMessage') {
         messageObj.role = 'user';
-        messageObj.content = input;
+        messageObj.content = content;
         messageObj.images = imagesVaultPath;
     } else if (messageType === 'botMessage') {
         messageObj.role = 'assistant';  
-        messageObj.content = input;
+        messageObj.content = content;
 
         // Add buttons to botMessage after fetching message
         const messageContainerElDivs = document.querySelectorAll('#messageContainer div.userMessage, #messageContainer div.botMessage');

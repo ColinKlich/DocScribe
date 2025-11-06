@@ -113,23 +113,30 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(generalCommandHeader);
 
   const commandClearP = document.createElement('p');
-  commandClearP.innerHTML = '<code>/clear</code> or <code>/c</code> - Clear chat history.';
+  commandClearP.createEl('code', { text: '/clear' });
+  commandClearP.append(' or ');
+  commandClearP.createEl('code', { text: '/c' });
+  commandClearP.append(' - Clear chat history.');
   displayCommandBotMessageDiv.appendChild(commandClearP);
 
   const commandRefOnP = document.createElement('p');
-  commandRefOnP.innerHTML = '<code>/ref on</code> - Turn on "reference current note".';
+  commandRefOnP.createEl('code', { text: '/ref on' });
+  commandRefOnP.append(' - Turn on "reference current note".');
   displayCommandBotMessageDiv.appendChild(commandRefOnP);
 
   const commandRefOffP = document.createElement('p');
-  commandRefOffP.innerHTML = '<code>/ref off</code> - Turn off "reference current note".';
+  commandRefOffP.createEl('code', { text: '/ref off' });
+  commandRefOffP.append(' - Turn off "reference current note".');
   displayCommandBotMessageDiv.appendChild(commandRefOffP);
 
   const commandMaxTokensP = document.createElement('p');
-  commandMaxTokensP.innerHTML = '<code>/maxtokens [VALUE]</code> - Set max tokens.';
+  commandMaxTokensP.createEl('code', { text: '/maxtokens [VALUE]' });
+  commandMaxTokensP.append(' - Set max tokens.');
   displayCommandBotMessageDiv.appendChild(commandMaxTokensP);
 
   const commandTempP = document.createElement('p');
-  commandTempP.innerHTML = '<code>/temp [VALUE]</code> - Change temperature range from 0 to 2.';
+  commandTempP.createEl('code', { text: '/temp [VALUE]' });
+  commandTempP.append(' - Change temperature range from 0 to 2.');
   displayCommandBotMessageDiv.appendChild(commandTempP);
 
   const profileCommandHeader = document.createElement('h4');
@@ -138,11 +145,13 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(profileCommandHeader);
 
   const commandProfileListP = document.createElement('p');
-  commandProfileListP.innerHTML = '<code>/profile</code> - List profile.';
+  commandProfileListP.createEl('code', { text: '/profile' });
+  commandProfileListP.append(' - List profile.');
   displayCommandBotMessageDiv.appendChild(commandProfileListP);
 
   const commandProfileChangeP = document.createElement('p');
-  commandProfileChangeP.innerHTML = '<code>/profile [PROFILE-NAME] or [VALUE]</code> - Change profile.';
+  commandProfileChangeP.createEl('code', { text: '/profile [PROFILE-NAME] or [VALUE]' });
+  commandProfileChangeP.append(' - Change profile.');
   displayCommandBotMessageDiv.appendChild(commandProfileChangeP);
 
   const modelCommandHeader = document.createElement('h4');
@@ -151,11 +160,13 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(modelCommandHeader);
 
   const commandModelListP = document.createElement('p');
-  commandModelListP.innerHTML = '<code>/model</code> - List model.';
+  commandModelListP.createEl('code', { text: '/model' });
+  commandModelListP.append(' - List model.');
   displayCommandBotMessageDiv.appendChild(commandModelListP);
 
   const commandModelChangeP = document.createElement('p');
-  commandModelChangeP.innerHTML = '<code>/model [MODEL-NAME] or [VALUE]</code> - Change model.';
+  commandModelChangeP.createEl('code', { text: '/model [MODEL-NAME] or [VALUE]' });
+  commandModelChangeP.append(' - Change model.');
   displayCommandBotMessageDiv.appendChild(commandModelChangeP);
 
   const promptCommandHeader = document.createElement('h4');
@@ -164,15 +175,18 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(promptCommandHeader);
 
   const commandPromptListP = document.createElement('p');
-  commandPromptListP.innerHTML = '<code>/prompt</code> - List prompts.';
+  commandPromptListP.createEl('code', { text: '/prompt' });
+  commandPromptListP.append(' - List prompts.');
   displayCommandBotMessageDiv.appendChild(commandPromptListP);
 
   const commandPromptChangeP = document.createElement('p');
-  commandPromptChangeP.innerHTML = '<code>/prompt [PROMPT-NAME] or [VALUE]</code> - Change prompts.';
+  commandPromptChangeP.createEl('code', { text: '/prompt [PROMPT-NAME] or [VALUE]' });
+  commandPromptChangeP.append(' - Change prompts.');
   displayCommandBotMessageDiv.appendChild(commandPromptChangeP);
 
   const commandPromptClearP = document.createElement('p');
-  commandPromptClearP.innerHTML = '<code>/prompt clear</code> - Clear prompt.';
+  commandPromptClearP.createEl('code', { text: '/prompt clear' });
+  commandPromptClearP.append(' - Clear prompt.');
   displayCommandBotMessageDiv.appendChild(commandPromptClearP);
 
   const editorCommandHeader = document.createElement('h4');
@@ -181,15 +195,18 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(editorCommandHeader);
 
   const commandAppendP = document.createElement('p');
-  commandAppendP.innerHTML = '<code>/append</code> - Append current chat history to current active note.';
+  commandAppendP.createEl('code', { text: '/append' });
+  commandAppendP.append(' - Append current chat history to current active note.');
   displayCommandBotMessageDiv.appendChild(commandAppendP);
 
   const commandSaveP = document.createElement('p');
-  commandSaveP.innerHTML = '<code>/save</code> - Save current chat history to a note.';
+  commandSaveP.createEl('code', { text: '/save' });
+  commandSaveP.append(' - Save current chat history to a note.');
   displayCommandBotMessageDiv.appendChild(commandSaveP);
 
   const commandLoadP = document.createElement('p');
-  commandLoadP.innerHTML = '<code>/load</code> - List or load a chat history into view.';
+  commandLoadP.createEl('code', { text: '/load' });
+  commandLoadP.append(' - List or load a chat history into view.');
   displayCommandBotMessageDiv.appendChild(commandLoadP);
 
   const streamCommandHeader = document.createElement('h4');
@@ -198,7 +215,10 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(streamCommandHeader);
 
   const commandStopP = document.createElement('p');
-  commandStopP.innerHTML = '<code>/stop</code> or <code>/s</code> - Stop fetching response. Warning: Anthropric models cannot be aborted. Please use with caution.';
+  commandStopP.createEl('code', { text: '/stop' });
+  commandStopP.append(' or ');
+  commandStopP.createEl('code', { text: '/s' });
+  commandStopP.append(' - Stop fetching response. Warning: Anthropric models cannot be aborted. Please use with caution.');
   displayCommandBotMessageDiv.appendChild(commandStopP);
 
   messageBlockDiv.appendChild(displayCommandBotMessageDiv);
@@ -208,7 +228,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
   const index = messageHistory.length - 1;
 
-  addMessage(plugin, messageBlockDiv.innerHTML, 'botMessage', settings, index);
+  addMessage(plugin, messageBlockDiv, 'botMessage', settings, index);
 
   messageContainer.appendChild(botMessageDiv);
 }
@@ -270,7 +290,8 @@ export async function commandModel(input: string, settings: DocscribeSettings, p
     displayCommandBotMessageDiv.appendChild(header);
 
     const currentModelP = document.createElement('p');
-    currentModelP.innerHTML = `<b>Current Model:</b> ${currentModel}`;
+    currentModelP.createEl('b', { text: 'Current Model:' });
+    currentModelP.append(` ${currentModel}`);
     currentModelP.addClass('text-align-center');
     displayCommandBotMessageDiv.appendChild(currentModelP);
 
@@ -317,7 +338,7 @@ export async function commandModel(input: string, settings: DocscribeSettings, p
 
     const index = messageHistory.length - 1;
 
-    addMessage(plugin, messageBlockDiv.innerHTML, 'botMessage', settings, index);
+    addMessage(plugin, messageBlockDiv, 'botMessage', settings, index);
 
     messageContainer.appendChild(botMessageDiv);
   }
@@ -355,9 +376,10 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
 
   if (!settings.profiles.profileFolderPath) {
     new Notice('Profile folder path not set.');
-    const commandBotMessage = '<p>Profile folder path not set.</p>';
+    const p = document.createElement('p');
+    p.textContent = 'Profile folder path not set.';
 
-    const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessage);
+    const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, p);
     messageContainer.appendChild(botMessageDiv);
     return;
   }
@@ -384,10 +406,29 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
       currentProfile = 'Empty';
     }
 
-    const commandBotMessage = 
-    `<h2 class="text-align-center">Profiles</h2>
-      <p class="text-align-center"><b>Current profile:</b> ${currentProfile}</p>
-      <ol>${fileListItems}</ol>`;
+    const commandBotMessage = document.createElement('div');
+    commandBotMessage.className = 'commandBotMessage';
+
+    const header = document.createElement('h2');
+    header.className = 'text-align-center';
+    header.textContent = 'Profiles';
+    commandBotMessage.appendChild(header);
+
+    const p = document.createElement('p');
+    p.className = 'text-align-center';
+    const bold = document.createElement('b');
+    bold.textContent = 'Current profile:';
+    p.appendChild(bold);
+    p.append(` ${currentProfile}`);
+    commandBotMessage.appendChild(p);
+
+    const ol = document.createElement('ol');
+    files.forEach(file => {
+      const li = document.createElement('li');
+      li.textContent = file.name.replace(/\.[^/.]+$/, '');
+      ol.appendChild(li);
+    });
+    commandBotMessage.appendChild(ol);
 
     const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessage);
     messageContainer.appendChild(botMessageDiv);
@@ -467,9 +508,10 @@ export async function commandPrompt(input: string, settings: DocscribeSettings, 
 
   if (!settings.prompts.promptFolderPath) {
     new Notice('Prompt folder path not set.');
-    const commandBotMessage = '<p>Prompt folder path not set.</p>';
+const p = document.createElement('p');
+    p.textContent = 'Prompt folder path not set.';
 
-    const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessage);
+    const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, p);
     messageContainer.appendChild(botMessageDiv);
     return;
   }
@@ -496,10 +538,30 @@ export async function commandPrompt(input: string, settings: DocscribeSettings, 
       currentPrompt = 'Empty';
     }
 
-    const commandBotMessage = 
-    `<h2 class="text-align-center">Prompts</h2>
-      <p class="text-align-center"><b>Current prompt:</b> ${currentPrompt.replace('.md', '') }</p>
-      <ol>${fileListItems}</ol>`;
+    const commandBotMessage = document.createElement('div');
+    commandBotMessage.className = 'commandBotMessage';
+
+    const header = document.createElement('h2');
+    header.className = 'text-align-center';
+    header.textContent = 'Prompts';
+    commandBotMessage.appendChild(header);
+
+    const p = document.createElement('p');
+    p.className = 'text-align-center';
+    const bold = document.createElement('b');
+    bold.textContent = 'Current prompt:';
+    p.appendChild(bold);
+    p.append(` ${currentPrompt.replace('.md', '')}`);
+    commandBotMessage.appendChild(p);
+
+    const ol = document.createElement('ol');
+    // populate list from files (remove extension)
+    files.forEach(file => {
+      const li = document.createElement('li');
+      li.textContent = file.name.replace(/\.[^/.]+$/, '');
+      ol.appendChild(li);
+    });
+    commandBotMessage.appendChild(ol);
 
     const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessage);
     messageContainer.appendChild(botMessageDiv);
@@ -942,12 +1004,27 @@ if (!input.split(' ')[1]) {
     })
     .join('');
 
-  const commandBotMessage = 
-  `<h2 class="text-align-center">Chat History</h2>
-   <p class="text-align-center"><b>Current Chat History:</b> ${settings.profiles.lastLoadedChatHistory[profileIndex] ? settings.profiles.lastLoadedChatHistory[profileIndex] : 'Empty'}</p>
-    <ol>${fileListItems}</ol>`;
+  const commandBotMessageEl = document.createElement('div');
+  commandBotMessageEl.className = 'commandBotMessage';
 
-  const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessage);
+  const headerEl = document.createElement('h2');
+  headerEl.className = 'text-align-center';
+  headerEl.textContent = 'Chat History';
+  commandBotMessageEl.appendChild(headerEl);
+
+  const pEl = document.createElement('p');
+  pEl.className = 'text-align-center';
+  const currentChatText = settings.profiles.lastLoadedChatHistory[profileIndex]
+    ? settings.profiles.lastLoadedChatHistory[profileIndex]
+    : 'Empty';
+  pEl.textContent = `<b>Current Chat History:</b> ${currentChatText}`;
+  commandBotMessageEl.appendChild(pEl);
+
+  const olEl = document.createElement('ol');
+  olEl.textContent = fileListItems;
+  commandBotMessageEl.appendChild(olEl);
+
+  const botMessageDiv = displayCommandBotMessage(plugin, settings, messageHistory, commandBotMessageEl);
   messageContainer.appendChild(botMessageDiv);
 
   return;

@@ -405,14 +405,18 @@ export class DocscribeView extends ItemView {
                 
                     if (baseCommand.startsWith('/') && commandMap.hasOwnProperty(baseCommand)) {
                         // This block handles recognized commands with or without parameters
-                        addMessage(this.plugin, input, 'userMessage', this.settings, index);
+                        const messageDiv = document.createElement('div');
+                        messageDiv.textContent = input;
+                        addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index);
                         const userMessageDiv = displayUserMessage(this.plugin, this.settings, input);
                         messageContainer.appendChild(userMessageDiv);
                         // console.log('Command processed:', commandMap[baseCommand], 'with parameters:', parts.slice(1).join(' ')); // Logs the processed command and parameters
                     } else if (!baseCommand.startsWith('/')) {
                         // This block handles non-command inputs
                         // console.log('User input modified:', inputModified);
-                        addMessage(this.plugin, inputModified, 'userMessage', this.settings, index);
+                        const messageDiv = document.createElement('div');
+                        messageDiv.textContent = inputModified;
+                        addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index);
                         const userMessageDiv = displayUserMessage(this.plugin, this.settings, input);
                         messageContainer.appendChild(userMessageDiv);
                     } else {
@@ -601,7 +605,9 @@ export class DocscribeView extends ItemView {
         const messageContainer = document.querySelector('#messageContainer');
         if (messageContainer) {
             const index = messageHistory.length - 1;
-            addMessage(this.plugin, message, 'userMessage', this.settings, index);
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message;
+            addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index);
             const userMessageDiv = displayUserMessage(this.plugin, this.settings, message);
             messageContainer.appendChild(userMessageDiv);
             await this.Docscribechatbot();
@@ -660,8 +666,8 @@ export function populateModelDropdown(plugin: DocscribeGPT, settings: DocscribeS
     const modelOptions = document.createElement('select');
     modelOptions.id = 'modelOptions';
 
-    if (modelOptions) {
-        modelOptions.innerHTML = ''; // Clear existing options
+    while (modelOptions.firstChild) {
+        modelOptions.removeChild(modelOptions.firstChild);
     }
 
     const defaultModel = settings.general.model || DEFAULT_SETTINGS.general.model;
