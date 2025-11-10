@@ -78,7 +78,11 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
         .onChange(async (value) => {
             plugin.settings.profiles.profile = value ? value : DEFAULT_SETTINGS.profiles.profile;
             const profileFilePath = plugin.settings.profiles.profileFolderPath + '/' + plugin.settings.profiles.profile;
-            const currentProfile = plugin.app.vault.getAbstractFileByPath(profileFilePath) as TFile;
+            const currentProfile = plugin.app.vault.getAbstractFileByPath(profileFilePath);
+            if (!(currentProfile instanceof TFile)) {
+                console.warn('Profile file is not a valid TFile:', profileFilePath);
+            return; // or throw, or handle as appropriate in your context
+            }
             plugin.activateView();
             await updateSettingsFromFrontMatter(plugin, currentProfile);
             await plugin.saveSettings();

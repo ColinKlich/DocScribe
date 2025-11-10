@@ -245,8 +245,12 @@ export default class DocscribeGPT extends Plugin {
 		const folderPath = this.settings.profiles.profileFolderPath || DEFAULT_SETTINGS.profiles.profileFolderPath;
 
 		const defaultFilePath = `${folderPath}/${DEFAULT_SETTINGS.profiles.profile}`;
-		const defaultProfile = this.app.vault.getAbstractFileByPath(defaultFilePath) as TFile;
-	
+		const defaultProfile = this.app.vault.getAbstractFileByPath(defaultFilePath);
+		if (!(defaultProfile instanceof TFile)) {
+		console.warn('Default profile is not a valid file:', defaultFilePath);
+		return;
+		}
+
 		// Check if the folder exists, create it if not
 		if (!await this.app.vault.adapter.exists(folderPath)) {
 			await this.app.vault.createFolder(folderPath);
@@ -612,7 +616,11 @@ export default class DocscribeGPT extends Plugin {
 
 	async saveSettings() {
 		const currentProfileFile = `${this.settings.profiles.profileFolderPath}/${this.settings.profiles.profile}`
-		const currentProfile = this.app.vault.getAbstractFileByPath(currentProfileFile) as TFile;
+		const currentProfile = this.app.vault.getAbstractFileByPath(currentProfileFile);
+		if (!(currentProfile instanceof TFile)) {
+		console.warn('Current profile is not a valid file:', currentProfileFile);
+		return;
+		}
 		updateFrontMatter(this, currentProfile);
 
 		// Update the model dropdown in the header

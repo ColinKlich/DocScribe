@@ -95,10 +95,18 @@ export class DocscribeSettingTab extends PluginSettingTab {
 			const confirmReset = confirm('Are you sure you want to reset all settings to default?');
 			if (confirmReset) {
 				const profilePathFile = this.plugin.settings.profiles.profileFolderPath + '/' + this.plugin.settings.profiles.profile;
-				const profilePath = this.plugin.app.vault.getAbstractFileByPath(profilePathFile) as TFile;
+				const profilePath = this.plugin.app.vault.getAbstractFileByPath(profilePathFile);
+				if (!(profilePath instanceof TFile)) {
+					console.warn('Profile file is not a valid TFile:', profilePathFile);
+				return; // or handle error as appropriate
+				}
 
 				const defaultProfilePathFile = DEFAULT_SETTINGS.profiles.profileFolderPath + '/' + DEFAULT_SETTINGS.profiles.profile;
-				const defaultProfilePath = this.plugin.app.vault.getAbstractFileByPath(defaultProfilePathFile) as TFile;
+				const defaultProfilePath = this.plugin.app.vault.getAbstractFileByPath(defaultProfilePathFile);
+				if (!(defaultProfilePath instanceof TFile)) {
+					console.warn('Profile file is not a valid TFile:', defaultProfilePathFile);
+				return; // or handle error as appropriate
+				}
 
 				if (profilePath) {
 					if (profilePath.path === defaultProfilePath.path) {

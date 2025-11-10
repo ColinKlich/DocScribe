@@ -11,9 +11,10 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
         content: '',
         images: [],
     };
-
-    const content = input.outerHTML;
-
+    
+    let content: string;
+    const serializer = new XMLSerializer();
+    content = serializer.serializeToString(input);
 
     const referenceCurrentNoteContent = getCurrentNoteContent() || '';
     const fullInput = referenceCurrentNoteContent + content;

@@ -461,7 +461,11 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
       // If input matches a key in profileAliases
       plugin.settings.profiles.profile = profileAliases[inputValue] + '.md';
       const profileFilePath = plugin.settings.profiles.profileFolderPath + '/' + profileAliases[inputValue] + '.md';
-      const currentProfile = plugin.app.vault.getAbstractFileByPath(profileFilePath) as TFile;
+      const currentProfile = plugin.app.vault.getAbstractFileByPath(profileFilePath);
+      if (!(currentProfile instanceof TFile)) {
+        console.warn('Profile file is not a valid TFile:', profileFilePath);
+        return; // or throw, or handle as appropriate in your context
+      }
 
       const currentProfileName = settings.profiles.profile.replace(/\.[^/.]+$/, ''); // Removing the file extension
   
@@ -480,7 +484,11 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
         if (matchedProfile) {
             plugin.settings.profiles.profile = matchedProfile[1] + '.md';
             const profileFilePath = plugin.settings.profiles.profileFolderPath + '/' + matchedProfile[1] + '.md';
-            const currentProfile = plugin.app.vault.getAbstractFileByPath(profileFilePath) as TFile;
+            const currentProfile = plugin.app.vault.getAbstractFileByPath(profileFilePath);
+            if (!(currentProfile instanceof TFile)) {
+              console.warn('Profile file is not a valid TFile:', profileFilePath);
+              return; // or throw, or handle as appropriate in your context
+            }
 
             const currentProfileName = settings.profiles.profile.replace(/\.[^/.]+$/, ''); // Removing the file extension
   
@@ -920,10 +928,17 @@ export async function commandSave(plugin: DocscribeGPT, settings: DocscribeSetti
       fileName = folderName + baseFileName + ' ' + dateTimeStamp + fileExtension;
     }
   
-    // Update if lastLoadedChatHistoryPath is not null
-    if (settings.profiles.lastLoadedChatHistoryPath !== null) {
-      lastLoadedChatHistoryFile = plugin.app.vault.getAbstractFileByPath(settings.profiles.lastLoadedChatHistoryPath) as TFile;
-    }
+// Update if lastLoadedChatHistoryPath is not null
+if (settings.profiles.lastLoadedChatHistoryPath !== null) {
+  const file = plugin.app.vault.getAbstractFileByPath(settings.profiles.lastLoadedChatHistoryPath);
+  if (file instanceof TFile) {
+    lastLoadedChatHistoryFile = file;
+  } else {
+    console.warn('Last loaded chat history file is not a valid TFile:', settings.profiles.lastLoadedChatHistoryPath);
+    // Optionally reset or handle invalid path:
+    // settings.profiles.lastLoadedChatHistoryPath = null;
+  }
+}
 
     if (lastLoadedChatHistoryFile === null) {
         // Create the new note with formatted Markdown content
@@ -1061,7 +1076,11 @@ if (input.startsWith('/load')) {
     const messageHistory: { role: string; content: string }[] = [];
 
     const loadChatHistory = async (filePath: string): Promise<boolean> => {
-      const currentLoad = plugin.app.vault.getAbstractFileByPath(filePath) as TFile;
+      const currentLoad = plugin.app.vault.getAbstractFileByPath(filePath);
+      if (!(currentLoad instanceof TFile)) {
+        console.warn('File is not a valid TFile:', filePath);
+        return false; // file is invalid, signal failure
+      }
       const fileContent = await plugin.app.vault.cachedRead(currentLoad);
       const contentWithoutFrontmatter = fileContent.replace(/^---\n[\s\S]*?\n---\n/, '');
     
