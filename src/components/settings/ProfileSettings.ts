@@ -43,7 +43,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
             // Sorting the files array alphabetically by file name
             files.sort((a, b) => a.name.localeCompare(b.name));
         
-            const dataFolderPath = './.obsidian/plugins/obsidian-docscribe/data/';
+            const dataFolderPath = plugin.app.vault.configDir + '/plugins/obsidian-docscribe/data/';
             
             if (!plugin.app.vault.getAbstractFileByPath(dataFolderPath)) {
                 plugin.app.vault.adapter.mkdir(dataFolderPath);

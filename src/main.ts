@@ -328,7 +328,7 @@ export default class DocscribeGPT extends Plugin {
 				}
 
 				if (file instanceof TFile && file.path.startsWith(folderPath)) {
-					const filenameMessageHistory = './.obsidian/plugins/obsidian-docscribe/data/' + 'messageHistory_' + file.name.replace('.md', '.json');
+					const filenameMessageHistory = this.app.vault.configDir + '/plugins/obsidian-docscribe/data/' + 'messageHistory_' + file.name.replace('.md', '.json');
 					this.app.vault.adapter.remove(filenameMessageHistory);
 
 					const profileIndex = profileFiles.findIndex((profileFile) => profileFile.name > file.name);
@@ -393,7 +393,7 @@ export default class DocscribeGPT extends Plugin {
 					}
 
 					if (file instanceof TFile && file.path.startsWith(folderPath)) {
-						const filenameMessageHistoryPath = './.obsidian/plugins/obsidian-docscribe/data/';
+						const filenameMessageHistoryPath = this.app.vault.configDir + '/plugins/obsidian-docscribe/data/';
 						const oldProfileMessageHistory = 'messageHistory_' + oldPath.replace(folderPath + '/', '').replace('.md', '.json');
 					
 						await this.app.vault.adapter.rename(filenameMessageHistoryPath + oldProfileMessageHistory, filenameMessageHistoryPath + 'messageHistory_' + file.name.replace('.md', '.json'))
