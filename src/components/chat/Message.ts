@@ -42,7 +42,7 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
         });
         }
 
-        // console.log('Image path:', imagesVaultPath);
+        // // console.log('Image path:', imagesVaultPath);
     }
 
     if (messageType === 'userMessage') {
@@ -113,7 +113,7 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
                             return `[[${filename}]]`;
                         });
                         
-                        // console.log('renderedMarkdownOutput', renderedMarkdownOutput);
+                        // // console.log('renderedMarkdownOutput', renderedMarkdownOutput);
                 
                         const extractBlocks = (message: string) => {
                             const regex = /```(\w+)\n([\s\S]*?)```(\s*(<block-rendered>[\s\S]*?<\/block-rendered>\s*)?)/g;
@@ -143,7 +143,7 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
                         };
                 
                         const updatedMessageContent = extractBlocks(messageObj.content);
-                        // console.log('updatedMessageContent', updatedMessageContent);
+                        // // console.log('updatedMessageContent', updatedMessageContent);
                 
                         // Update the message content with the rendered markdown output
                         messageObj.content = updatedMessageContent;
@@ -173,7 +173,7 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
                             const regex = /(!\[\[.*?\]\])(\s*(<note-rendered>[\s\S]*?<\/note-rendered>\s*)?)/g;
                             let updatedMessage = message;
                 
-                            // console.log('message', message);
+                            // // console.log('message', message);
                 
                             for (const match of [...message.matchAll(regex)]) {
                                 const oldLink = match[0];
@@ -199,7 +199,7 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
                         };
                 
                         const updatedMessageContent = extractLinks(messageObj.content);
-                        // console.log('updatedMessageContent', updatedMessageContent);
+                        // // console.log('updatedMessageContent', updatedMessageContent);
                 
                         // Update the message content with the rendered markdown output
                         messageObj.content = updatedMessageContent;

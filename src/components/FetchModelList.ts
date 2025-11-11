@@ -11,7 +11,7 @@ export async function fetchOllamaModels(plugin: DocscribeGPT) {
         try {
             const ollama = new Ollama({host: ollamaRESTAPIURL});
             const modelsList = await ollama.list();
-            // console.log('Ollama Models:', modelsList);
+            // // console.log('Ollama Models:', modelsList);
             
             // Extracting model names and updating the plugin settings
             const models = modelsList.models.map((model: { name: string }) => model.name);
@@ -106,7 +106,7 @@ export async function fetchMistralModels(plugin: DocscribeGPT) {
         if (response.json && response.json.data) {
             const models = response.json.data.map((model: { id: number; }) => model.id);
             plugin.settings.APIConnections.mistral.mistralModels = models;
-            console.log(models);
+            // console.log(models);
             return models;
         }
     } catch (error) {

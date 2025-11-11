@@ -259,7 +259,7 @@ export default class DocscribeGPT extends Plugin {
 		// Check if the 'Default.md' file exists, create it if not
 		if (!await this.app.vault.adapter.exists(defaultFilePath)) {
 			this.app.vault.create(defaultFilePath, '');
-			console.log('Default profile created.');
+			// console.log('Default profile created.');
 		}
 
 		this.registerEvent(

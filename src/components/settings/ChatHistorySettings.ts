@@ -84,10 +84,10 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
                         file.path.toLowerCase() === plugin.settings.chatHistory.templateFilePath.toLowerCase());
                         
                     if (fileExists) {
-                        // console.log("File exists in vault!");
+                        // // console.log("File exists in vault!");
                         text.inputEl.style.borderColor = '';
                     } else {
-                        // console.log("File does not exist in vault.");
+                        // // console.log("File does not exist in vault.");
                         text.inputEl.style.borderColor = 'red';
                     }
                 } else {

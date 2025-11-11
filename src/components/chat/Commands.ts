@@ -1230,7 +1230,7 @@ if (input.startsWith('/load')) {
         const matchingFiles = files.filter(file => file.name.includes(matchedFile[1]));
     
         // matchingFiles.forEach(file => {
-        //   console.log(file.path);
+        //   // console.log(file.path);
         // });
     
         // Create modal content

@@ -57,7 +57,7 @@ export async function fetchOllamaResponseEditor(settings: DocscribeSettings, pro
         return message;
     } catch (error) {
         if (error.name === 'AbortError') {
-            console.log('Request aborted');
+            // console.log('Request aborted');
         } else {
             console.error('Ollama request:', error);
             throw error;

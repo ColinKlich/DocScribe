@@ -41,7 +41,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
                 }
                 catch (error) {
                     new Notice('Error occurred while fetching completion: ' + error.message);
-                    console.log(error.message);
+                    // console.log(error.message);
                 }
             }
             else if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
@@ -248,7 +248,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     inputModified = inputModified.replace(/(<note-rendered>File cannot be read.<\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
 
 
-                    // console.log(`Modified input: ${inputModified}`);
+                    // // console.log(`Modified input: ${inputModified}`);
                     messageHistory[index].content = inputModified;
 
 
@@ -312,7 +312,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                         }
                         catch (error) {
                             new Notice('Error occurred while fetching completion: ' + error.message);
-                            //console.log(error.message);
+                            //// console.log(error.message);
                         }
                     }
                     else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
@@ -390,7 +390,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
             }
             messageBlock.appendChild(editContainer);
         } else {
-            console.log('messageBlock not found.');
+            // console.log('messageBlock not found.');
         }
 
         textareaEditButton.addEventListener('click', async function () {
@@ -505,7 +505,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
                     inputModified = inputModified.replace(/(<note-rendered>File cannot be read.<\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
 
 
-                    // console.log(`Modified input: ${inputModified}`);
+                    // // console.log(`Modified input: ${inputModified}`);
                     messageHistory[index].content = inputModified;
 
                     const jsonString = JSON.stringify(messageHistory, null, 4);

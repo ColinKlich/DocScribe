@@ -361,7 +361,7 @@ export class DocscribeView extends ItemView {
 
 
 
-        // console.log(`Modified input: ${inputModified}`);
+        // // console.log(`Modified input: ${inputModified}`);
 
         if (this.preventEnter === false && !event.shiftKey && event.key === 'Enter') {
             loadData(this.plugin);
@@ -410,17 +410,17 @@ export class DocscribeView extends ItemView {
                         addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index);
                         const userMessageDiv = displayUserMessage(this.plugin, this.settings, input);
                         messageContainer.appendChild(userMessageDiv);
-                        // console.log('Command processed:', commandMap[baseCommand], 'with parameters:', parts.slice(1).join(' ')); // Logs the processed command and parameters
+                        // // console.log('Command processed:', commandMap[baseCommand], 'with parameters:', parts.slice(1).join(' ')); // Logs the processed command and parameters
                     } else if (!baseCommand.startsWith('/')) {
                         // This block handles non-command inputs
-                        // console.log('User input modified:', inputModified);
+                        // // console.log('User input modified:', inputModified);
                         const messageDiv = document.createElement('div');
                         messageDiv.textContent = inputModified;
                         addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index);
                         const userMessageDiv = displayUserMessage(this.plugin, this.settings, input);
                         messageContainer.appendChild(userMessageDiv);
                     } else {
-                        // console.log('Unknown command ignored:', input);
+                        // // console.log('Unknown command ignored:', input);
                     }
                 }
                 
@@ -589,7 +589,7 @@ export class DocscribeView extends ItemView {
             }
 
         }
-        // console.log('Docscribe settings:', this.settings);
+        // // console.log('Docscribe settings:', this.settings);
     }
 
     async onClose() {
