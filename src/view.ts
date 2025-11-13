@@ -27,7 +27,7 @@ export const GOOGLE_GEMINI_MODELS = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemi
 export const OPENAI_MODELS = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'];
 
 export function fileNameMessageHistoryJson(plugin: DocscribeGPT) {
-    const filenameMessageHistoryPath = plugin.app.vault.configDir + '/plugins/obsidian-docscribe/data/';
+    const filenameMessageHistoryPath = plugin.app.vault.configDir + '/plugins/docscribe/data/';
     const currentProfileMessageHistory = 'messageHistory_' + plugin.settings.profiles.profile.replace('.md', '.json');
 
     return filenameMessageHistoryPath + currentProfileMessageHistory;
@@ -617,8 +617,8 @@ export class DocscribeView extends ItemView {
 
 // Create data folder and load JSON file
 async function loadData(plugin: DocscribeGPT) {
-    if (!await plugin.app.vault.adapter.exists(plugin.app.vault.configDir + '/plugins/obsidian-docscribe/data/')) {
-        plugin.app.vault.adapter.mkdir(plugin.app.vault.configDir + '/plugins/obsidian-docscribe/data/');
+    if (!await plugin.app.vault.adapter.exists(plugin.app.vault.configDir + '/plugins/docscribe/data/')) {
+        plugin.app.vault.adapter.mkdir(plugin.app.vault.configDir + '/plugins/docscribe/data/');
     }
 
     if (await plugin.app.vault.adapter.exists(fileNameMessageHistoryJson(plugin))) {

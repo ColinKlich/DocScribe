@@ -119,7 +119,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 						await this.plugin.app.plugins.enablePlugin(this.plugin.manifest.id);
 					}
 					else {
-						const filenameMessageHistory = this.app.vault.configDir + '/plugins/obsidian-docscribe/data/' + 'messageHistory_' + defaultProfilePath.name.replace('.md', '.json');
+						const filenameMessageHistory = this.app.vault.configDir + '/plugins/docscribe/data/' + 'messageHistory_' + defaultProfilePath.name.replace('.md', '.json');
 						this.app.vault.adapter.remove(filenameMessageHistory);
 						this.plugin.app.fileManager.trashFile(profilePath);
 						this.plugin.settings.profiles.profile = DEFAULT_SETTINGS.profiles.profile;
@@ -130,7 +130,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 
 				requestAnimationFrame(() => {
 					// @ts-ignore
-					const refreshTab = this.plugin.app.setting.openTabById('obsidian-docscribe');
+					const refreshTab = this.plugin.app.setting.openTabById('docscribe');
 					if (refreshTab) {
 						refreshTab.display();
 					} else {
