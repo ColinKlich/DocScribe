@@ -5,6 +5,7 @@ import { promptSelectGenerateCommand, renameTitleCommand } from './components/ed
 import { colorToHex, isValidHexColor } from './utils/ColorConverter';
 import { DocscribeCodeBlockProcessor } from './components/editor/DocscribeCodeBlockProcessor';
 import { extractStructuredText } from './utils/PptxExtractor';
+import { extractTextFromPdf } from './utils/PdfExtractor';
 
 export interface DocscribeSettings {
 	profiles: {
@@ -519,6 +520,21 @@ export default class DocscribeGPT extends Plugin {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractStructuredText(arrayBuffer);
 								const prompt = "Please output the topics from the following text in well-formatted markdown:\n\n" + extractedText;
+								await this.activateView();
+								const view = this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0].view as DocscribeView;
+								view.sendSystemMessage(prompt);
+							});
+					});
+				}
+
+				if (file.extension === 'pdf') {
+					menu.addItem((item) => {
+						item
+							.setTitle('Docscribe: Extract notes from PDF')
+							.onClick(async () => {
+								const arrayBuffer = await this.app.vault.readBinary(file);
+								const extractedText = await extractTextFromPdf(arrayBuffer, 5000);
+								const prompt = "Please summarize the following text in well-formatted markdown:\n\n" + extractedText;
 								await this.activateView();
 								const view = this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0].view as DocscribeView;
 								view.sendSystemMessage(prompt);
