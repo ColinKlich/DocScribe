@@ -1,6 +1,6 @@
 {
 	"name": "Docscribe",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "An Obsidian plugin to generate, summarize, and refine notes using AI language models.",
 	"main": "main.js",
 	"type": "module",

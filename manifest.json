@@ -1,7 +1,7 @@
 {
 	"id": "docscribe",
 	"name": "DocScribe",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"minAppVersion": "1.0.0",
 	"description": "Generate notes from PPTX and PDF files using LLMs.",
 	"author": "Colin Klich",
