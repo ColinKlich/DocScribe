@@ -5,6 +5,7 @@ import { addMessage, addParagraphBreaks, updateUnresolvedInternalLinks } from '.
 import { displayErrorBotMessage, displayLoadingBotMessage } from './chat/BotMessage';
 import { getActiveFileContent, getCurrentNoteContent } from './editor/ReferenceCurrentNote';
 import { getPrompt } from './chat/Prompt';
+import { GoogleGenAI } from '@google/genai';
 
 let abortController: AbortController | null = null;
 
@@ -19,8 +20,7 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
 
     const prompt = await getPrompt(plugin, settings);
 
-    const filteredMessageHistory = filterMessageHistory(messageHistory);
-    const messageHistoryAtIndex = removeConsecutiveUserRoles(filteredMessageHistory);
+    const messageHistoryAtIndex = filterMessageHistory(messageHistory);
 
     const messageContainerEl = document.querySelector('#messageContainer');
     const messageContainerElDivs = document.querySelectorAll('#messageContainer div.userMessage, #messageContainer div.botMessage');
@@ -171,9 +171,7 @@ export async function fetchOllamaResponseStream(plugin: BMOGPT, settings: Docscr
 
     let isScroll = false;
 
-    const filteredMessageHistory = filterMessageHistory(messageHistory);
-
-    const messageHistoryAtIndex = removeConsecutiveUserRoles(filteredMessageHistory);
+    const messageHistoryAtIndex = filterMessageHistory(messageHistory);
     
     const messageContainerEl = document.querySelector('#messageContainer');
     const messageContainerElDivs = document.querySelectorAll('#messageContainer div.userMessage, #messageContainer div.botMessage');
@@ -816,435 +814,273 @@ export async function fetchAnthropicResponse(plugin: BMOGPT, settings: Docscribe
 
 }
 
-// Fetch response from Google Gemini
-export async function fetchGoogleGeminiResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
-    const prompt = await getPrompt(plugin, settings);
-    const filteredMessageHistory = filterMessageHistory(messageHistory);
-    const messageHistoryAtIndex = removeConsecutiveUserRoles(filteredMessageHistory);
-    
-    const messageContainerEl = document.querySelector('#messageContainer');
-    const messageContainerElDivs = document.querySelectorAll('#messageContainer div.userMessage, #messageContainer div.botMessage');
-
-    const botMessageDiv = displayLoadingBotMessage(settings);
-
-    messageContainerEl?.insertBefore(botMessageDiv, messageContainerElDivs[index+1]);
-    botMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    await getActiveFileContent(plugin, settings);
-    const referenceCurrentNoteContent = getCurrentNoteContent();
-
-    // Function to convert messageHistory to Google Gemini format
-    const convertMessageHistory = (messageHistory: { role: string; content: string }[]) => {
-        // Clone the messageHistory to avoid mutating the original array
-        const modifiedMessageHistory = [...messageHistory];
-        
-        const convertedMessageHistory = modifiedMessageHistory.map(({ role, content }) => ({
-            role: role === 'assistant' ? 'model' : role,
-            parts: [{ text: content }]
-        }));
-        
-        const contents = [
-            ...convertedMessageHistory
-        ];
-
-        return { contents };
-    };
-    
-    // Use the function to convert your message history
-    const convertedMessageHistory = convertMessageHistory(messageHistoryAtIndex);
-
-    abortController = new AbortController();
-
-    const submitButton = document.querySelector('.submit-button') as HTMLElement;
-
-    // Change button text to "Cancel"
-    setIcon(submitButton, 'square');
-    submitButton.title = 'stop';
-
-    submitButton.addEventListener('click', async () => {
-        if (submitButton.title === 'stop') {
-            const controller = getAbortController();
-            if (controller) {
-                controller.abort();
-            }
-        }
-    });
-
-    try {        
-        const API_KEY = settings.APIConnections.googleGemini.APIKey;
-        const MODEL = settings.general.model.replace('models/', '');
-    
-        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + MODEL + ':generateContent?key=' + API_KEY;
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              contents: [
-                {
-                  role: 'user',
-                  parts: [{ text: `System prompt: \n\n ${plugin.settings.general.system_role} ${prompt} ${referenceCurrentNoteContent} Respond understood if you got it.` }],
-                },
-                {
-                  role: 'model',
-                  parts: [{ text: 'Understood.' }],
-                },
-                ...convertedMessageHistory.contents,
-              ],
-              generationConfig: {
-                stopSequences: [],
-                temperature: parseInt(settings.general.temperature),
-                maxOutputTokens: settings.general.max_tokens || 4096,
-                topP: 0.8,
-                topK: 10
-              }
-            }),
-            signal: abortController?.signal,
-          });
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const responseData = await response.json();
-          // console.log('Gemini Response:', responseData);
-          let message = responseData.candidates[0].content.parts[0].text;
-
-        const messageContainerEl = document.querySelector('#messageContainer');
-        if (messageContainerEl) {
-            const targetUserMessage = messageContainerElDivs[index];
-            const targetBotMessage = targetUserMessage.nextElementSibling;
-
-            const messageBlock = targetBotMessage?.querySelector('.messageBlock');
-            const loadingEl = targetBotMessage?.querySelector('#loading');
-        
-            if (messageBlock) {
-                if (loadingEl) {
-                    targetBotMessage?.removeChild(loadingEl);
-                }
-
-                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', plugin);
-                
-                addParagraphBreaks(messageBlock);
-                updateUnresolvedInternalLinks(plugin, messageBlock);
-
-                const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
-                copyCodeBlocks.forEach((copyCodeBlock) => {
-                    copyCodeBlock.textContent = 'Copy';
-                    setIcon(copyCodeBlock, 'copy');
-                });
-                
-                targetBotMessage?.appendChild(messageBlock);
-            }
-            targetBotMessage?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
-        }
-
-        // Define regex patterns for the unwanted tags and their content
-        const regexPatterns = [
-            /<block-rendered>[\s\S]*?<\/block-rendered>/g,
-            /<note-rendered>[\s\S]*?<\/note-rendered>/g
-        ];
-
-        // Clean the message content by removing the unwanted tags and their content
-        regexPatterns.forEach(pattern => {
-            message = message.replace(pattern, '').trim();
-        });
-
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
-        return;
-    } catch (error) {
-        if (error.name === 'AbortError') {
-            // Request was aborted, handle accordingly
-            // console.log('Request aborted');
-            setIcon(submitButton, 'arrow-up');
-            submitButton.title = 'send';
-
-                        // Request was aborted
-                        if (messageContainerEl) {
-                            const targetUserMessage = messageContainerElDivs[index];
-                            const targetBotMessage = targetUserMessage.nextElementSibling;
-            
-                            const messageBlock = targetBotMessage?.querySelector('.messageBlock');
-                            const loadingEl = targetBotMessage?.querySelector('#loading');
-            
-                            if (messageBlock && loadingEl) {
-                                targetBotMessage?.removeChild(loadingEl);
-                                messageBlock.textContent = 'SYSTEM: Response aborted.';
-                                const messageDiv = document.createElement('div');
-                                messageDiv.textContent = 'SYSTEM: Response aborted.';
-                                addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
-                            }
-                        }
-        } else {
-            // Handle other errors
-            const targetUserMessage = messageContainerElDivs[index];
-            const targetBotMessage = targetUserMessage.nextElementSibling;
-            targetBotMessage?.remove();
-
-            const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
-            const botMessageDiv = displayErrorBotMessage(plugin, settings, messageHistory, error);
-            messageContainer.appendChild(botMessageDiv);
-        }
-    } finally {
-        // Reset the abort controller
-        abortController = null;
-    }
+// Convert internal history to Gemini format
+function convertToGeminiHistory(messages: { role: string; content: string }[]) {
+  return messages.map(msg => ({
+    role: msg.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: msg.content.trim() }]
+  }));
 }
 
-export async function fetchGoogleGeminiResponseStream(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
-    const prompt = await getPrompt(plugin, settings);
+// Fetch response from Google Gemini
+export async function fetchGoogleGeminiResponse(
+  plugin: BMOGPT,
+  settings: DocscribeSettings,
+  index: number
+) {
+  const prompt = await getPrompt(plugin, settings);
+  const filteredMessageHistory = filterMessageHistory(messageHistory);
+  const messageHistoryAtIndex = removeConsecutiveUserRoles(filteredMessageHistory);
 
-    abortController = new AbortController();
+  const messageContainerEl = document.querySelector('#messageContainer');
+  const messageContainerElDivs = document.querySelectorAll(
+    '#messageContainer div.userMessage, #messageContainer div.botMessage'
+  );
 
-    let message = '';
+  const botMessageDiv = displayLoadingBotMessage(settings);
+  messageContainerEl?.insertBefore(botMessageDiv, messageContainerElDivs[index + 1]);
+  botMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    let isScroll = false;
+  await getActiveFileContent(plugin, settings);
+  const referenceCurrentNoteContent = getCurrentNoteContent();
 
-    const filteredMessageHistory = filterMessageHistory(messageHistory);
-    const messageHistoryAtIndex = removeConsecutiveUserRoles(filteredMessageHistory);
-    
-    const messageContainerEl = document.querySelector('#messageContainer');
-    const messageContainerElDivs = document.querySelectorAll('#messageContainer div.userMessage, #messageContainer div.botMessage');
+  const fullSystemPrompt = `${plugin.settings.general.system_role} ${prompt} ${referenceCurrentNoteContent}`;
+  const geminiHistory = convertToGeminiHistory(messageHistoryAtIndex);
 
-    const botMessageDiv = displayLoadingBotMessage(settings);
+  abortController = new AbortController();
+  const submitButton = document.querySelector('.submit-button') as HTMLElement;
+  setIcon(submitButton, 'square');
+  submitButton.title = 'stop';
 
-    messageContainerEl?.insertBefore(botMessageDiv, messageContainerElDivs[index+1]);
-    botMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const handleStop = () => {
+    if (submitButton.title === 'stop') {
+      const controller = getAbortController();
+      controller?.abort();
+    }
+  };
+  submitButton.addEventListener('click', handleStop, { once: true });
 
-    await getActiveFileContent(plugin, settings);
-    const referenceCurrentNoteContent = getCurrentNoteContent();
+  try {
+    const API_KEY = settings.APIConnections.googleGemini.APIKey;
+    const MODEL_NAME = settings.general.model.replace('models/', '');
 
-    // Function to convert messageHistory to Google Gemini format
-    const convertMessageHistory = (messageHistory: { role: string; content: string }[]) => {
-        // Clone the messageHistory to avoid mutating the original array
-        const modifiedMessageHistory = [...messageHistory];
-        
-        const convertedMessageHistory = modifiedMessageHistory.map(({ role, content }) => ({
-            role: role === 'assistant' ? 'model' : role,
-            parts: [{ text: content }]
-        }));
-        
-        const contents = [
-            ...convertedMessageHistory
-        ];
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-        return { contents };
+    const generationConfig = {
+      temperature: parseFloat(settings.general.temperature) || 0.7,
+      maxOutputTokens: settings.general.max_tokens || 4096,
+      topP: 0.8,
+      topK: 10,
+      // Optional: disable "thinking" for 2.5 models
+      // thinkingConfig: { thinkingBudget: 0 }
     };
 
-    const convertedMessageHistory = convertMessageHistory(messageHistoryAtIndex);
-
-    abortController = new AbortController();
-
-    const submitButton = document.querySelector('.submit-button') as HTMLElement;
-
-    // Change button text to "Cancel"
-    setIcon(submitButton, 'square');
-    submitButton.title = 'stop';
-
-    submitButton.addEventListener('click', async () => {
-        if (submitButton.title === 'stop') {
-            const controller = getAbortController();
-            if (controller) {
-                controller.abort();
-            }
-        }
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: geminiHistory,
+      config: {
+        systemInstruction: fullSystemPrompt,
+      },
     });
 
-    try {
-        const API_KEY = settings.APIConnections.googleGemini.APIKey;
-        const MODEL = settings.general.model.replace('models/', '');
-    
-        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + MODEL + ':streamGenerateContent?alt=sse&key=' + API_KEY;
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              contents: [
-                {
-                  role: 'user',
-                  parts: [{ text: `System prompt: \n\n ${plugin.settings.general.system_role} ${prompt} ${referenceCurrentNoteContent} Respond understood if you got it.` }],
-                },
-                {
-                  role: 'model',
-                  parts: [{ text: 'Understood.' }],
-                },
-                ...convertedMessageHistory.contents,
-              ],
-              generationConfig: {
-                stopSequences: [],
-                temperature: parseInt(settings.general.temperature),
-                maxOutputTokens: settings.general.max_tokens || 4096,
-                topP: 0.8,
-                topK: 10
-              }
-            }),
-            signal: abortController?.signal,
-          });
+    let message = response.text || '';
 
-        if (!response.ok) {
-            new Notice(`HTTP error! Status: ${response.status}`);
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+    // Clean unwanted tags
+    const regexPatterns = [
+      /<block-rendered>[\s\S]*?<\/block-rendered>/g,
+      /<note-rendered>[\s\S]*?<\/note-rendered>/g
+    ];
+    regexPatterns.forEach(pattern => {
+      message = message.replace(pattern, '').trim();
+    });
 
-        if (!response.body) {
-            new Notice('Response body is null or undefined.');
-            throw new Error('Response body is null or undefined.');
-        }
+    // Update UI
+    const targetUserMessage = messageContainerElDivs[index];
+    const targetBotMessage = targetUserMessage.nextElementSibling;
+    const messageBlock = targetBotMessage?.querySelector('.messageBlock');
+    const loadingEl = targetBotMessage?.querySelector('#loading');
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let reading = true;
+    if (messageBlock) {
+      if (loadingEl) targetBotMessage?.removeChild(loadingEl);
+      await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', plugin);
+      addParagraphBreaks(messageBlock);
+      updateUnresolvedInternalLinks(plugin, messageBlock);
 
-        while (reading) {
-            const { done, value } = await reader.read();
-            if (done) {
-                reading = false;
-                break;
-            }
-
-            const chunk = decoder.decode(value, { stream: true }) || '';
-            // Splitting the chunk to parse JSON messages separately
-            const parts = chunk.split('\n');
-            
-            for (const part of parts.filter(Boolean)) { // Filter out empty parts
-                if (part.startsWith('data: ')) {
-                    const jsonData = part.slice(6); // Remove the "data: " prefix
-                    let parsedChunk;
-                    try {
-                        parsedChunk = JSON.parse(jsonData);
-                        // console.log('Gemini Stream Chunk:', parsedChunk);
-                        if (parsedChunk.done !== true) {
-                            const content = parsedChunk.candidates[0].content.parts[0].text;
-                            message += content;
-                        }
-                    } catch (err) {
-                        console.error('Error parsing JSON:', err);
-                        // console.log('Part with error:', jsonData);
-                        parsedChunk = { response: '{_e_}' };
-                    }
-                }
-            }
-
-            const messageContainerEl = document.querySelector('#messageContainer');
-            if (messageContainerEl) {
-                const targetUserMessage = messageContainerElDivs[index];
-                const targetBotMessage = targetUserMessage.nextElementSibling;
-    
-                const messageBlock = targetBotMessage?.querySelector('.messageBlock');
-                const loadingEl = targetBotMessage?.querySelector('#loading');
-
-                if (messageBlock) {
-                    if (loadingEl) {
-                        targetBotMessage?.removeChild(loadingEl);
-                    }
-        
-                    // Clear the messageBlock for re-rendering
-                    while (messageBlock.firstChild) {
-                        messageBlock.removeChild(messageBlock.firstChild);
-                    }
-                    // DocumentFragment to render markdown off-DOM
-                    const fragment = document.createDocumentFragment();
-                    const tempContainer = document.createElement('div');
-                    fragment.appendChild(tempContainer);
-        
-                    // Render the accumulated message to the temporary container
-                    await MarkdownRenderer.render(plugin.app, message, tempContainer, '/', plugin);
-        
-                    // Once rendering is complete, move the content to the actual message block
-                    while (tempContainer.firstChild) {
-                        messageBlock.appendChild(tempContainer.firstChild);
-                    }
-        
-                    addParagraphBreaks(messageBlock);
-                    updateUnresolvedInternalLinks(plugin, messageBlock);
-
-                    const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
-                    copyCodeBlocks.forEach((copyCodeBlock) => {
-                        copyCodeBlock.textContent = 'Copy';
-                        setIcon(copyCodeBlock, 'copy');
-                    });
-                }
-
-                messageContainerEl.addEventListener('wheel', (event: WheelEvent) => {
-                    // If the user scrolls up or down, stop auto-scrolling
-                    if (event.deltaY < 0 || event.deltaY > 0) {
-                        isScroll = true;
-                    }
-                });
-
-                if (!isScroll) {
-                    targetBotMessage?.scrollIntoView({ behavior: 'auto', block: 'start' });
-                }
-            }
-        }
-
-        // Define regex patterns for the unwanted tags and their content
-        const regexPatterns = [
-            /<block-rendered>[\s\S]*?<\/block-rendered>/g,
-            /<note-rendered>[\s\S]*?<\/note-rendered>/g
-        ];
-
-        // Clean the message content by removing the unwanted tags and their content
-        regexPatterns.forEach(pattern => {
-            message = message.replace(pattern, '').trim();
-        });
-        
-
-        const messageDiv = document.createElement('div');
-        messageDiv.textContent = message.trim();
-        addMessage(plugin, messageDiv, 'botMessage', settings, index);
-    } catch (error) {
-        if (error.name === 'AbortError') {
-            // Request was aborted
-            if (messageContainerEl) {
-                const targetUserMessage = messageContainerElDivs[index];
-                const targetBotMessage = targetUserMessage.nextElementSibling;
-
-                const messageBlock = targetBotMessage?.querySelector('.messageBlock');
-                const loadingEl = targetBotMessage?.querySelector('#loading');
-
-                if (messageBlock && loadingEl) {
-                    targetBotMessage?.removeChild(loadingEl);
-                    messageBlock.textContent = 'SYSTEM: Response aborted.';
-                }
-            }
-        } else {
-            // Handle other errors
-            const targetUserMessage = messageContainerElDivs[index];
-            const targetBotMessage = targetUserMessage.nextElementSibling;
-            targetBotMessage?.remove();
-
-            const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
-            const botMessageDiv = displayErrorBotMessage(plugin, settings, messageHistory, error);
-            messageContainer.appendChild(botMessageDiv);
-        }
-
-        if (message.trim() === '') {
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = 'SYSTEM: Response aborted.';
-            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation./ This will save mid-stream conversation.
-        } else {
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = message.trim();
-            addMessage(plugin, messageDiv, 'botMessage', settings, index); // This will save mid-stream conversation.
-        }
-        new Notice('Stream stopped.');
-        console.error('Error fetching chat response from Google Gemini:', error);
-    } finally {
-        // Reset the abort controller
-        abortController = null;
+      const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+      copyCodeBlocks.forEach(btn => {
+        btn.textContent = 'Copy';
+        setIcon(btn, 'copy');
+      });
+      targetBotMessage?.appendChild(messageBlock);
     }
 
-    // Change the submit button back to a send button
-    submitButton.textContent = 'send';
+    targetBotMessage?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = message.trim();
+    addMessage(plugin, messageDiv, 'botMessage', settings, index);
+
+  } catch (error) {
+    handleError(error, plugin, settings, index, messageContainerElDivs);
+  } finally {
+    abortController = null;
     setIcon(submitButton, 'arrow-up');
     submitButton.title = 'send';
+    submitButton.removeEventListener('click', handleStop);
+  }
+}
+
+export async function fetchGoogleGeminiResponseStream(
+  plugin: BMOGPT,
+  settings: DocscribeSettings,
+  index: number
+) {
+  const prompt = await getPrompt(plugin, settings);
+  const filteredMessageHistory = filterMessageHistory(messageHistory);
+  const messageHistoryAtIndex = removeConsecutiveUserRoles(filteredMessageHistory);
+
+  const messageContainerEl = document.querySelector('#messageContainer');
+  const messageContainerElDivs = document.querySelectorAll(
+    '#messageContainer div.userMessage, #messageContainer div.botMessage'
+  );
+
+  const botMessageDiv = displayLoadingBotMessage(settings);
+  messageContainerEl?.insertBefore(botMessageDiv, messageContainerElDivs[index + 1]);
+  botMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  await getActiveFileContent(plugin, settings);
+  const referenceCurrentNoteContent = getCurrentNoteContent();
+  const fullSystemPrompt = `${plugin.settings.general.system_role} ${prompt} ${referenceCurrentNoteContent}`;
+  const geminiHistory = convertToGeminiHistory(messageHistoryAtIndex);
+
+  abortController = new AbortController();
+  const submitButton = document.querySelector('.submit-button') as HTMLElement;
+  setIcon(submitButton, 'square');
+  submitButton.title = 'stop';
+
+  let isScroll = false;
+  let accumulatedMessage = '';
+
+  const handleStop = () => {
+    if (submitButton.title === 'stop') {
+      const controller = getAbortController();
+      controller?.abort();
+    }
+  };
+  submitButton.addEventListener('click', handleStop, { once: true });
+
+  const onScroll = () => { isScroll = true; };
+  messageContainerEl?.addEventListener('wheel', onScroll, { passive: true });
+
+  try {
+    const API_KEY = settings.APIConnections.googleGemini.APIKey;
+    const MODEL_NAME = settings.general.model.replace('models/', '');
+
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+
+    const generationConfig = {
+      temperature: parseFloat(settings.general.temperature) || 0.7,
+      maxOutputTokens: settings.general.max_tokens || 4096,
+      topP: 0.8,
+      topK: 10,
+      // thinkingConfig: { thinkingBudget: 0 } // optional
+    };
+
+    const stream = await ai.models.generateContentStream({
+      model: MODEL_NAME,
+      contents: geminiHistory,
+      config: {
+        systemInstruction: fullSystemPrompt,
+      },
+    });
+
+    for await (const chunk of stream) {
+      const text = chunk.text || '';
+      if (!text) continue;
+
+      accumulatedMessage += text;
+
+      const targetUserMessage = messageContainerElDivs[index];
+      const targetBotMessage = targetUserMessage.nextElementSibling;
+      const messageBlock = targetBotMessage?.querySelector('.messageBlock');
+
+      if (messageBlock) {
+        const loadingEl = targetBotMessage?.querySelector('#loading');
+        if (loadingEl) targetBotMessage?.removeChild(loadingEl);
+
+        messageBlock.innerHTML = '';
+        const tempDiv = document.createElement('div');
+        await MarkdownRenderer.render(plugin.app, accumulatedMessage, tempDiv, '/', plugin);
+        while (tempDiv.firstChild) messageBlock.appendChild(tempDiv.firstChild);
+
+        addParagraphBreaks(messageBlock);
+        updateUnresolvedInternalLinks(plugin, messageBlock);
+
+        const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+        copyCodeBlocks.forEach(btn => {
+          btn.textContent = 'Copy';
+          setIcon(btn, 'copy');
+        });
+      }
+
+      if (!isScroll) {
+        targetBotMessage?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }
+
+    // Clean final message
+    const regexPatterns = [
+      /<block-rendered>[\s\S]*?<\/block-rendered>/g,
+      /<note-rendered>[\s\S]*?<\/note-rendered>/g
+    ];
+    let cleanedMessage = accumulatedMessage;
+    regexPatterns.forEach(pattern => {
+      cleanedMessage = cleanedMessage.replace(pattern, '').trim();
+    });
+
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = cleanedMessage;
+    addMessage(plugin, messageDiv, 'botMessage', settings, index);
+
+  } catch (error) {
+    handleError(error, plugin, settings, index, messageContainerElDivs);
+  } finally {
+    abortController = null;
+    setIcon(submitButton, 'arrow-up');
+    submitButton.title = 'send';
+    submitButton.removeEventListener('click', handleStop);
+    messageContainerEl?.removeEventListener('wheel', onScroll);
+  }
+}
+
+function handleError(
+  error: any,
+  plugin: BMOGPT,
+  settings: DocscribeSettings,
+  index: number,
+  messageContainerElDivs: NodeListOf<Element>
+) {
+  const messageContainerEl = document.querySelector('#messageContainer');
+  const submitButton = document.querySelector('.submit-button') as HTMLElement;
+
+  if (error.name === 'AbortError') {
+    const targetUserMessage = messageContainerElDivs[index];
+    const targetBotMessage = targetUserMessage.nextElementSibling;
+    const messageBlock = targetBotMessage?.querySelector('.messageBlock');
+    const loadingEl = targetBotMessage?.querySelector('#loading');
+
+    if (messageBlock && loadingEl) {
+      targetBotMessage?.removeChild(loadingEl);
+      messageBlock.textContent = 'SYSTEM: Response aborted.';
+    }
+  } else {
+    const targetUserMessage = messageContainerElDivs[index];
+    const targetBotMessage = targetUserMessage.nextElementSibling;
+    targetBotMessage?.remove();
+
+    const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
+    const botMessageDiv = displayErrorBotMessage(plugin, settings, messageHistory, error);
+    messageContainer.appendChild(botMessageDiv);
+  }
 }
 
 // Fetch response from Mistral

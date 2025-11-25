@@ -142,7 +142,8 @@ export async function fetchGoogleGeminiDataEditor(settings: DocscribeSettings, p
                 contents: [
                     {
                         parts: [
-                            { text: settings.editor.systen_role + prompt }
+                            { text: settings.editor.systen_role + prompt },
+                            { text: `\n\n[cache_buster: ${Date.now()}]` }
                         ]
                     }
                 ],
