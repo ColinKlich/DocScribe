@@ -12,7 +12,7 @@ export async function getPrompt(plugin: DocscribeGPT, settings: DocscribeSetting
         // Await the reading of the file and return its content
         const content = await plugin.app.vault.adapter.read(promptFilePath);
         // Remove YAML front matter if present
-        const clearYamlContent = content.replace(/---[\s\S]+?---/, '').trim();
+        const clearYamlContent = content.replace(/---[\s\S]+?---/, '').trim().replace(/<[^>]*>/g, '');
         return '\n\n' + clearYamlContent + '\n\n';
     } catch (error) {
         console.error(`Error reading file ${promptFilePath}:`, error);

@@ -1,7 +1,7 @@
 import { MarkdownRenderer, Modal, Notice, TFile, setIcon } from 'obsidian';
 import DocscribeGPT, { DocscribeSettings, checkActiveFile } from 'src/main';
 import { ANTHROPIC_MODELS, OPENAI_MODELS, activeEditor, fileNameMessageHistoryJson, lastCursorPosition, lastCursorPositionFile, messageHistory } from 'src/view';
-import { fetchOpenAIAPIResponseStream, fetchOpenAIAPIResponse, fetchOllamaResponse, fetchOllamaResponseStream, fetchAnthropicResponse, fetchRESTAPIURLResponse, fetchRESTAPIURLResponseStream, fetchMistralResponseStream, fetchMistralResponse, fetchGoogleGeminiResponse, fetchOpenRouterResponseStream, fetchOpenRouterResponse, fetchGoogleGeminiResponseStream } from '../FetchModelResponse';
+import { fetchOpenAIAPIResponse, fetchOllamaResponse, fetchAnthropicResponse, fetchRESTAPIURLResponse, fetchMistralResponse, fetchGoogleGeminiResponse, fetchOpenRouterResponse } from '../FetchModelResponse';
 import { getActiveFileContent } from '../editor/ReferenceCurrentNote';
 import { addParagraphBreaks } from './Message';
 
@@ -33,11 +33,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
             deleteMessage(plugin, index+1);
             if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
                 try {
-                    if (settings.APIConnections.openAI.enableStream) {
-                        await fetchOpenAIAPIResponseStream(plugin, settings, index); 
-                    } else {
-                        await fetchOpenAIAPIResponse(plugin, settings, index);
-                    }
+                    await fetchOpenAIAPIResponse(plugin, settings, index);
                 }
                 catch (error) {
                     new Notice('Error occurred while fetching completion: ' + error.message);
@@ -45,37 +41,17 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
                 }
             }
             else if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
-                if (settings.OllamaConnection.enableStream) {
-                    await fetchOllamaResponseStream(plugin, settings, index);
-                }
-                else {
-                    await fetchOllamaResponse(plugin, settings, index);
-                }
+                await fetchOllamaResponse(plugin, settings, index);
             }
             else if (settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
-                if (settings.RESTAPIURLConnection.enableStream) {
-                    await fetchRESTAPIURLResponseStream(plugin, settings, index);
-                }
-                else {
-                    await fetchRESTAPIURLResponse(plugin, settings, index);
-                }
+                await fetchRESTAPIURLResponse(plugin, settings, index);
             }
             else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
-                if (settings.APIConnections.openRouter.enableStream) {
-                    await fetchOpenRouterResponseStream(plugin, settings, index);
-                }
-                else {
-                    await fetchOpenRouterResponse(plugin, settings, index);
-                }
+                await fetchOpenRouterResponse(plugin, settings, index);
             }
             else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
                 try {
-                    if (settings.APIConnections.mistral.enableStream) {
-                        await fetchMistralResponseStream(plugin, settings, index);
-                    }
-                    else {
-                        await fetchMistralResponse(plugin, settings, index);
-                    }
+                    await fetchMistralResponse(plugin, settings, index);
                 }
                 catch (error) {
                     console.error('Mistral Error:', error);
@@ -83,11 +59,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
             }
             else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
                 try {
-                    if (settings.APIConnections.googleGemini.enableStream) {
-                        await fetchGoogleGeminiResponseStream(plugin, settings, index);
-                    } else {
-                        await fetchGoogleGeminiResponse(plugin, settings, index);
-                    }
+                    await fetchGoogleGeminiResponse(plugin, settings, index);
                 }
                 catch (error) {
                     console.error('Google Gemini Error:', error);
@@ -253,20 +225,10 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
 
 
                     if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
-                        if (settings.OllamaConnection.enableStream) {
-                            await fetchOllamaResponseStream(plugin, settings, index);
-                        }
-                        else {
-                            await fetchOllamaResponse(plugin, settings, index);
-                        }
+                        await fetchOllamaResponse(plugin, settings, index);
                     }
                     else if (settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
-                        if (settings.RESTAPIURLConnection.enableStream) {
-                            await fetchRESTAPIURLResponseStream(plugin, settings, index);
-                        }
-                        else {
-                            await fetchRESTAPIURLResponse(plugin, settings, index);
-                        }
+                        await fetchRESTAPIURLResponse(plugin, settings, index);
                     }
                     else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
                         try {
@@ -278,11 +240,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     }
                     else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
                         try {
-                            if (settings.APIConnections.googleGemini.enableStream) {
-                                await fetchGoogleGeminiResponseStream(plugin, settings, index);
-                            } else {
-                                await fetchGoogleGeminiResponse(plugin, settings, index);
-                            }
+                            await fetchGoogleGeminiResponse(plugin, settings, index);
                         }
                         catch (error) {
                             console.error('Google GeminiError:', error);
@@ -291,12 +249,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     }
                     else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
                         try {
-                            if (settings.APIConnections.mistral.enableStream) {
-                                await fetchMistralResponseStream(plugin, settings, index);
-                            }
-                            else {
-                                await fetchMistralResponse(plugin, settings, index);
-                            }
+                            await fetchMistralResponse(plugin, settings, index);
                         }
                         catch (error) {
                             console.error('Mistral Error:', error);
@@ -304,11 +257,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     }
                     else if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
                         try {
-                            if (settings.APIConnections.openAI.enableStream) {
-                                await fetchOpenAIAPIResponseStream(plugin, settings, index); 
-                            } else {
-                                await fetchOpenAIAPIResponse(plugin, settings, index);
-                            }
+                            await fetchOpenAIAPIResponse(plugin, settings, index);
                         }
                         catch (error) {
                             new Notice('Error occurred while fetching completion: ' + error.message);
@@ -316,12 +265,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                         }
                     }
                     else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
-                        if (settings.APIConnections.openRouter.enableStream) {
-                            await fetchOpenRouterResponseStream(plugin, settings, index);
-                        }
-                        else {
-                            await fetchOpenRouterResponse(plugin, settings, index);
-                        }
+                        await fetchOpenRouterResponse(plugin, settings, index);
                     }
                 }
                 else {

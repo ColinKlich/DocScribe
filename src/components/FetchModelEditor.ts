@@ -32,7 +32,8 @@ export async function fetchOllamaResponseEditor(settings: DocscribeSettings, pro
     }
 
     try {
-        const response = await fetch(ollamaRESTAPIURL + '/api/generate', {
+        const response = await requestUrl({
+            url: ollamaRESTAPIURL + '/api/generate',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -49,9 +50,8 @@ export async function fetchOllamaResponseEditor(settings: DocscribeSettings, pro
                     num_predict: maxTokens ? parseInt(maxTokens) : parseInt(settings.general.max_tokens),
                 },
             }),
-            signal: signal,
         });
-        const data = await response.json();
+        const data = response.json;
         const message = data.response.trim();
 
         return message;
@@ -68,7 +68,8 @@ export async function fetchOllamaResponseEditor(settings: DocscribeSettings, pro
 // Request response from openai-based rest api url (editor)
 export async function fetchRESTAPIURLDataEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
-        const response = await fetch(settings.RESTAPIURLConnection.RESTAPIURL + '/chat/completions', {
+        const response = await requestUrl({
+            url: settings.RESTAPIURLConnection.RESTAPIURL + '/chat/completions',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -83,14 +84,13 @@ export async function fetchRESTAPIURLDataEditor(settings: DocscribeSettings, pro
                 max_tokens: parseInt(maxTokens || settings.general.max_tokens || '-1'),
                 temperature: parseFloat(temperature || settings.general.temperature),
             }),
-            signal: signal
         });
 
-        if (!response.ok) {
+        if (response.status !== 200) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data = response.json;
         const message = data.choices[0].message.content.trim();
         return message;
 
@@ -133,7 +133,8 @@ export async function fetchAnthropicResponseEditor(settings: DocscribeSettings, 
 // Fetch Google Gemini API Editor
 export async function fetchGoogleGeminiDataEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model || settings.general.model}:generateContent?key=${settings.APIConnections.googleGemini.APIKey}`, {
+        const response = await requestUrl({
+            url: `https://generativelanguage.googleapis.com/v1beta/models/${model || settings.general.model}:generateContent?key=${settings.APIConnections.googleGemini.APIKey}`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -153,10 +154,9 @@ export async function fetchGoogleGeminiDataEditor(settings: DocscribeSettings, p
                     maxOutputTokens: parseInt(maxTokens || settings.general.max_tokens) || 4096,
                 }
             }),
-            signal: signal,
         });
 
-        const data = await response.json();
+        const data = response.json;
         const message = data.candidates[0].content.parts[0].text.trim();
         return message;
     } catch (error) {
@@ -167,7 +167,8 @@ export async function fetchGoogleGeminiDataEditor(settings: DocscribeSettings, p
 // Fetch Mistral API Editor
 export async function fetchMistralDataEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
-        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+        const response = await requestUrl({
+            url: 'https://api.mistral.ai/v1/chat/completions',
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -182,10 +183,9 @@ export async function fetchMistralDataEditor(settings: DocscribeSettings, prompt
               max_tokens: parseInt(maxTokens || settings.general.max_tokens),
               temperature: parseFloat(temperature || settings.general.temperature),
             }),
-            signal: signal,
         });
         
-        const data = await response.json();
+        const data = response.json;
         const message = data.choices[0].message.content.trim();
         return message;
 
@@ -196,7 +196,8 @@ export async function fetchMistralDataEditor(settings: DocscribeSettings, prompt
 
 // Fetch OpenAI-Based API Editor
 export async function fetchOpenAIBaseAPIResponseEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
-    const response = await fetch(`${settings.APIConnections.openAI.openAIBaseUrl}/chat/completions`, {
+    const response = await requestUrl({
+        url: `${settings.APIConnections.openAI.openAIBaseUrl}/chat/completions`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -212,10 +213,9 @@ export async function fetchOpenAIBaseAPIResponseEditor(settings: DocscribeSettin
             { role: 'user', content: prompt}
         ],
         }),
-        signal: signal,
     });
       
-    const data = await response.json();
+    const data = response.json;
     const message = data.choices[0].message.content || '';
 
     return message;
@@ -224,7 +224,8 @@ export async function fetchOpenAIBaseAPIResponseEditor(settings: DocscribeSettin
 // Request response from openai-based rest api url (editor)
 export async function fetchOpenRouterEditor(settings: DocscribeSettings, prompt: string, model?: string, temperature?: string, maxTokens?: string, signal?: AbortSignal) {
     try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        const response = await requestUrl({
+            url: 'https://openrouter.ai/api/v1/chat/completions',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -239,10 +240,9 @@ export async function fetchOpenRouterEditor(settings: DocscribeSettings, prompt:
                 max_tokens: parseInt(maxTokens || settings.general.max_tokens),
                 temperature: parseFloat(temperature || settings.general.temperature),
             }),
-            signal: signal,
         });
         
-        const data = await response.json();
+        const data = response.json;
         const message = data.choices[0].message.content.trim();
         return message;
 

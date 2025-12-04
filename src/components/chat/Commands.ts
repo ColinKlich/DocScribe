@@ -3,7 +3,6 @@ import { DocscribeSettings, DEFAULT_SETTINGS, updateSettingsFromFrontMatter } fr
 import { colorToHex } from '../../utils/ColorConverter';
 import { fileNameMessageHistoryJson, messageHistory } from '../../view';
 import DocscribeGPT from '../../main';
-import { getAbortController } from '../FetchModelResponse';
 import { fetchModelRenameTitle } from '../editor/FetchRenameNoteTitle';
 import { displayCommandBotMessage } from './BotMessage';
 import { addMessage } from './Message';
@@ -25,7 +24,6 @@ export const commandMap: Record<string, CommandHandler> = {
   '/save': (input, settings, plugin) => commandSave(plugin, settings),
   '/load': (input, settings, plugin) => commandLoad(input, plugin, settings),
   '/clear': (input, settings, plugin) => removeMessageThread(plugin, 0),
-  '/stop': (input, settings, plugin) => commandStop()
 };
 
 // Populate commandMap with aliases for cleaner access
@@ -208,11 +206,6 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   commandLoadP.createEl('code', { text: '/load' });
   commandLoadP.append(' - List or load a chat history into view.');
   displayCommandBotMessageDiv.appendChild(commandLoadP);
-
-  const streamCommandHeader = document.createElement('h4');
-  streamCommandHeader.textContent = 'Response Commands';
-  streamCommandHeader.addClass('text-align-left');
-  displayCommandBotMessageDiv.appendChild(streamCommandHeader);
 
   const commandStopP = document.createElement('p');
   commandStopP.createEl('code', { text: '/stop' });
@@ -1335,14 +1328,6 @@ if (input.startsWith('/load')) {
       new Notice('File does not exist.');
     }
 
-  }
-}
-
-// `/stop` to stop fetching response
-export function commandStop() {
-  const controller = getAbortController();
-  if (controller) {
-      controller.abort();
   }
 }
 

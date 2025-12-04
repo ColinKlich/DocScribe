@@ -56,14 +56,4 @@ export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: D
             SettingTab.display();
         })
     );
-
-    new Setting(settingsContainer)
-    .setName('Enable Stream')
-    .setDesc('Enable stream for Mistral models.')
-    .addToggle((toggle) =>
-        toggle.setValue(plugin.settings.APIConnections.mistral.enableStream).onChange((value) => {
-            plugin.settings.APIConnections.mistral.enableStream = value;
-            plugin.saveSettings();
-        })
-    );
 }

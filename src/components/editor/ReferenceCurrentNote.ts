@@ -18,7 +18,7 @@ export async function getActiveFileContent(plugin: DocscribeGPT, settings: Docsc
             (dotElement as HTMLElement).addClass('dot-green');
             }
             const content = await plugin.app.vault.read(activeFile);
-            const clearYamlContent = content.replace(/---[\s\S]+?---/, '').trim();
+            const clearYamlContent = content.replace(/---[\s\S]+?---/, '').trim().replace(/<[^>]*>/g, '');
             referenceCurrentNoteContent = '\n\n' + 'Additional Note:' + '\n\n' + clearYamlContent + '\n\n';
         }
     }

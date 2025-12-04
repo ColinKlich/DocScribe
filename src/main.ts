@@ -51,7 +51,6 @@ export interface DocscribeSettings {
 	}
 	OllamaConnection: {
 		RESTAPIURL: string,
-		enableStream: boolean,
 		ollamaParameters: {
 			mirostat: string,
 			mirostat_eta: string,
@@ -74,7 +73,6 @@ export interface DocscribeSettings {
 	RESTAPIURLConnection: {
 		APIKey: string,
 		RESTAPIURL: string,
-		enableStream: boolean,
 		RESTAPIURLModels: string[],
 	},
 	APIConnections: {
@@ -84,23 +82,19 @@ export interface DocscribeSettings {
 		},
 		googleGemini: {
 			APIKey: string,
-			enableStream: boolean,
 			geminiModels: string[],
 		},
 		mistral: {
 			APIKey: string,
-			enableStream: boolean,
 			mistralModels: string[],
 		},
 		openAI: {
 			APIKey: string,
 			openAIBaseUrl: string,
-			enableStream: boolean,
 			openAIBaseModels: string[],
 		},
 		openRouter: {
 			APIKey: string,
-			enableStream: boolean,
 			openRouterModels: string[],
 		},
 	},
@@ -165,7 +159,7 @@ export const DEFAULT_SETTINGS: DocscribeSettings = {
 	},
 	OllamaConnection: {
 		RESTAPIURL: 'http://localhost:11434',
-		enableStream: true,
+
 		ollamaParameters: {
 			mirostat: '0',
 			mirostat_eta: '0.10',
@@ -188,7 +182,7 @@ export const DEFAULT_SETTINGS: DocscribeSettings = {
 	RESTAPIURLConnection: {
 		APIKey: '',	
 		RESTAPIURL: '',
-		enableStream: false,
+
 		RESTAPIURLModels: [],
 	},
 	APIConnections: {
@@ -198,23 +192,23 @@ export const DEFAULT_SETTINGS: DocscribeSettings = {
 		},
 		googleGemini: {
 			APIKey: '',
-			enableStream: false,
+	
 			geminiModels: [],
 		},
 		mistral: {
 			APIKey: '',
-			enableStream: false,
+	
 			mistralModels: [],
 		},
 		openAI: {
 			APIKey: '',
 			openAIBaseUrl: 'https://api.openai.com/v1',
-			enableStream: true,
+	
 			openAIBaseModels: [],
 		},
 		openRouter: {
 			APIKey: '',
-			enableStream: false,
+	
 			openRouterModels: [],
 		},
 	},

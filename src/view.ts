@@ -6,19 +6,13 @@ import { getActiveFileContent } from './components/editor/ReferenceCurrentNote';
 import { addMessage, updateUnresolvedInternalLinks } from './components/chat/Message';
 import { displayUserMessage } from './components/chat/UserMessage';
 import { displayBotMessage, displayErrorBotMessage } from './components/chat/BotMessage';
-import { fetchOpenAIAPIResponseStream, 
-        fetchOpenAIAPIResponse, 
+import { fetchOpenAIAPIResponse, 
         fetchOllamaResponse, 
-        fetchOllamaResponseStream, 
         fetchRESTAPIURLResponse, 
-        fetchRESTAPIURLResponseStream, 
         fetchMistralResponse, 
-        fetchMistralResponseStream, 
         fetchGoogleGeminiResponse, 
         fetchAnthropicResponse, 
-        fetchOpenRouterResponseStream,
-        fetchOpenRouterResponse,
-        fetchGoogleGeminiResponseStream} from './components/FetchModelResponse';
+        fetchOpenRouterResponse} from './components/FetchModelResponse';
 import { extractStructuredText } from './utils/PptxExtractor';
 
 export const VIEW_TYPE_CHATBOT = 'chatbot-view';
@@ -250,17 +244,6 @@ export class DocscribeView extends ItemView {
         
         const input = this.textareaElement.value;
         const index = messageHistory.length - 1;
-
-        // Only allow /stop command to be executed during fetch
-        if (this.settings.OllamaConnection.enableStream || 
-            this.settings.RESTAPIURLConnection.enableStream || 
-            this.settings.APIConnections.mistral.enableStream || 
-            this.settings.APIConnections.openAI.enableStream) {
-            if ((input === '/s' || input === '/stop') && event.key === 'Enter') {
-                this.preventEnter = false;
-                await executeCommand(input, this.settings, this.plugin);
-            }
-        }
 
         // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
         const regex = /(!?)!!\[\[(.*?)\]\]/g;
@@ -527,54 +510,25 @@ export class DocscribeView extends ItemView {
         else {
             // Fetch OpenAI API
             if (this.settings.OllamaConnection.ollamaModels.includes(this.settings.general.model)) {
-                if (this.settings.OllamaConnection.enableStream) {
-                    await fetchOllamaResponseStream(this.plugin, this.settings, index);
-                }
-                else {
-                    await fetchOllamaResponse(this.plugin, this.settings, index);
-                }
+                await fetchOllamaResponse(this.plugin, this.settings, index);
             }
             else if (this.settings.RESTAPIURLConnection.RESTAPIURLModels.includes(this.settings.general.model)){
-                if (this.settings.RESTAPIURLConnection.enableStream) {
-                    await fetchRESTAPIURLResponseStream(this.plugin, this.settings, index);
-                }
-                else {
-                    await fetchRESTAPIURLResponse(this.plugin, this.settings, index);
-                }
+                await fetchRESTAPIURLResponse(this.plugin, this.settings, index);
             }
             else if (ANTHROPIC_MODELS.includes(this.settings.general.model)) {
                 await fetchAnthropicResponse(this.plugin, this.settings, index);
             }
             else if (this.settings.APIConnections.mistral.mistralModels.includes(this.settings.general.model)) {
-                if (this.settings.APIConnections.mistral.enableStream) {
-                    await fetchMistralResponseStream(this.plugin, this.settings, index);
-                }
-                else {
-                    await fetchMistralResponse(this.plugin, this.settings, index);
-                }
+                await fetchMistralResponse(this.plugin, this.settings, index);
             }
             else if (this.settings.APIConnections.googleGemini.geminiModels.includes(this.settings.general.model)) {
-                if (this.settings.APIConnections.googleGemini.enableStream) {
-                    await fetchGoogleGeminiResponseStream(this.plugin, this.settings, index);
-                } else {
-                    await fetchGoogleGeminiResponse(this.plugin, this.settings, index);
-                }
+                await fetchGoogleGeminiResponse(this.plugin, this.settings, index);
             }
             else if (this.settings.APIConnections.openAI.openAIBaseModels.includes(this.settings.general.model)) {
-                if (this.settings.APIConnections.openAI.enableStream) {
-                    await fetchOpenAIAPIResponseStream(this.plugin, this.settings, index); 
-                }
-                else {
-                    await fetchOpenAIAPIResponse(this.plugin, this.settings, index); 
-                }
+                await fetchOpenAIAPIResponse(this.plugin, this.settings, index); 
             }
             else if (this.settings.APIConnections.openRouter.openRouterModels.includes(this.settings.general.model)){
-                if (this.settings.APIConnections.openRouter.enableStream) {
-                    await fetchOpenRouterResponseStream(this.plugin, this.settings, index);
-                }
-                else {
-                    await fetchOpenRouterResponse(this.plugin, this.settings, index);
-                }
+                await fetchOpenRouterResponse(this.plugin, this.settings, index);
             }
             else {
                 const errorMessage = 'Connection not found.';

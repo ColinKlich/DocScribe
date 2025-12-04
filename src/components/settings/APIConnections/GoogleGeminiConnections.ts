@@ -57,13 +57,5 @@ export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plug
         })
     );
 
-    new Setting(settingsContainer)
-    .setName('Enable Stream')
-    .setDesc('Enable Google Gemini models to stream response.')
-    .addToggle((toggle) =>
-        toggle.setValue(plugin.settings.APIConnections.googleGemini.enableStream).onChange((value) => {
-            plugin.settings.APIConnections.googleGemini.enableStream = value;
-            plugin.saveSettings();
-        })
-    );
+    
 }

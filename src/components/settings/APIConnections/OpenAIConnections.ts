@@ -81,14 +81,4 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
                 SettingTab.display();
             })
         );
-
-    new Setting(settingsContainer)
-        .setName('Enable Stream')
-        .setDesc('Enable stream for OpenAI-Based models.')
-        .addToggle((toggle) =>
-            toggle.setValue(plugin.settings.APIConnections.openAI.enableStream).onChange(async (value) => {
-                plugin.settings.APIConnections.openAI.enableStream = value;
-                await plugin.saveSettings();
-            })
-        );
 }

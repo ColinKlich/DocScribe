@@ -58,15 +58,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
             })
         )
 
-    new Setting(settingsContainer)
-        .setName('Enable Stream')
-        .setDesc('Enable Ollama models to stream response.')
-        .addToggle((toggle) =>
-            toggle.setValue(plugin.settings.OllamaConnection.enableStream).onChange((value) => {
-                plugin.settings.OllamaConnection.enableStream = value;
-                plugin.saveSettings();
-            })
-        );
+    
 
     // Create the toggle container for Advanced Settings within the main settingsContainer
     const advancedToggleSettingContainer = settingsContainer.createDiv({ cls: 'toggleSettingContainer' });

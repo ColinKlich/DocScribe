@@ -74,13 +74,5 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
         })
     );
 
-    new Setting(settingsContainer)
-    .setName('Enable Stream')
-    .setDesc(addDescriptionLink('Enable REST API models to stream response.', '', '', ''))
-    .addToggle((toggle) =>
-        toggle.setValue(plugin.settings.RESTAPIURLConnection.enableStream).onChange((value) => {
-            plugin.settings.RESTAPIURLConnection.enableStream = value;
-            plugin.saveSettings();
-        })
-    );
+    
 }
