@@ -37,7 +37,7 @@ DocScribe will then extract the text from the PowerPoint, send it to the LLM, an
 
 We are constantly working to improve DocScribe. Here's what's coming soon:
 
-*   **PDF Support:** We are actively working on adding support for `.pdf` files. This feature is available starting in [v1.1.2](https://github.com/ColinKlich/DocScribe/releases/tag/1.1.2)
+*   **PDF Support:** We are actively working on adding support for `.pdf` files. This feature is available starting in [v1.1.0](https://github.com/ColinKlich/DocScribe/releases/tag/1.1.2)
 
 ## Screenshots
 
