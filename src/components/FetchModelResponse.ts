@@ -18,7 +18,7 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
 
     const prompt = await getPrompt(plugin, settings);
 
-    const messageHistoryAtIndex = filterMessageHistory(messageHistory).map(msg => ({...msg, content: typeof msg.content === 'string' ? msg.content.replace(/<[^>]*>/g, '') : msg.content}));
+    const messageHistoryAtIndex = filterMessageHistory(messageHistory);
 
     const messageContainerEl = document.querySelector('#messageContainer');
     const messageContainerElDivs = document.querySelectorAll('#messageContainer div.userMessage, #messageContainer div.botMessage');
@@ -91,7 +91,9 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
             message = message.replace(pattern, '').trim();
         });
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message.trim();
+        addMessage(plugin, messageDiv, 'botMessage', settings, index);
 
     } catch (error) {
         // Handle other errors
