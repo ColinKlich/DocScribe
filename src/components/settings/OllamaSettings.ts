@@ -14,19 +14,19 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
 
     // Create the settings container to be toggled
     const settingsContainer = containerEl.createDiv({ cls: 'settingsContainer' });
-    settingsContainer.style.display = initialState ? 'block' : 'none';
+    settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
     toggleSettingContainer.addEventListener('click', async () => {
-        const isOpen = settingsContainer.style.display !== 'none';
+        const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
-            settingsContainer.style.display = 'none';
+            settingsContainer.classList.add('hidden');
             plugin.settings.toggleOllamaSettings = false;
 
         } else {
             setIcon(chevronIcon, 'chevron-down'); // Open state
-            settingsContainer.style.display = 'block';
+            settingsContainer.classList.remove('hidden');
             plugin.settings.toggleOllamaSettings = true;
         }
         // fire-and-forget with error handling — listener itself returns void
@@ -74,18 +74,18 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
 
     // Create the container for Advanced Settings that will be toggled
     const advancedSettingsContainer = settingsContainer.createDiv({ cls: 'settingsContainer' });
-    advancedSettingsContainer.style.display = advancedInitialState ? 'block' : 'none';
+    advancedSettingsContainer.classList.toggle('hidden', !advancedInitialState);
 
     // Toggle visibility for Advanced Settings
     advancedToggleSettingContainer.addEventListener('click', async () => {
-        const isOpen = advancedSettingsContainer.style.display !== 'none';
+        const isOpen = !advancedSettingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(advancedChevronIcon, 'chevron-right'); // Close state
-            advancedSettingsContainer.style.display = 'none';
+            advancedSettingsContainer.classList.add('hidden');
             plugin.settings.toggleAdvancedSettings = false;
         } else {
             setIcon(advancedChevronIcon, 'chevron-down'); // Open state
-            advancedSettingsContainer.style.display = 'block';
+            advancedSettingsContainer.classList.remove('hidden');
             plugin.settings.toggleAdvancedSettings = true;
         }
         // fire-and-forget with error handling — listener itself returns void

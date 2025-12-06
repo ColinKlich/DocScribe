@@ -12,19 +12,19 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
 
     // Create the settings container to be toggled
     const settingsContainer = containerEl.createDiv({ cls: 'settingsContainer' });
-    settingsContainer.style.display = initialState ? 'block' : 'none';
+    settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
     toggleSettingContainer.addEventListener('click', async () => {
-        const isOpen = settingsContainer.style.display !== 'none';
+        const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
-            settingsContainer.style.display = 'none';
+            settingsContainer.classList.add('hidden');
             plugin.settings.toggleAppearanceSettings = false;
 
         } else {
             setIcon(chevronIcon, 'chevron-down'); // Open state
-            settingsContainer.style.display = 'block';
+            settingsContainer.classList.remove('hidden');
             plugin.settings.toggleAppearanceSettings = true;
         }
         plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
@@ -118,7 +118,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 if (chatbotContainer) {
                     // Modify the background color of the chatbot container
                     chatbotContainer.style.setProperty('--docscribe-chatbot-container-background-color', defaultValue);
-                    messageContainer.style.backgroundColor = colorPicker2.getValue();
+                    messageContainer.style.setProperty('--docscribe-message-container-background-color', colorPicker2.getValue());
                     plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 }
             })
@@ -140,7 +140,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
                 if (chatbotContainer) {
                     chatbotContainer.style.setProperty('--docscribe-chatbot-container-background-color', hexValue);
-                    messageContainer.style.backgroundColor = colorPicker2.getValue();
+                    messageContainer.style.setProperty('--docscribe-message-container-background-color', colorPicker2.getValue());
                 }
                 plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
@@ -433,8 +433,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             const chatbox = document.querySelector('.chatbox');
             if (chatbox) {
                 const element = chatbox as HTMLElement;
-                element.style.backgroundColor = defaultValue;
-                element.style.borderColor = defaultValue;
+                element.style.setProperty('--docscribe-chatbox-background-color', defaultValue);
                 plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             }
         })
@@ -505,7 +504,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         .onClick(async () => {
             colorPicker9.setValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
             
-            const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
+            const containers = document.querySelectorAll('.docscribe-code-block-container');
                             containers.forEach((container) => {
                                 const element = container as HTMLElement;
                                 element.style.setProperty('--docscribe-generate-background-color', DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
@@ -542,10 +541,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             const defaultValue = colorToHex(defaultDocscribeGenerateFontColor);
             colorPicker10.setValue(defaultValue);
             
-            const DocscribeCodeBlockContents = document.querySelectorAll('.DocscribeCodeBlockContent');
+            const DocscribeCodeBlockContents = document.querySelectorAll('.docscribe-code-block-content');
             DocscribeCodeBlockContents.forEach((content) => {
                 const element = content as HTMLElement;
-                element.style.color = defaultValue;
+                element.style.setProperty('--docscribe-generate-font-color', defaultValue);
             });
             
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});

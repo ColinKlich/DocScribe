@@ -13,19 +13,19 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
 
     // Create the settings container to be toggled
     const settingsContainer = containerEl.createDiv({ cls: 'settingsContainer' });
-    settingsContainer.style.display = initialState ? 'block' : 'none';
+    settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
     toggleSettingContainer.addEventListener('click', async () => {
-        const isOpen = settingsContainer.style.display !== 'none';
+        const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
-            settingsContainer.style.display = 'none';
+            settingsContainer.classList.add('hidden');
             plugin.settings.toggleProfileSettings = false;
 
         } else {
             setIcon(chevronIcon, 'chevron-down'); // Open state
-            settingsContainer.style.display = 'block';
+            settingsContainer.classList.remove('hidden');
             plugin.settings.toggleProfileSettings = true;
         }
         plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
@@ -111,9 +111,9 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
                     const folder = plugin.app.vault.getAbstractFileByPath(folderPath);
                     
                     if (folder && folder instanceof TFolder) {
-                        text.inputEl.style.borderColor = ''; 
+                        text.inputEl.classList.remove('is-invalid');
                     } else {
-                        text.inputEl.style.borderColor = 'red'; 
+                        text.inputEl.classList.add('is-invalid');
                     }
                 }
                 plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});

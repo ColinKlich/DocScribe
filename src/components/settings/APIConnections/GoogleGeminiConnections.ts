@@ -12,19 +12,19 @@ export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plug
 
     // Create the settings container to be toggled
     const settingsContainer = containerEl.createDiv({ cls: 'settingsContainer' });
-    settingsContainer.style.display = initialState ? 'block' : 'none';
+    settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
     toggleSettingContainer.addEventListener('click', async () => {
-        const isOpen = settingsContainer.style.display !== 'none';
+        const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
-            settingsContainer.style.display = 'none';
+            settingsContainer.classList.add('hidden');
             plugin.settings.toggleGoogleGeminiSettings = false;
 
         } else {
             setIcon(chevronIcon, 'chevron-down'); // Open state
-            settingsContainer.style.display = 'block';
+            settingsContainer.classList.remove('hidden');
             plugin.settings.toggleGoogleGeminiSettings = true;
         }
         plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});

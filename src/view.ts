@@ -102,14 +102,13 @@ export class DocscribeView extends ItemView {
         header.appendChild(modelOptions);
 
         referenceCurrentNoteElement.appendChild(dotIndicator);
-
-        referenceCurrentNoteElement.style.display = 'none';
         
         if (referenceCurrentNoteElement) {
             if (this.settings.general.enableReferenceCurrentNote) {
-                referenceCurrentNoteElement.style.display = 'block';
+                referenceCurrentNoteElement.classList.add('visible');
+                referenceCurrentNoteElement.classList.remove('hidden');
             } else {
-                referenceCurrentNoteElement.style.display = 'none';
+                referenceCurrentNoteElement.classList.add('hidden');
             }
         }
     
@@ -120,10 +119,11 @@ export class DocscribeView extends ItemView {
         });
 
         if (this.settings.appearance.enableHeader) {
-            header.style.display = 'block';
+            header.classList.add('visible');
+            header.classList.remove('hidden');
         }
         else {
-            header.style.display = 'none';
+            header.classList.add('hidden');
             messageContainer.style.maxHeight = 'calc(100% - 60px)';
             referenceCurrentNoteElement.style.margin = '0.5rem 0 0.5rem 0';
         }
@@ -153,7 +153,6 @@ export class DocscribeView extends ItemView {
                 const link = target as HTMLAnchorElement;
                 const linkName = link.getAttribute('data-href') || '';
                 this.plugin.app.workspace.openLinkText(linkName, '', false);
-                link.style.color = 'var(--link-color)';
             }
         });
         
@@ -170,20 +169,6 @@ export class DocscribeView extends ItemView {
         textarea.setAttribute('contenteditable', true.toString());
         textarea.setAttribute('placeholder', 'Start typing...');
 
-
-        if (textarea) {
-            textarea.style.color = this.settings.appearance.chatBoxFontColor;
-            
-            // Set the placeholder color to the default value
-            const style = document.createElement('style');
-            style.textContent = `
-                .chatbox textarea::placeholder {
-                    color: ${this.settings.appearance.chatBoxFontColor} !important;
-                }
-            `;
-            textarea.appendChild(style);
-        }
-
         // Submit button
         const submitButton = document.createElement('button');
         submitButton.textContent = 'send';
@@ -194,26 +179,6 @@ export class DocscribeView extends ItemView {
 
         submitButton.addEventListener('click', () => {
             this.handleKeyup(new KeyboardEvent('keyup', { key: 'Enter' }), true);
-        });
-
-
-        chatbotContainer.style.backgroundColor = this.settings.appearance.chatbotContainerBackgroundColor || DEFAULT_SETTINGS.appearance.chatbotContainerBackgroundColor;
-        messageContainer.style.backgroundColor = this.settings.appearance.messageContainerBackgroundColor || DEFAULT_SETTINGS.appearance.messageContainerBackgroundColor;
-        textarea.style.backgroundColor = this.settings.appearance.chatBoxBackgroundColor || DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor;
-        textarea.style.borderColor = this.settings.appearance.chatBoxBackgroundColor || DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor;
-        textarea.style.color = this.settings.appearance.chatBoxFontColor || DEFAULT_SETTINGS.appearance.chatBoxFontColor;
-        chatbox.style.backgroundColor = this.settings.appearance.chatBoxBackgroundColor || DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor;
-        submitButton.style.backgroundColor = this.settings.appearance.chatBoxBackgroundColor || DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor;
-
-
-        const userMessages = messageContainer.querySelectorAll('.userMessage');
-        userMessages.forEach((userMessage: HTMLElement) => {
-            userMessage.style.color = this.settings.appearance.userMessageFontColor || DEFAULT_SETTINGS.appearance.userMessageFontColor;
-        });
-
-        const botMessages = messageContainer.querySelectorAll('.botMessage');
-        botMessages.forEach((botMessage: HTMLElement) => {
-            botMessage.style.color = this.settings.appearance.botMessageFontColor || DEFAULT_SETTINGS.appearance.botMessageFontColor;
         });
 
         chatbox.appendChild(textarea);

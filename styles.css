@@ -623,12 +623,21 @@ ul#dropdownOptions li:hover {
 	}
 }
 
+.is-invalid {
+	border-color: red !important;
+}
+
+.fade-in {
+	opacity: 0;
+	transition: opacity 1s ease-in-out;
+}
+
 .hidden {
 	display: none;
 }
 
 .visible {
-	display: inline;
+	display: block;
 }
 
 .text-align-center {
@@ -669,4 +678,30 @@ ul#dropdownOptions li:hover {
 
 .scrollbar-hidden {
     overflow-y: hidden;
+}
+
+.settings-links {
+    font-size: 0.8rem;
+}
+
+.settings-link-separator {
+    font-size: 0.8rem;
+    margin-right: 5px;
+}
+
+.settings-link {
+    font-size: 0.8rem;
+    margin-right: 5px;
+}
+
+.settings-reset-button {
+    display: block;
+    text-align: center;
+    margin: 1rem 0;
+    font-size: 0.7rem;
+    color: #ff6666;
+}
+
+.settings-hr {
+    margin: 1rem 0;
 }

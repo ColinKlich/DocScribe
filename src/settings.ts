@@ -26,7 +26,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 		containerEl.createEl('h1', { text: 'Docscribe settings' });
 
 		// Create a container for the links
-		const linkContainer = containerEl.createEl('div');
+		const linkContainer = containerEl.createEl('div', { cls: 'settings-links' });
 
 		// Define link data
 		const links = [
@@ -40,19 +40,15 @@ export class DocscribeSettingTab extends PluginSettingTab {
 			if (index > 0) {
 				linkContainer.createEl('span', {
 					text: ' | ',
-					attr: { style: 'font-size: 0.8rem; margin-right: 5px;' }
+					cls: 'settings-link-separator'
 				});
 			}
 
 			const linkEl = linkContainer.createEl('a', {
 				text: link.text,
 				href: link.href,
-				attr: { style: 'font-size: 0.8rem;' }
+				cls: 'settings-link'
 			});
-
-			if (index < links.length - 1) {
-				linkEl.style.marginRight = '5px';
-			}
 		});
 
 		containerEl.createEl('p', { text: 'Type `/help` in chat for commands.' });
@@ -85,9 +81,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 		const resetButton = containerEl.createEl('a', {
 			text: 'Reset settings',
 			href: '#',
-			attr: {
-				style: 'display: block; text-align: center; margin: 1rem 0; font-size: 0.7rem; color: #ff6666;'
-			}
+			cls: 'settings-reset-button'
 		});
 
 		resetButton.addEventListener('click', async (event) => {
@@ -153,6 +147,6 @@ export class DocscribeSettingTab extends PluginSettingTab {
 
 function addHorizontalRule(containerEl: HTMLElement) {
 	const separator = document.createElement('hr');
-	separator.style.margin = '1rem 0';
+	separator.classList.add('settings-hr');
 	containerEl.appendChild(separator);
 }

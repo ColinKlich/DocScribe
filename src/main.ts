@@ -597,8 +597,7 @@ export default class DocscribeGPT extends Plugin {
 		const textarea = document.querySelector('.chatbox textarea') as HTMLTextAreaElement;
 	
 		if (textarea) {
-			textarea.style.opacity = '0';
-			textarea.style.transition = 'opacity 1s ease-in-out';
+			textarea.classList.add('fade-in');
 	
 			setTimeout(() => {
 				textarea.focus();
@@ -814,482 +813,657 @@ export async function updateFrontMatter(plugin: DocscribeGPT, file: TFile){
 
 export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 	try {
-		await plugin.app.fileManager.processFrontMatter(file, (frontmatter: any) => {
+		await plugin.app.fileManager.processFrontMatter(
+			file,
+			(frontmatter: any) => {
+				plugin.settings.general.model =
+					frontmatter.model || DEFAULT_SETTINGS.general.model;
 
-			plugin.settings.general.model = frontmatter.model || DEFAULT_SETTINGS.general.model;
+				if (frontmatter.max_tokens) {
+					plugin.settings.general.max_tokens =
+						frontmatter.max_tokens.toString();
 
-			if (frontmatter.max_tokens) {
-				plugin.settings.general.max_tokens = frontmatter.max_tokens.toString();
-				frontmatter.max_tokens = parseInt(plugin.settings.general.max_tokens);
-			} else {
-				plugin.settings.general.max_tokens = DEFAULT_SETTINGS.general.max_tokens;
-			}
-
-			if (frontmatter.temperature) {
-				if (frontmatter.temperature < 0) {
-					frontmatter.temperature = '0.00';
-				} else if (frontmatter.temperature > 2) {
-					frontmatter.temperature = '2.00';
+					frontmatter.max_tokens = parseInt(
+						plugin.settings.general.max_tokens
+					);
 				} else {
-					plugin.settings.general.temperature = parseFloat(frontmatter.temperature).toFixed(2).toString();
-					frontmatter.temperature = parseFloat(plugin.settings.general.temperature);
+					plugin.settings.general.max_tokens =
+						DEFAULT_SETTINGS.general.max_tokens;
 				}
-			} else {
-				plugin.settings.general.temperature = DEFAULT_SETTINGS.general.temperature;
-				frontmatter.temperature = DEFAULT_SETTINGS.general.temperature;
-			}
 
-			plugin.settings.general.enableReferenceCurrentNote = frontmatter.enable_reference_current_note;
+				if (frontmatter.temperature) {
+					if (frontmatter.temperature < 0) {
+						frontmatter.temperature = "0.00";
+					} else if (frontmatter.temperature > 2) {
+						frontmatter.temperature = "2.00";
+					} else {
+						plugin.settings.general.temperature = parseFloat(
+							frontmatter.temperature
+						)
+							.toFixed(2)
+							.toString();
 
-			const referenceCurrentNoteElement = document.getElementById('referenceCurrentNote') as HTMLElement;
-			if (referenceCurrentNoteElement) {
-				if (frontmatter.enable_reference_current_note === true) {
-					referenceCurrentNoteElement.style.display = 'block';
+						frontmatter.temperature = parseFloat(
+							plugin.settings.general.temperature
+						);
+					}
 				} else {
-					referenceCurrentNoteElement.style.display = 'none';
+					plugin.settings.general.temperature =
+						DEFAULT_SETTINGS.general.temperature;
+
+					frontmatter.temperature =
+						DEFAULT_SETTINGS.general.temperature;
 				}
-			}
 
-			if (frontmatter.prompt && (frontmatter.prompt !== '')) {
-				plugin.settings.prompts.prompt = frontmatter.prompt + '.md'
-			} else {
-				plugin.settings.prompts.prompt = DEFAULT_SETTINGS.prompts.prompt;
-			}
+				plugin.settings.general.enableReferenceCurrentNote =
+					frontmatter.enable_reference_current_note;
 
-			if (frontmatter.user_name) {
-				plugin.settings.appearance.userName = frontmatter.user_name.substring(0, 30);
-			} else {
-				plugin.settings.appearance.userName = DEFAULT_SETTINGS.appearance.userName;
-			}
-			frontmatter.user_name = plugin.settings.appearance.userName;
+				const referenceCurrentNoteElement = document.getElementById(
+					"referenceCurrentNote"
+				) as HTMLElement;
 
-			const userNames = document.querySelectorAll('.userName') as NodeListOf<HTMLHeadingElement>;
-			userNames.forEach(userName => {
-				userName.textContent = plugin.settings.appearance.userName;
-			});
+				if (referenceCurrentNoteElement) {
+					referenceCurrentNoteElement.classList.remove(
+						"visible",
+						"hidden"
+					);
+					if (frontmatter.enable_reference_current_note === true) {
+						referenceCurrentNoteElement.classList.add("visible");
+					} else {
+						referenceCurrentNoteElement.classList.add("hidden");
+					}
+				}
 
+				if (frontmatter.prompt && frontmatter.prompt !== "") {
+					plugin.settings.prompts.prompt = frontmatter.prompt + ".md";
+				} else {
+					plugin.settings.prompts.prompt =
+						DEFAULT_SETTINGS.prompts.prompt;
+				}
 
-			// if (frontmatter.chatbot_name) {
+				if (frontmatter.user_name) {
+					plugin.settings.appearance.userName =
+						frontmatter.user_name.substring(0, 30);
+				} else {
+					plugin.settings.appearance.userName =
+						DEFAULT_SETTINGS.appearance.userName;
+				}
+
+				frontmatter.user_name = plugin.settings.appearance.userName;
+
+				const userNames = document.querySelectorAll(
+					".userName"
+				) as NodeListOf<HTMLHeadingElement>;
+
+				userNames.forEach((userName) => {
+					userName.textContent = plugin.settings.appearance.userName;
+				});
+
+				// if (frontmatter.chatbot_name) {
+
 				// plugin.settings.appearance.chatbotName = frontmatter.chatbot_name.toUpperCase().substring(0, 30);
-			// } else {
-			// 	plugin.settings.appearance.chatbotName = DEFAULT_SETTINGS.appearance.chatbotName;
-			// }
-			// frontmatter.chatbot_name = plugin.settings.appearance.chatbotName;
 
-			const chatbotNameHeading = document.querySelector('#chatbotNameHeading') as HTMLHeadingElement;
-			const chatbotNames = document.querySelectorAll('.chatbotName') as NodeListOf<HTMLHeadingElement>;
-			if (chatbotNameHeading) {
-				chatbotNameHeading.textContent = plugin.settings.appearance.chatbotName;
-			}
-			chatbotNames.forEach(chatbotName => {
-				chatbotName.textContent = plugin.settings.appearance.chatbotName;
-			});
+				// } else {
 
-			const chatbotContainer = document.querySelector('.chatbotContainer') as HTMLElement;
-			const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
+				// 	plugin.settings.appearance.chatbotName = DEFAULT_SETTINGS.appearance.chatbotName;
 
-			if (isValidHexColor(frontmatter.chatbot_container_background_color)) {
-				plugin.settings.appearance.chatbotContainerBackgroundColor = '#' + frontmatter.chatbot_container_background_color.substring(0, 6);
-				if (chatbotContainer) {
-					chatbotContainer.style.backgroundColor = plugin.settings.appearance.chatbotContainerBackgroundColor;
-				}
-			} else {
-				plugin.settings.appearance.chatbotContainerBackgroundColor = colorToHex(DEFAULT_SETTINGS.appearance.chatbotContainerBackgroundColor);
-				frontmatter.chatbot_container_background_color = plugin.settings.appearance.chatbotContainerBackgroundColor.replace(/^#/, '');
-				if (chatbotContainer) {
-					const defaultChatbotContainerBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.chatbotContainerBackgroundColor).trim();
-					chatbotContainer.style.backgroundColor = defaultChatbotContainerBackgroundColor;
-				}
-			}
+				// }
 
-			if (isValidHexColor(frontmatter.message_container_background_color)) {
-				plugin.settings.appearance.messageContainerBackgroundColor = '#' + frontmatter.message_container_background_color.substring(0, 6);
-				if (messageContainer) {
-					messageContainer.style.backgroundColor = plugin.settings.appearance.messageContainerBackgroundColor;
-				}
-			} else {
-				plugin.settings.appearance.messageContainerBackgroundColor = colorToHex(DEFAULT_SETTINGS.appearance.messageContainerBackgroundColor);
-				frontmatter.message_container_background_color = plugin.settings.appearance.messageContainerBackgroundColor.replace(/^#/, '');
-				if (messageContainer) {
-					const defaultMessageContainerBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.messageContainerBackgroundColor).trim();
-					messageContainer.style.backgroundColor = defaultMessageContainerBackgroundColor;
-				}
-			}
+				// frontmatter.chatbot_name = plugin.settings.appearance.chatbotName;
 
-			if (isValidHexColor(frontmatter.user_message_font_color)) {
-				plugin.settings.appearance.userMessageFontColor = '#' + frontmatter.user_message_font_color.substring(0, 6);
-				if (messageContainer) {
-					const userMessages = messageContainer.querySelectorAll('.userMessage');
-					userMessages.forEach((userMessage) => {
-					const element = userMessage as HTMLElement;
-					element.style.color = plugin.settings.appearance.userMessageFontColor;
-					});
-				}
-			} else {
-				plugin.settings.appearance.userMessageFontColor = colorToHex(DEFAULT_SETTINGS.appearance.userMessageFontColor);
-				frontmatter.user_message_font_color = plugin.settings.appearance.userMessageFontColor.replace(/^#/, '');
-				if (messageContainer) {
-					const userMessages = messageContainer.querySelectorAll('.userMessage');
-					userMessages.forEach((userMessage) => {
-					const element = userMessage as HTMLElement;
-					const defaultUserMessageFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.userMessageFontColor).trim();
-					element.style.color = defaultUserMessageFontColor;
-					});
-				}
-			}
-			
-			if (isValidHexColor(frontmatter.user_message_background_color)) {
-				plugin.settings.appearance.userMessageBackgroundColor = '#' + frontmatter.user_message_background_color.substring(0, 6);
-				if (messageContainer) {
-					const userMessages = messageContainer.querySelectorAll('.userMessage');
-					userMessages.forEach((userMessage) => {
-					const element = userMessage as HTMLElement;
-					element.style.backgroundColor = plugin.settings.appearance.userMessageBackgroundColor;
-					});
-				}
-			} else {
-				plugin.settings.appearance.userMessageBackgroundColor = colorToHex(DEFAULT_SETTINGS.appearance.userMessageBackgroundColor);
-				frontmatter.user_message_background_color = plugin.settings.appearance.userMessageBackgroundColor.replace(/^#/, '');
-				if (messageContainer) {
-					const userMessages = messageContainer.querySelectorAll('.userMessage');
-					userMessages.forEach((userMessage) => {
-					const element = userMessage as HTMLElement;
-					const defaultUserMessageBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.userMessageBackgroundColor).trim();
-					element.style.backgroundColor = defaultUserMessageBackgroundColor;
-					});
-				}
-			}
+				const chatbotNameHeading = document.querySelector(
+					"#chatbotNameHeading"
+				) as HTMLHeadingElement;
 
-			if (isValidHexColor(frontmatter.bot_message_font_color)) {
-				plugin.settings.appearance.botMessageFontColor = '#' + frontmatter.bot_message_font_color.substring(0, 6);
-				if (messageContainer) {
-					const botMessages = messageContainer.querySelectorAll('.botMessage');
-					botMessages.forEach((botMessage) => {
-					const element = botMessage as HTMLElement;
-					element.style.color = plugin.settings.appearance.botMessageFontColor;
-					});
-				}
-			} else {
-				plugin.settings.appearance.botMessageFontColor = colorToHex(DEFAULT_SETTINGS.appearance.botMessageFontColor);
-				frontmatter.bot_message_font_color = plugin.settings.appearance.botMessageFontColor.replace(/^#/, '');
-				if (messageContainer) {
-					const botMessages = messageContainer.querySelectorAll('.botMessage');
-					botMessages.forEach((botMessage) => {
-					const element = botMessage as HTMLElement;
-					const defaultBotMessageFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageFontColor).trim();
-					element.style.color = defaultBotMessageFontColor;
-					});
-				}
-			}
-			
-			if (isValidHexColor(frontmatter.chatbot_message_background_color)) {
-				plugin.settings.appearance.botMessageBackgroundColor = '#' + frontmatter.chatbot_message_background_color.substring(0, 6);
-				if (messageContainer) {
-					const botMessages = messageContainer.querySelectorAll('.botMessage');
-					botMessages.forEach((botMessage) => {
-						const element = botMessage as HTMLElement;
-						element.style.backgroundColor = plugin.settings.appearance.botMessageBackgroundColor;
-					});
-				}
-			} else {
-				plugin.settings.appearance.botMessageBackgroundColor = colorToHex(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor);
-				frontmatter.chatbot_message_background_color = plugin.settings.appearance.botMessageBackgroundColor.replace(/^#/, '');
-				if (messageContainer) {
-					const botMessages = messageContainer.querySelectorAll('.botMessage');
-					botMessages.forEach((botMessage) => {
-						const element = botMessage as HTMLElement;
-						const defaultBotMessageBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor).trim();
-						element.style.backgroundColor = defaultBotMessageBackgroundColor;
-					});
-				}
-			}
+				const chatbotNames = document.querySelectorAll(
+					".chatbotName"
+				) as NodeListOf<HTMLHeadingElement>;
 
-			if (isValidHexColor(frontmatter.chatbox_font_color)) {
-				plugin.settings.appearance.chatBoxFontColor = '#' + frontmatter.chatbox_font_color.substring(0, 6);
-				const textarea = document.querySelector('.chatbox textarea') as HTMLElement;
-				if (textarea) {
-					textarea.style.color = plugin.settings.appearance.chatBoxFontColor;
-					
-					// Set the placeholder color to the default value
-					const style = document.createElement('style');
-					style.textContent = `
-						.chatbox textarea::placeholder {
-							color: ${plugin.settings.appearance.chatBoxFontColor} !important;
-						}
-					`;
-					textarea.appendChild(style);
+				if (chatbotNameHeading) {
+					chatbotNameHeading.textContent =
+						plugin.settings.appearance.chatbotName;
 				}
-			} else {
-				plugin.settings.appearance.chatBoxFontColor = colorToHex(DEFAULT_SETTINGS.appearance.chatBoxFontColor);
-				frontmatter.chatbox_font_color = plugin.settings.appearance.chatBoxFontColor.replace(/^#/, '');
-                const textarea = document.querySelector('.chatbox textarea') as HTMLTextAreaElement;
-				const defaultChatBoxFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.chatBoxFontColor).trim();
-                
-                if (textarea) {
-                    textarea.style.color = DEFAULT_SETTINGS.appearance.chatBoxFontColor;
-                    
-                    // Set the placeholder color to the selected value
-                    const style = document.createElement('style');
-                    style.textContent = `
-                        .chatbox textarea::placeholder {
-                            color: ${defaultChatBoxFontColor} !important;
-                        }
-                    `;
-                    textarea.appendChild(style);
-                }
-			}
 
-			if (isValidHexColor(frontmatter.chatbox_background_color)) {
-				plugin.settings.appearance.chatBoxBackgroundColor = '#' + frontmatter.chatbox_background_color.substring(0, 6);
-				
-				if (messageContainer) {
-					const chatbox = document.querySelector('.chatbox');
-					if (chatbox) {
-						const element = chatbox as HTMLElement;
-						element.style.backgroundColor = plugin.settings.appearance.chatBoxBackgroundColor;
-						element.style.borderColor = plugin.settings.appearance.chatBoxBackgroundColor;
-					}
-					
-					const textarea = document.querySelector('.chatbox textarea');
-					if (textarea) {
-						const element = textarea as HTMLElement;
-						element.style.backgroundColor = plugin.settings.appearance.chatBoxBackgroundColor;
-						element.style.borderColor = plugin.settings.appearance.chatBoxBackgroundColor;
-					}
-					
-					const submitButton = document.querySelector('.chatbox .submit-button');
-					if (submitButton) {
-						const element = submitButton as HTMLElement;
-						element.style.backgroundColor = plugin.settings.appearance.chatBoxBackgroundColor;
-						element.style.borderColor = plugin.settings.appearance.chatBoxBackgroundColor;
-					}
-				}
-			} else {
-				plugin.settings.appearance.chatBoxBackgroundColor = DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor;
-				frontmatter.chatbox_background_color = DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor.replace(/^#/, '');
-
-				const defaultChatBoxBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor).trim();
-
-				if (messageContainer) {
-					const chatbox = document.querySelector('.chatbox');
-					if (chatbox) {
-						const element = chatbox as HTMLElement;
-						element.style.backgroundColor = defaultChatBoxBackgroundColor;
-						element.style.borderColor = defaultChatBoxBackgroundColor;
-					}
-					
-					const textarea = document.querySelector('.chatbox textarea');
-					if (textarea) {
-						const element = textarea as HTMLElement;
-						element.style.backgroundColor = defaultChatBoxBackgroundColor;
-						element.style.borderColor = defaultChatBoxBackgroundColor;
-					}
-
-					const submitButton = document.querySelector('.chatbox .submit-button');
-					if (submitButton) {
-						const element = submitButton as HTMLElement;
-						element.style.backgroundColor = defaultChatBoxBackgroundColor;
-						element.style.borderColor = defaultChatBoxBackgroundColor;
-					}
-
-				}
-			}
-
-			if (isValidHexColor(frontmatter.Docscribe_generate_background_color)) {
-				plugin.settings.appearance.DocscribeGenerateBackgroundColor = '#' + frontmatter.Docscribe_generate_background_color.substring(0, 6);
-				
-				const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
-				containers.forEach((container) => {
-					const element = container as HTMLElement;
-					element.style.backgroundColor = plugin.settings.appearance.DocscribeGenerateBackgroundColor;
+				chatbotNames.forEach((chatbotName) => {
+					chatbotName.textContent =
+						plugin.settings.appearance.chatbotName;
 				});
-			} else {
-				plugin.settings.appearance.DocscribeGenerateBackgroundColor = colorToHex(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
-				frontmatter.Docscribe_generate_background_color = plugin.settings.appearance.DocscribeGenerateBackgroundColor.replace(/^#/, '');
-				
-				const containers = document.querySelectorAll('.DocscribeCodeBlockContainer');
-				containers.forEach((container) => {
-					const element = container as HTMLElement;
-					const defaultDocscribeGenerateBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor).trim();
-					element.style.backgroundColor = defaultDocscribeGenerateBackgroundColor;
-				});
-			}
 
-			if (isValidHexColor(frontmatter.Docscribe_generate_font_color)) {
-				plugin.settings.appearance.DocscribeGenerateFontColor = '#' + frontmatter.Docscribe_generate_font_color.substring(0, 6);
-				
-				const containers = document.querySelectorAll('.DocscribeCodeBlockContent');
-				containers.forEach((container) => {
-					const element = container as HTMLElement;
-					element.style.color = plugin.settings.appearance.DocscribeGenerateFontColor;
-				});
-			} else {
-				plugin.settings.appearance.DocscribeGenerateFontColor = colorToHex(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor);
-				frontmatter.Docscribe_generate_font_color = plugin.settings.appearance.DocscribeGenerateFontColor.replace(/^#/, '');
-				
-				const containers = document.querySelectorAll('.DocscribeCodeBlockContent');
-				containers.forEach((container) => {
-					const element = container as HTMLElement;
-					const defaultDocscribeGenerateFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor).trim();
-					element.style.color = defaultDocscribeGenerateFontColor;
-				});
-			}
+				updateStyles(frontmatter, plugin.settings);
 
-			plugin.settings.editor.systen_role = frontmatter.systen_role;
+				plugin.settings.editor.systen_role = frontmatter.systen_role;
 
-			plugin.settings.appearance.enableHeader = frontmatter.enable_header;
-			if (frontmatter.enable_header === true) {
-				const header = document.querySelector('#header') as HTMLElement;
+				plugin.settings.appearance.enableHeader =
+					frontmatter.enable_header;
 
-				if (header) {
-					header.style.display = 'block';
-					referenceCurrentNoteElement.style.margin = '-0.5rem 0 0.5rem 0';
-				}
-			} else {
-				const header = document.querySelector('#header') as HTMLElement;
-				const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
-				if (header) {
-					header.style.display = 'none';
-					messageContainer.style.maxHeight = 'calc(100% - 60px)';
-					referenceCurrentNoteElement.style.margin = '0.5rem 0 0.5rem 0';
-				}
-			}
+				if (frontmatter.enable_header === true) {
+					const header = document.querySelector(
+						"#header"
+					) as HTMLElement;
 
-			const intValue = parseInt(frontmatter.ollama_mirostat, 10); // 10 is the radix parameter to ensure parsing is done in base 10
-	
-			// Check if the parsed value is a valid integer, if not, fallback to the default URL
-			if (isNaN(intValue)) {
-				plugin.settings.OllamaConnection.ollamaParameters.mirostat = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat;
-				frontmatter.ollama_mirostat = plugin.settings.OllamaConnection.ollamaParameters.mirostat;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.mirostat = intValue.toString();
-				frontmatter.ollama_mirostat = intValue;
-			}
+					if (header) {
+						header.style.display = "block";
 
-
-			if (isNaN(parseFloat(frontmatter.ollama_mirostat_eta))) {
-				plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta;
-				frontmatter.ollama_mirostat_eta = plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta = parseFloat(frontmatter.ollama_mirostat_eta).toFixed(2).toString();
-				frontmatter.ollama_mirostat_eta = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta);
-			}
-
-			if (isNaN(parseFloat(frontmatter.ollama_mirostat_tau))) {
-				plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau;
-				frontmatter.ollama_mirostat_tau = plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau = parseFloat(frontmatter.ollama_mirostat_tau).toFixed(2).toString();
-				frontmatter.ollama_mirostat_tau = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau);
-			}
-
-			if (isNaN(parseInt(frontmatter.ollama_num_ctx))) {
-				plugin.settings.OllamaConnection.ollamaParameters.num_ctx = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx;
-				frontmatter.ollama_num_ctx = plugin.settings.OllamaConnection.ollamaParameters.num_ctx;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.num_ctx = parseInt(frontmatter.ollama_num_ctx).toString();
-				frontmatter.ollama_num_ctx = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_ctx);
-			}
-
-			if (isNaN(parseInt(frontmatter.ollama_num_gqa))) {
-				plugin.settings.OllamaConnection.ollamaParameters.num_gqa = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.num_gqa = parseInt(frontmatter.ollama_num_gqa).toString();
-				frontmatter.ollama_num_gqa = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_gqa);
-			}
-
-			if (isNaN(parseInt(frontmatter.ollama_num_thread))) {
-				plugin.settings.OllamaConnection.ollamaParameters.num_thread = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.num_thread = parseInt(frontmatter.ollama_num_thread).toString();
-				frontmatter.ollama_num_thread = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_thread);
-			}
-
-			if (isNaN(parseInt(frontmatter.ollama_repeat_last_n))) {
-				plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n;
-				frontmatter.ollama_repeat_last_n = plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n = parseInt(frontmatter.ollama_repeat_last_n).toString();
-				frontmatter.ollama_repeat_last_n = parseInt(plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n);
-			}
-
-			if (isNaN(parseFloat(frontmatter.ollama_repeat_penalty))) {
-				plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty;
-				frontmatter.ollama_repeat_penalty = plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty = parseFloat(frontmatter.ollama_repeat_penalty).toFixed(2).toString();
-				frontmatter.ollama_repeat_penalty = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty);
-			}
-
-			if (isNaN(parseInt(frontmatter.ollama_seed))) {
-				plugin.settings.OllamaConnection.ollamaParameters.seed = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.seed;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.seed = parseInt(frontmatter.ollama_seed).toString();
-				frontmatter.ollama_seed = parseInt(plugin.settings.OllamaConnection.ollamaParameters.seed);
-			}
-
-			plugin.settings.OllamaConnection.ollamaParameters.stop = frontmatter.ollama_stop;
-
-			if (isNaN(parseFloat(frontmatter.ollama_tfs_z))) {
-				plugin.settings.OllamaConnection.ollamaParameters.tfs_z = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.tfs_z;
-				frontmatter.ollama_tfs_z = plugin.settings.OllamaConnection.ollamaParameters.tfs_z;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.tfs_z = parseFloat(frontmatter.ollama_tfs_z).toFixed(2).toString();
-				frontmatter.ollama_tfs_z = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.tfs_z);
-			}
-
-			if (isNaN(parseInt(frontmatter.ollama_top_k))) {
-				plugin.settings.OllamaConnection.ollamaParameters.top_k = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k;
-				frontmatter.ollama_top_k = plugin.settings.OllamaConnection.ollamaParameters.top_k;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.top_k = parseInt(frontmatter.ollama_top_k).toString();
-				frontmatter.ollama_top_k = parseInt(plugin.settings.OllamaConnection.ollamaParameters.top_k);
-			}
-
-			if (isNaN(parseInt(frontmatter.ollama_top_p))) {
-				plugin.settings.OllamaConnection.ollamaParameters.top_p = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p;
-				frontmatter.ollama_top_p = plugin.settings.OllamaConnection.ollamaParameters.top_p;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.top_p = parseFloat(frontmatter.ollama_top_p).toFixed(2).toString();
-				frontmatter.ollama_top_p = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.top_p);
-			}
-
-			if (isNaN(parseInt(frontmatter.ollama_min_p))) {
-				plugin.settings.OllamaConnection.ollamaParameters.min_p = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p;
-				frontmatter.ollama_min_p = plugin.settings.OllamaConnection.ollamaParameters.min_p;
-			} else {
-				plugin.settings.OllamaConnection.ollamaParameters.min_p = parseFloat(frontmatter.ollama_min_p).toFixed(2).toString();
-				frontmatter.ollama_min_p = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.min_p);
-			}
-
-			// Regular expression to validate the input value and capture the number and unit
-			const match = String(frontmatter.ollama_keep_alive).match(/^(-?\d+)(m|hr|h)?$/);
-
-			if (match) {
-				const num = parseInt(match[1]);
-				const unit = match[2];
-
-				// Convert to seconds based on the unit
-				let seconds;
-				if (unit === 'm') {
-					seconds = num * 60; // Convert minutes to seconds
-				} else if (unit === 'hr' || unit === 'h') {
-					seconds = num * 3600; // Convert hours to seconds
+						referenceCurrentNoteElement.style.margin =
+							"-0.5rem 0 0.5rem 0";
+					}
 				} else {
-					seconds = num; // Assume it's already in seconds if no unit
+					const header = document.querySelector(
+						"#header"
+					) as HTMLElement;
+
+					const messageContainer = document.querySelector(
+						"#messageContainer"
+					) as HTMLElement;
+
+					if (header) {
+						header.style.display = "none";
+
+						messageContainer.style.maxHeight = "calc(100% - 60px)";
+
+						referenceCurrentNoteElement.style.margin =
+							"0.5rem 0 0.5rem 0";
+					}
 				}
 
-				// Store the value in seconds
-				plugin.settings.OllamaConnection.ollamaParameters.keep_alive = seconds.toString();
-				frontmatter.ollama_keep_alive = plugin.settings.OllamaConnection.ollamaParameters.keep_alive;
-			} else {
-				// If the input is invalid, revert to the default setting
-				plugin.settings.OllamaConnection.ollamaParameters.keep_alive = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.keep_alive;
-				frontmatter.ollama_keep_alive = plugin.settings.OllamaConnection.ollamaParameters.keep_alive;
-			}
+				const intValue = parseInt(frontmatter.ollama_mirostat, 10); // 10 is the radix parameter to ensure parsing is done in base 10
 
-		});
+				// Check if the parsed value is a valid integer, if not, fallback to the default URL
+
+				if (isNaN(intValue)) {
+					plugin.settings.OllamaConnection.ollamaParameters.mirostat =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat;
+
+					frontmatter.ollama_mirostat =
+						plugin.settings.OllamaConnection.ollamaParameters.mirostat;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.mirostat =
+						intValue.toString();
+
+					frontmatter.ollama_mirostat = intValue;
+				}
+
+				if (isNaN(parseFloat(frontmatter.ollama_mirostat_eta))) {
+					plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta;
+
+					frontmatter.ollama_mirostat_eta =
+						plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta =
+						parseFloat(frontmatter.ollama_mirostat_eta)
+							.toFixed(2)
+							.toString();
+
+					frontmatter.ollama_mirostat_eta = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters
+							.mirostat_eta
+					);
+				}
+
+				if (isNaN(parseFloat(frontmatter.ollama_mirostat_tau))) {
+					plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau;
+
+					frontmatter.ollama_mirostat_tau =
+						plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau =
+						parseFloat(frontmatter.ollama_mirostat_tau)
+							.toFixed(2)
+							.toString();
+
+					frontmatter.ollama_mirostat_tau = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters
+							.mirostat_tau
+					);
+				}
+
+				if (isNaN(parseInt(frontmatter.ollama_num_ctx))) {
+					plugin.settings.OllamaConnection.ollamaParameters.num_ctx =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx;
+
+					frontmatter.ollama_num_ctx =
+						plugin.settings.OllamaConnection.ollamaParameters.num_ctx;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.num_ctx =
+						parseInt(frontmatter.ollama_num_ctx).toString();
+
+					frontmatter.ollama_num_ctx = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters
+							.num_ctx
+					);
+				}
+
+				if (isNaN(parseInt(frontmatter.ollama_num_gqa))) {
+					plugin.settings.OllamaConnection.ollamaParameters.num_gqa =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.num_gqa =
+						parseInt(frontmatter.ollama_num_gqa).toString();
+
+					frontmatter.ollama_num_gqa = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters
+							.num_gqa
+					);
+				}
+
+				if (isNaN(parseInt(frontmatter.ollama_num_thread))) {
+					plugin.settings.OllamaConnection.ollamaParameters.num_thread =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.num_thread =
+						parseInt(frontmatter.ollama_num_thread).toString();
+
+					frontmatter.ollama_num_thread = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters
+							.num_thread
+					);
+				}
+
+				if (isNaN(parseInt(frontmatter.ollama_repeat_last_n))) {
+					plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n;
+
+					frontmatter.ollama_repeat_last_n =
+						plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n =
+						parseInt(frontmatter.ollama_repeat_last_n).toString();
+
+					frontmatter.ollama_repeat_last_n = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters
+							.repeat_last_n
+					);
+				}
+
+				if (isNaN(parseFloat(frontmatter.ollama_repeat_penalty))) {
+					plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty;
+
+					frontmatter.ollama_repeat_penalty =
+						plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty =
+						parseFloat(frontmatter.ollama_repeat_penalty)
+							.toFixed(2)
+							.toString();
+
+					frontmatter.ollama_repeat_penalty = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters
+							.repeat_penalty
+					);
+				}
+
+				if (isNaN(parseInt(frontmatter.ollama_seed))) {
+					plugin.settings.OllamaConnection.ollamaParameters.seed =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.seed;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.seed =
+						parseInt(frontmatter.ollama_seed).toString();
+
+					frontmatter.ollama_seed = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters.seed
+					);
+				}
+
+				plugin.settings.OllamaConnection.ollamaParameters.stop =
+					frontmatter.ollama_stop;
+
+				if (isNaN(parseFloat(frontmatter.ollama_tfs_z))) {
+					plugin.settings.OllamaConnection.ollamaParameters.tfs_z =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.tfs_z;
+
+					frontmatter.ollama_tfs_z =
+						plugin.settings.OllamaConnection.ollamaParameters.tfs_z;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.tfs_z =
+						parseFloat(frontmatter.ollama_tfs_z)
+							.toFixed(2)
+							.toString();
+
+					frontmatter.ollama_tfs_z = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.tfs_z
+					);
+				}
+
+				if (isNaN(parseInt(frontmatter.ollama_top_k))) {
+					plugin.settings.OllamaConnection.ollamaParameters.top_k =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k;
+
+					frontmatter.ollama_top_k =
+						plugin.settings.OllamaConnection.ollamaParameters.top_k;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.top_k =
+						parseInt(frontmatter.ollama_top_k).toString();
+
+					frontmatter.ollama_top_k = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters.top_k
+					);
+				}
+
+				if (isNaN(parseInt(frontmatter.ollama_top_p))) {
+					plugin.settings.OllamaConnection.ollamaParameters.top_p =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p;
+
+					frontmatter.ollama_top_p =
+						plugin.settings.OllamaConnection.ollamaParameters.top_p;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.top_p =
+						parseFloat(frontmatter.ollama_top_p)
+							.toFixed(2)
+							.toString();
+
+					frontmatter.ollama_top_p = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.top_p
+					);
+				}
+
+				if (isNaN(parseInt(frontmatter.ollama_min_p))) {
+					plugin.settings.OllamaConnection.ollamaParameters.min_p =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p;
+
+					frontmatter.ollama_min_p =
+						plugin.settings.OllamaConnection.ollamaParameters.min_p;
+				} else {
+					plugin.settings.OllamaConnection.ollamaParameters.min_p =
+						parseFloat(frontmatter.ollama_min_p)
+							.toFixed(2)
+							.toString();
+
+					frontmatter.ollama_min_p = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.min_p
+					);
+				}
+
+				// Regular expression to validate the input value and capture the number and unit
+
+				const match = String(frontmatter.ollama_keep_alive).match(
+					/^(-?\d+)(m|hr|h)?$/
+				);
+
+				if (match) {
+					const num = parseInt(match[1]);
+
+					const unit = match[2];
+
+					// Convert to seconds based on the unit
+
+					let seconds;
+
+					if (unit === "m") {
+						seconds = num * 60; // Convert minutes to seconds
+					} else if (unit === "hr" || unit === "h") {
+						seconds = num * 3600; // Convert hours to seconds
+					} else {
+						seconds = num; // Assume it's already in seconds if no unit
+					}
+
+					// Store the value in seconds
+
+					plugin.settings.OllamaConnection.ollamaParameters.keep_alive =
+						seconds.toString();
+
+					frontmatter.ollama_keep_alive =
+						plugin.settings.OllamaConnection.ollamaParameters.keep_alive;
+				} else {
+					// If the input is invalid, revert to the default setting
+
+					plugin.settings.OllamaConnection.ollamaParameters.keep_alive =
+						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.keep_alive;
+
+					frontmatter.ollama_keep_alive =
+						plugin.settings.OllamaConnection.ollamaParameters.keep_alive;
+				}
+			}
+		);
 	} catch (error) {
-		console.error('Error processing frontmatter:', error);
+		console.error("Error processing frontmatter:", error);
+	}
+}
+
+
+
+function updateStyles(frontmatter: any, settings: DocscribeSettings) {
+	const root = document.documentElement;
+
+	if (isValidHexColor(frontmatter.chatbot_container_background_color)) {
+		settings.appearance.chatbotContainerBackgroundColor =
+			"#" +
+			frontmatter.chatbot_container_background_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-chatbot-container-background-color",
+			settings.appearance.chatbotContainerBackgroundColor
+		);
+	} else {
+		settings.appearance.chatbotContainerBackgroundColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.chatbotContainerBackgroundColor
+		);
+
+		frontmatter.chatbot_container_background_color =
+			settings.appearance.chatbotContainerBackgroundColor.replace(
+				/^#/,
+				""
+			);
+
+		root.style.setProperty(
+			"--docscribe-chatbot-container-background-color",
+			colorToHex(
+				DEFAULT_SETTINGS.appearance.chatbotContainerBackgroundColor
+			)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.message_container_background_color)) {
+		settings.appearance.messageContainerBackgroundColor =
+			"#" +
+			frontmatter.message_container_background_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-message-container-background-color",
+			settings.appearance.messageContainerBackgroundColor
+		);
+	} else {
+		settings.appearance.messageContainerBackgroundColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.messageContainerBackgroundColor
+		);
+
+		frontmatter.message_container_background_color =
+			settings.appearance.messageContainerBackgroundColor.replace(
+				/^#/,
+				""
+			);
+
+		root.style.setProperty(
+			"--docscribe-message-container-background-color",
+			colorToHex(
+				DEFAULT_SETTINGS.appearance.messageContainerBackgroundColor
+			)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.user_message_font_color)) {
+		settings.appearance.userMessageFontColor =
+			"#" + frontmatter.user_message_font_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-user-message-font-color",
+			settings.appearance.userMessageFontColor
+		);
+	} else {
+		settings.appearance.userMessageFontColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.userMessageFontColor
+		);
+
+		frontmatter.user_message_font_color =
+			settings.appearance.userMessageFontColor.replace(/^#/, "");
+
+		root.style.setProperty(
+			"--docscribe-user-message-font-color",
+			colorToHex(DEFAULT_SETTINGS.appearance.userMessageFontColor)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.user_message_background_color)) {
+		settings.appearance.userMessageBackgroundColor =
+			"#" + frontmatter.user_message_background_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-user-message-background-color",
+			settings.appearance.userMessageBackgroundColor
+		);
+	} else {
+		settings.appearance.userMessageBackgroundColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.userMessageBackgroundColor
+		);
+
+		frontmatter.user_message_background_color =
+			settings.appearance.userMessageBackgroundColor.replace(/^#/, "");
+
+		root.style.setProperty(
+			"--docscribe-user-message-background-color",
+			colorToHex(DEFAULT_SETTINGS.appearance.userMessageBackgroundColor)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.bot_message_font_color)) {
+		settings.appearance.botMessageFontColor =
+			"#" + frontmatter.bot_message_font_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-bot-message-font-color",
+			settings.appearance.botMessageFontColor
+		);
+	} else {
+		settings.appearance.botMessageFontColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.botMessageFontColor
+		);
+
+		frontmatter.bot_message_font_color =
+			settings.appearance.botMessageFontColor.replace(/^#/, "");
+
+		root.style.setProperty(
+			"--docscribe-bot-message-font-color",
+			colorToHex(DEFAULT_SETTINGS.appearance.botMessageFontColor)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.chatbot_message_background_color)) {
+		settings.appearance.botMessageBackgroundColor =
+			"#" + frontmatter.chatbot_message_background_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-bot-message-background-color",
+			settings.appearance.botMessageBackgroundColor
+		);
+	} else {
+		settings.appearance.botMessageBackgroundColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.botMessageBackgroundColor
+		);
+
+		frontmatter.chatbot_message_background_color =
+			settings.appearance.botMessageBackgroundColor.replace(/^#/, "");
+
+		root.style.setProperty(
+			"--docscribe-bot-message-background-color",
+			colorToHex(DEFAULT_SETTINGS.appearance.botMessageBackgroundColor)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.chatbox_font_color)) {
+		settings.appearance.chatBoxFontColor =
+			"#" + frontmatter.chatbox_font_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-chatbox-font-color",
+			settings.appearance.chatBoxFontColor
+		);
+	} else {
+		settings.appearance.chatBoxFontColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.chatBoxFontColor
+		);
+
+		frontmatter.chatbox_font_color =
+			settings.appearance.chatBoxFontColor.replace(/^#/, "");
+
+		root.style.setProperty(
+			"--docscribe-chatbox-font-color",
+			colorToHex(DEFAULT_SETTINGS.appearance.chatBoxFontColor)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.chatbox_background_color)) {
+		settings.appearance.chatBoxBackgroundColor =
+			"#" + frontmatter.chatbox_background_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-chatbox-background-color",
+			settings.appearance.chatBoxBackgroundColor
+		);
+	} else {
+		settings.appearance.chatBoxBackgroundColor =
+			DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor;
+
+		frontmatter.chatbox_background_color =
+			DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor.replace(
+				/^#/,
+				""
+			);
+
+		root.style.setProperty(
+			"--docscribe-chatbox-background-color",
+			colorToHex(DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.Docscribe_generate_background_color)) {
+		settings.appearance.DocscribeGenerateBackgroundColor =
+			"#" +
+			frontmatter.Docscribe_generate_background_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-generate-background-color",
+			settings.appearance.DocscribeGenerateBackgroundColor
+		);
+	} else {
+		settings.appearance.DocscribeGenerateBackgroundColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor
+		);
+
+		frontmatter.Docscribe_generate_background_color =
+			settings.appearance.DocscribeGenerateBackgroundColor.replace(
+				/^#/,
+				""
+			);
+
+		root.style.setProperty(
+			"--docscribe-generate-background-color",
+			colorToHex(
+				DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor
+			)
+		);
+	}
+
+	if (isValidHexColor(frontmatter.Docscribe_generate_font_color)) {
+		settings.appearance.DocscribeGenerateFontColor =
+			"#" + frontmatter.Docscribe_generate_font_color.substring(0, 6);
+
+		root.style.setProperty(
+			"--docscribe-generate-font-color",
+			settings.appearance.DocscribeGenerateFontColor
+		);
+	} else {
+		settings.appearance.DocscribeGenerateFontColor = colorToHex(
+			DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor
+		);
+
+		frontmatter.Docscribe_generate_font_color =
+			settings.appearance.DocscribeGenerateFontColor.replace(/^#/, "");
+
+		root.style.setProperty(
+			"--docscribe-generate-font-color",
+			colorToHex(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor)
+		);
 	}
 }

@@ -13,19 +13,19 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
 
     // Create the settings container to be toggled
     const settingsContainer = containerEl.createDiv({ cls: 'settingsContainer' });
-    settingsContainer.style.display = initialState ? 'block' : 'none';
+    settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
     toggleSettingContainer.addEventListener('click', async () => {
-        const isOpen = settingsContainer.style.display !== 'none';
+        const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
-            settingsContainer.style.display = 'none';
+            settingsContainer.classList.add('hidden');
             plugin.settings.toggleGeneralSettings = false;
 
         } else {
             setIcon(chevronIcon, 'chevron-down'); // Open state
-            settingsContainer.style.display = 'block';
+            settingsContainer.classList.remove('hidden');
             plugin.settings.toggleGeneralSettings = true;
         }
         // fire-and-forget with error handling — listener itself returns void
@@ -210,9 +210,9 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
                 const referenceCurrentNoteElement = document.getElementById('referenceCurrentNote');
                 if (referenceCurrentNoteElement) {
                     if (value) {
-                        referenceCurrentNoteElement.style.display = 'block';
+                        referenceCurrentNoteElement.classList.add('visible');
                     } else {
-                        referenceCurrentNoteElement.style.display = 'none';
+                        referenceCurrentNoteElement.classList.add('hidden');
                     }
                 }
             })
