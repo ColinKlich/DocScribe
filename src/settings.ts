@@ -23,7 +23,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl('h1', { text: 'Docscribe Chatbot Settings' });
+		containerEl.createEl('h1', { text: 'Docscribe settings' });
 
 		// Create a container for the links
 		const linkContainer = containerEl.createEl('div');
@@ -32,7 +32,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 		const links = [
 			{ text: 'Changelog', href: 'https://github.com/colinklich/docscribe/releases' },
 			{ text: 'Wiki', href: 'https://github.com/colinklich/docscribe/wiki' },
-			{ text: 'Report a Bug', href: 'https://github.com/colinklich/docscribe/issues' }
+			{ text: 'Report a bug', href: 'https://github.com/colinklich/docscribe/issues' }
 		];
 
 		// Create links and separators
@@ -83,7 +83,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 
 		// Add reset button
 		const resetButton = containerEl.createEl('a', {
-			text: 'Reset Settings',
+			text: 'Reset settings',
 			href: '#',
 			attr: {
 				style: 'display: block; text-align: center; margin: 1rem 0; font-size: 0.7rem; color: #ff6666;'

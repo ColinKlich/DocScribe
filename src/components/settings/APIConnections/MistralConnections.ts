@@ -4,7 +4,7 @@ import DocscribeGPT from 'src/main';
 
 export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', { text: 'Mistral AI' });
+    toggleSettingContainer.createEl('h2', { text: 'Mistral AI connection' });
 
     const initialState = plugin.settings.toggleMistralSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -31,8 +31,8 @@ export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: D
     });
 
     new Setting(settingsContainer)
-    .setName('Mistral API Key')
-    .setDesc('Insert Mistral API Key.')
+    .setName('Mistral API key')
+    .setDesc('Insert Mistral API key.')
     .addText(text => text
         .setPlaceholder('insert-api-key')
         .setValue(plugin.settings.APIConnections.mistral.APIKey ? `${plugin.settings.APIConnections.mistral.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.mistral.APIKey.slice(-4)}` : '')

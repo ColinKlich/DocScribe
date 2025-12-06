@@ -4,7 +4,7 @@ import DocscribeGPT from 'src/main';
 
 export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', { text: 'Google Gemini' });
+    toggleSettingContainer.createEl('h2', { text: 'Google Gemini connection' });
 
     const initialState = plugin.settings.toggleGoogleGeminiSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -31,8 +31,8 @@ export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plug
     });
 
     new Setting(settingsContainer)
-    .setName('Google Gemini API Key')
-    .setDesc('Insert Google Gemini API Key.')
+    .setName('Google Gemini API key')
+    .setDesc('Insert Google Gemini API key.')
     .addText(text => text
         .setPlaceholder('insert-api-key')
         .setValue(plugin.settings.APIConnections.googleGemini.APIKey ? `${plugin.settings.APIConnections.googleGemini.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.googleGemini.APIKey.slice(-4)}` : '')

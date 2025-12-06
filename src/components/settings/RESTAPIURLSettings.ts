@@ -6,7 +6,7 @@ import { fetchRESTAPIURLModels } from '../FetchModelList';
 // OpenAI-Based REST API URL Connection Settings
 export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', {text: 'REST API Connection'});
+    toggleSettingContainer.createEl('h2', {text: 'REST API connection'});
 
     const initialState = plugin.settings.toggleRESTAPIURLSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -33,8 +33,8 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
     });
 
     new Setting(settingsContainer)
-    .setName('API Key')
-    .setDesc('Insert API Key (Optional).')
+    .setName('API key')
+    .setDesc('Insert API key (optional).')
     .addText(text => text
         .setPlaceholder('insert-api-key')
         .setValue(plugin.settings.RESTAPIURLConnection.APIKey ? `${plugin.settings.RESTAPIURLConnection.APIKey.slice(0, 6)}-...${plugin.settings.RESTAPIURLConnection.APIKey.slice(-4)}` : '')
@@ -49,8 +49,8 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
     );
 
     new Setting(settingsContainer)
-    .setName('REST API URL')
-    .setDesc(addDescriptionLink('ENTER YOUR REST API URL.', 'https://github.com/colinklich/docscribe/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
+    .setName('REST API url')
+    .setDesc(addDescriptionLink('Enter your REST API url.', 'https://github.com/colinklich/docscribe/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
     .addText(text => text
         .setPlaceholder('http://localhost:1234/v1')
         .setValue(plugin.settings.RESTAPIURLConnection.RESTAPIURL || DEFAULT_SETTINGS.RESTAPIURLConnection.RESTAPIURL)

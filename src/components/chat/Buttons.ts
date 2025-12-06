@@ -7,10 +7,10 @@ import { addParagraphBreaks } from './Message';
 
 export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSettings) {
     const regenerateButton = document.createElement('button');
-    regenerateButton.textContent = 'regenerate';
+    regenerateButton.textContent = 'Regenerate';
     setIcon(regenerateButton, 'refresh-ccw');
     regenerateButton.classList.add('regenerate-button');
-    regenerateButton.title = 'regenerate';
+    regenerateButton.title = 'Regenerate';
 
     let lastClickedElement: HTMLElement | null = null;
 
@@ -54,7 +54,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
                     await fetchMistralResponse(plugin, settings, index);
                 }
                 catch (error) {
-                    console.error('Mistral Error:', error);
+                    console.error('Mistral error:', error);
                 }
             }
             else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
@@ -62,7 +62,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
                     await fetchGoogleGeminiResponse(plugin, settings, index);
                 }
                 catch (error) {
-                    console.error('Google Gemini Error:', error);
+                    console.error('Google Gemini error:', error);
                 
                 }
             }
@@ -71,7 +71,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
                     await fetchAnthropicResponse(plugin, settings, index);
                 }
                 catch (error) {
-                    console.error('Anthropic Error:', error);
+                    console.error('Anthropic error:', error);
                 }
             }
         }
@@ -84,10 +84,10 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
 
 export function displayUserEditButton (plugin: DocscribeGPT, settings: DocscribeSettings, userPre: HTMLPreElement) {
     const editButton = document.createElement('button');
-    editButton.textContent = 'edit';
+    editButton.textContent = 'Edit';
     setIcon(editButton, 'edit'); // Assuming setIcon is defined elsewhere
     editButton.classList.add('edit-button');
-    editButton.title = 'edit';
+    editButton.title = 'Edit';
 
     let lastClickedElement: HTMLElement | null = null;
 
@@ -103,12 +103,12 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
         const textareaEditButton = document.createElement('button');
         textareaEditButton.textContent = 'Edit';
         textareaEditButton.classList.add('textarea-edit-button');
-        textareaEditButton.title = 'edit';
+        textareaEditButton.title = 'Edit';
 
         const cancelButton = document.createElement('button');
         cancelButton.textContent = 'Cancel';
         cancelButton.classList.add('textarea-cancel-button');
-        cancelButton.title = 'cancel';
+        cancelButton.title = 'Cancel';
 
         event.stopPropagation();
         lastClickedElement = event.target as HTMLElement;
@@ -235,7 +235,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                             await fetchAnthropicResponse(plugin, settings, index);
                         }
                         catch (error) {
-                            console.error('Anthropic Error:', error);
+                            console.error('Anthropic error:', error);
                         }
                     }
                     else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
@@ -243,7 +243,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                             await fetchGoogleGeminiResponse(plugin, settings, index);
                         }
                         catch (error) {
-                            console.error('Google GeminiError:', error);
+                            console.error('Google Gemini error:', error);
                         
                         }
                     }
@@ -252,7 +252,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                             await fetchMistralResponse(plugin, settings, index);
                         }
                         catch (error) {
-                            console.error('Mistral Error:', error);
+                            console.error('Mistral error:', error);
                         }
                     }
                     else if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
@@ -292,10 +292,10 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
 
 export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
     const editButton = document.createElement('button');
-    editButton.textContent = 'edit';
+    editButton.textContent = 'Edit';
     setIcon(editButton, 'edit');
     editButton.classList.add('edit-button');
-    editButton.title = 'edit';
+    editButton.title = 'Edit';
 
     let lastClickedElement: HTMLElement | null = null;
 
@@ -311,12 +311,12 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
         const textareaEditButton = document.createElement('button');
         textareaEditButton.textContent = 'Edit';
         textareaEditButton.classList.add('textarea-edit-button');
-        textareaEditButton.title = 'edit';
+        textareaEditButton.title = 'Edit';
 
         const cancelButton = document.createElement('button');
         cancelButton.textContent = 'Cancel';
         cancelButton.classList.add('textarea-cancel-button');
-        cancelButton.title = 'cancel';
+        cancelButton.title = 'Cancel';
 
         editContainer.appendChild(textArea);
 
@@ -351,7 +351,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
             const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
             copyCodeBlocks.forEach((copyCodeBlock) => {
                 copyCodeBlock.textContent = 'Copy';
-                setIcon(copyCodeBlock, 'copy');
+                setIcon(copyCodeBlock, 'Copy');
             });
 
             if (lastClickedElement) {
@@ -488,7 +488,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
             const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
             copyCodeBlocks.forEach((copyCodeBlock) => {
                 copyCodeBlock.textContent = 'Copy';
-                setIcon(copyCodeBlock, 'copy');
+                setIcon(copyCodeBlock, 'Copy');
             });
         });
 
@@ -505,10 +505,10 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
 
 export function displayUserCopyButton (userPre: HTMLPreElement) {
     const copyButton = document.createElement('button');
-    copyButton.textContent = 'copy';
+    copyButton.textContent = 'Copy';
     setIcon(copyButton, 'copy');
     copyButton.classList.add('copy-button');
-    copyButton.title = 'copy';
+    copyButton.title = 'Copy';
 
     copyButton.addEventListener('click', function () {
         const messageText = userPre.textContent;
@@ -525,10 +525,10 @@ export function displayUserCopyButton (userPre: HTMLPreElement) {
 
 export function displayBotCopyButton (settings: DocscribeSettings, message: string) {
     const copyButton = document.createElement('button');
-    copyButton.textContent = 'copy';
+    copyButton.textContent = 'Copy';
     setIcon(copyButton, 'copy');
     copyButton.classList.add('copy-button');
-    copyButton.title = 'copy';
+    copyButton.title = 'Copy';
 
     copyButton.addEventListener('click', function () {
         if (message !== null) {
@@ -551,10 +551,10 @@ export function copyMessageToClipboard(message: string) {
 // Append button to editor
 export function displayAppendButton(plugin: DocscribeGPT, settings: DocscribeSettings, message: string) {
     const appendButton = document.createElement('button');
-    appendButton.textContent = 'append';
+    appendButton.textContent = 'Append';
     setIcon(appendButton, 'plus-square');
     appendButton.classList.add('append-button');
-    appendButton.title = 'append';
+    appendButton.title = 'Append';
 
     const messageText = message;
 
@@ -576,7 +576,7 @@ export function displayAppendButton(plugin: DocscribeGPT, settings: DocscribeSet
             new Notice('Appended response.');
         }
         else {
-            new Notice('No active Markdown file detected.');
+            new Notice('No active markdown file detected.');
         }
     });
 
@@ -585,10 +585,10 @@ export function displayAppendButton(plugin: DocscribeGPT, settings: DocscribeSet
 
 export function displayTrashButton (plugin: DocscribeGPT) {
     const trashButton = document.createElement('button');
-    trashButton.textContent = 'trash';
+    trashButton.textContent = 'Trash';
     setIcon(trashButton, 'trash');
     trashButton.classList.add('trash-button');
-    trashButton.title = 'trash';
+    trashButton.title = 'Trash';
 
     let lastClickedElement: HTMLElement | null = null;
 
@@ -608,9 +608,9 @@ export function displayTrashButton (plugin: DocscribeGPT) {
             if (index !== -1) {
                 const modal = new Modal(plugin.app);
                 
-                modal.contentEl.createEl('h2', { text: 'Delete Message Block.' });
+                modal.contentEl.createEl('h2', { text: 'Delete message block.' });
                 modal.contentEl.createEl('p', { text: 'Are you sure you want to delete this message block?' });
-                const confirmDeleteButton = modal.contentEl.createEl('button', { text: 'Confirm Delete', attr: { id: 'confirmDelete' } });
+                const confirmDeleteButton = modal.contentEl.createEl('button', { text: 'Confirm delete', attr: { id: 'confirmDelete' } });
                 confirmDeleteButton?.addEventListener('click', async function () {
                     deleteMessage(plugin, index);
                     new Notice('Message deleted.');
@@ -655,6 +655,6 @@ export async function deleteMessage(plugin: DocscribeGPT, index: number) {
     try {
         await plugin.app.vault.adapter.write(fileNameMessageHistoryJson(plugin), jsonString);
     } catch (error) {
-        console.error('Error writing messageHistory.json', error);
+        console.error('Error writing messagehistory.json', error);
     }
 }

@@ -5,7 +5,7 @@ import { ANTHROPIC_MODELS } from 'src/view';
 
 export async function addGeneralSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', {text: 'General'});
+    toggleSettingContainer.createEl('h2', {text: 'General settings'});
 
     const initialState = plugin.settings.toggleGeneralSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -36,13 +36,13 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
 
     const createModelDropdown = (dropdown: DropdownComponent) => {
         const modelGroups = [
-            { name: 'Ollama Models', models: plugin.settings.OllamaConnection.ollamaModels },
-            { name: 'REST API Models', models: plugin.settings.RESTAPIURLConnection.RESTAPIURLModels },
-            { name: 'Anthropic Models', models: plugin.settings.APIConnections.anthropic.anthropicModels },
-            { name: 'Google Gemini Models', models: plugin.settings.APIConnections.googleGemini.geminiModels },
-            { name: 'Mistral Models', models: plugin.settings.APIConnections.mistral.mistralModels },
-            { name: 'OpenAI-Based Models', models: plugin.settings.APIConnections.openAI.openAIBaseModels },
-            { name: 'OpenRouter Models', models: plugin.settings.APIConnections.openRouter.openRouterModels }
+            { name: 'Ollama models', models: plugin.settings.OllamaConnection.ollamaModels },
+            { name: 'REST API models', models: plugin.settings.RESTAPIURLConnection.RESTAPIURLModels },
+            { name: 'Anthropic models', models: plugin.settings.APIConnections.anthropic.anthropicModels },
+            { name: 'Google Gemini models', models: plugin.settings.APIConnections.googleGemini.geminiModels },
+            { name: 'Mistral models', models: plugin.settings.APIConnections.mistral.mistralModels },
+            { name: 'OpenAI-based models', models: plugin.settings.APIConnections.openAI.openAIBaseModels },
+            { name: 'OpenRouter models', models: plugin.settings.APIConnections.openRouter.openRouterModels }
         ];
     
         const selectEl = dropdown.selectEl;
@@ -52,9 +52,9 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
         // Add the default model option
         const defaultOption = selectEl.createEl('option', {
             value: '',
-            text: 'No Model'
+            text: 'No model'
         });
-        if (plugin.settings.general.model === 'No Model') {
+        if (plugin.settings.general.model === 'No model') {
             defaultOption.selected = true;
         }
     
@@ -89,7 +89,7 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
         .setName('Model')
         .setDesc('Choose a model.')
         .addButton(button => button
-            .setButtonText('Restore Default')
+            .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
             .onClick(async () => {
@@ -146,7 +146,7 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
         });
 
     new Setting(settingsContainer)
-        .setName('Max Tokens')
+        .setName('Max tokens')
         .setDesc('The maximum number of tokens, or words, that the model is allowed to generate in its output. Some models require a minimum number of tokens to be set. The default value is empty.')
         .addText(text => text
             .setPlaceholder('4096')
@@ -197,7 +197,7 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
         );
 
     new Setting(settingsContainer)
-        .setName('Enable Reference Current Note')
+        .setName('Enable reference current note')
         .setDesc('Enable chatbot to reference current active note during conversation.')
         .addToggle((toggle) =>
             toggle.setValue(plugin.settings.general.enableReferenceCurrentNote).onChange((value) => {

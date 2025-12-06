@@ -3,7 +3,7 @@ import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 
 export function addChatHistorySettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', {text: 'Chat History'});
+    toggleSettingContainer.createEl('h2', {text: 'Chat history'});
 
     const initialState = plugin.settings.toggleChatHistorySettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -30,7 +30,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
     });
 
     new Setting(settingsContainer)
-        .setName('Chat History Folder Path')
+        .setName('Chat history folder path')
         .setDesc('Save your chat history in a specified folder.')
         .addText(text => text
             .setPlaceholder('Docscribe/History')
@@ -62,7 +62,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
         );
 
     new Setting(settingsContainer)
-        .setName('Template File Path')
+        .setName('Template file path')
         .setDesc('Insert your template file path.')
         .addText(text => text
             .setPlaceholder('templates/Docscribe.md')
@@ -99,7 +99,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
         );
 
     new Setting(settingsContainer)
-        .setName('Enable Rename Note Title')
+        .setName('Enable rename note title')
         .setDesc('Enable model to rename the note title when saving chat history.')
         .addToggle((toggle) =>
             toggle.setValue(plugin.settings.chatHistory.allowRenameNoteTitle).onChange((value) => {

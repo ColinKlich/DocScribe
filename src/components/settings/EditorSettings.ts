@@ -4,7 +4,7 @@ import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 
 export async function addEditorSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', {text: 'Editor'});
+    toggleSettingContainer.createEl('h2', {text: 'Editor settings'});
 
     const initialState = plugin.settings.toggleEditorSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -31,8 +31,8 @@ export async function addEditorSettings(containerEl: HTMLElement, plugin: Docscr
     });
 
     new Setting(settingsContainer)
-        .setName('Editor System Role')
-        .setDesc('System role for Docscribe Generate and \'Prompt Select Generate\' command.')
+        .setName('Editor system role')
+        .setDesc('System role for Docscribe generate and \'Prompt Select Generate\' command.')
         .addTextArea(text => text
             .setPlaceholder('You are a helpful assistant.')
             .setValue(plugin.settings.editor.systen_role !== undefined ? plugin.settings.editor.systen_role : DEFAULT_SETTINGS.editor.systen_role)

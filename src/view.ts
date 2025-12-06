@@ -56,7 +56,7 @@ export class DocscribeView extends ItemView {
     }
 
     getDisplayText() {
-        return 'Docscribe Chatbot';
+        return 'Docscribe chatbot';
     }
     
     async onOpen(): Promise<void> {
@@ -92,7 +92,7 @@ export class DocscribeView extends ItemView {
         });
         
         const referenceCurrentNoteElement = chatbotContainer.createEl('p', {
-            text: 'Reference Current Note',
+            text: 'Reference current note',
             attr: {
                 id: 'referenceCurrentNote'
             }
@@ -628,18 +628,18 @@ export function populateModelDropdown(plugin: DocscribeGPT, settings: DocscribeS
 
     // Get models as arrays
     const modelGroups = [
-        { name: 'Ollama Models', models: settings.OllamaConnection.ollamaModels },
-        { name: 'REST API Models', models: settings.RESTAPIURLConnection.RESTAPIURLModels },
-        { name: 'Anthropic Models', models: settings.APIConnections.anthropic.anthropicModels },
-        { name: 'Google Gemini Models', models: settings.APIConnections.googleGemini.geminiModels },
-        { name: 'Mistral Models', models: settings.APIConnections.mistral.mistralModels },
-        { name: 'OpenAI-Based Models', models: settings.APIConnections.openAI.openAIBaseModels },
-        { name: 'OpenRouter Models', models: settings.APIConnections.openRouter.openRouterModels }
+        { name: 'Ollama models', models: settings.OllamaConnection.ollamaModels },
+        { name: 'REST API models', models: settings.RESTAPIURLConnection.RESTAPIURLModels },
+        { name: 'Anthropic models', models: settings.APIConnections.anthropic.anthropicModels },
+        { name: 'Google Gemini models', models: settings.APIConnections.googleGemini.geminiModels },
+        { name: 'Mistral models', models: settings.APIConnections.mistral.mistralModels },
+        { name: 'OpenAI-based models', models: settings.APIConnections.openAI.openAIBaseModels },
+        { name: 'OpenRouter models', models: settings.APIConnections.openRouter.openRouterModels }
     ];
 
     if (defaultModel === '') {
         const optionEl = document.createElement('option');
-        optionEl.textContent = 'No Model';
+        optionEl.textContent = 'No model';
         optionEl.value = '';
         optionEl.selected = true;
         modelOptions.appendChild(optionEl);

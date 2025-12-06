@@ -5,7 +5,7 @@ import DocscribeGPT, { DEFAULT_SETTINGS, updateSettingsFromFrontMatter } from 's
 // Profile Settings
 export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', {text: 'Profiles'});
+    toggleSettingContainer.createEl('h2', {text: 'Profile settings'});
 
     const initialState = plugin.settings.toggleProfileSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -92,7 +92,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
     });
 
     new Setting(settingsContainer)
-        .setName('Profile Folder Path')
+        .setName('Profile folder path')
         .setDesc('Select a profile from a specified folder.')
         .addText(text => text
             .setPlaceholder('Docscribe/Profiles')

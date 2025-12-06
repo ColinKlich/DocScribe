@@ -8,7 +8,7 @@ import { addOpenRouterConnectionSettings } from './APIConnections/OpenRouterConn
 
 export function addAPIConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', { text: 'API Connections' });
+    toggleSettingContainer.createEl('h2', { text: 'API connections' });
 
     const initialState = plugin.settings.toggleAPIConnectionSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });

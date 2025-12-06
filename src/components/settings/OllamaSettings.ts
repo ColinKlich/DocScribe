@@ -6,7 +6,7 @@ import { addDescriptionLink } from 'src/utils/DescriptionLink';
 // Ollama Settings
 export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', {text: 'Ollama Connection'});
+    toggleSettingContainer.createEl('h2', {text: 'Ollama connection'});
 
     const initialState = plugin.settings.toggleOllamaSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -36,7 +36,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     });
 
     new Setting(settingsContainer)
-        .setName('OLLAMA REST API URL')
+        .setName('Ollama REST API url')
         .setDesc(addDescriptionLink('Enter your REST API URL. Update ', 'https://ollama.com/', 'to version >=0.1.42 to avoid CORS restriction.', 'Ollama'))
         .addText(text => text
             .setPlaceholder('http://localhost:11434')
@@ -65,7 +65,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
 
     // Create the toggle container for Advanced Settings within the main settingsContainer
     const advancedToggleSettingContainer = settingsContainer.createDiv({ cls: 'toggleSettingContainer' });
-    advancedToggleSettingContainer.createEl('h2', { text: 'Advanced Settings' });
+    advancedToggleSettingContainer.createEl('h2', { text: 'Advanced settings' });
 
     // Determine the initial state for Advanced Settings from the plugin's settings
     const advancedInitialState = plugin.settings.toggleAdvancedSettings;

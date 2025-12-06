@@ -4,7 +4,7 @@ import { ANTHROPIC_MODELS } from 'src/view';
 
 export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', { text: 'Anthropic' });
+    toggleSettingContainer.createEl('h2', { text: 'Anthropic connection' });
 
     const initialState = plugin.settings.toggleAnthropicSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -31,8 +31,8 @@ export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin:
     });
 
     new Setting(settingsContainer)
-    .setName('Anthropic API Key')
-    .setDesc('Insert Anthropic API Key. Warning: Anthropic models cannot be aborted. Please use with caution.')
+    .setName('Anthropic API key')
+    .setDesc('Insert Anthropic API key. Warning: Anthropic models cannot be aborted. Please use with caution.')
     .addText(text => text
         .setPlaceholder('insert-api-key')
         .setValue(plugin.settings.APIConnections.anthropic.APIKey ? `${plugin.settings.APIConnections.anthropic.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.anthropic.APIKey.slice(-4)}` : '')

@@ -5,7 +5,7 @@ import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 // Prompt Settings
 export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', {text: 'Prompts'});
+    toggleSettingContainer.createEl('h2', {text: 'Prompt settings'});
 
     const initialState = plugin.settings.togglePromptSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -69,7 +69,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     });
 
     new Setting(settingsContainer)
-        .setName('Prompt Folder Path')
+        .setName('Prompt folder path')
         .setDesc('Select a prompt from a specified folder.')
         .addText(text => text
             .setPlaceholder('Docscribe/Prompts')

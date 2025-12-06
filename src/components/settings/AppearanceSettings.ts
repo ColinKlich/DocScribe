@@ -4,7 +4,7 @@ import { colorToHex } from 'src/utils/ColorConverter';
 
 export function addAppearanceSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', {text: 'Appearance'});
+    toggleSettingContainer.createEl('h2', {text: 'Appearance settings'});
 
     const initialState = plugin.settings.toggleAppearanceSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -30,10 +30,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
-    settingsContainer.createEl('h6', {text: 'Chat View'});
+    settingsContainer.createEl('h6', {text: 'Chat view'});
 
     new Setting(settingsContainer)
-    .setName('Enable Header')
+    .setName('Enable header')
     .setDesc('Display chatbot name and model name in header.')
     .addToggle((toggle) =>
         toggle.setValue(plugin.settings.appearance.enableHeader).onChange((value) => {
@@ -62,7 +62,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     );
     
     new Setting(settingsContainer)
-        .setName('User Name')
+        .setName('User name')
         .setDesc('Create a username.')
         .addText(text => text
             .setPlaceholder('Enter user name')
@@ -103,10 +103,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     const defaultChatBoxBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor).trim();
 
     new Setting(settingsContainer)
-        .setName('Chatbot Container Background Color')
+        .setName('Chatbot container background color')
         .setDesc('Modify the background color of the chatbot container.')
         .addButton(button => button
-            .setButtonText('Restore Default')
+            .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
             .onClick(async () => {
@@ -147,10 +147,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         });
 
     new Setting(settingsContainer)
-    .setName('Message Container Background Color')
+    .setName('Message container background color')
     .setDesc('Modify the background color of the message container.')
     .addButton(button => button
-        .setButtonText('Restore Default')
+        .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
         .onClick(async () => {
@@ -187,10 +187,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     });
 
     new Setting(settingsContainer)
-        .setName('User Message Font Color')
+        .setName('User message font color')
         .setDesc('Modify the font color of the user message.')
         .addButton(button => button
-            .setButtonText('Restore Default')
+            .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
             .onClick(async () => {
@@ -235,10 +235,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         });
 
     new Setting(settingsContainer)
-        .setName('User Message Background Color')
+        .setName('User message background color')
         .setDesc('Modify the background color of the user message.')
         .addButton(button => button
-            .setButtonText('Restore Default')
+            .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
             .onClick(async () => {
@@ -283,10 +283,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         });
 
     new Setting(settingsContainer)
-    .setName('Bot Message Font Color')
+    .setName('Bot message font color')
     .setDesc('Modify the font color of the bot message.')
     .addButton(button => button
-        .setButtonText('Restore Default')
+        .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
         .onClick(async () => {
@@ -331,10 +331,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     });
 
     new Setting(settingsContainer)
-        .setName('Bot Message Background Color')
+        .setName('Bot message background color')
         .setDesc('Modify the background color of the bot message.')
         .addButton(button => button
-            .setButtonText('Restore Default')
+            .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
             .onClick(async () => {
@@ -378,10 +378,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     });
 
     new Setting(settingsContainer)
-    .setName('Chatbox Font Color')
+    .setName('Chatbox font color')
     .setDesc('Modify the font color of the chatbox.')
     .addButton(button => button
-        .setButtonText('Restore Default')
+        .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
         .onClick(async () => {
@@ -420,10 +420,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     });
     
     new Setting(settingsContainer)
-    .setName('Chatbox Background Color')
+    .setName('Chatbox background color')
     .setDesc('Modify the background color of the chatbox.')
     .addButton(button => button
-        .setButtonText('Restore Default')
+        .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
         .onClick(async () => {
@@ -464,7 +464,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     });
 
     new Setting(settingsContainer)
-    .setName('Enable Scrollbar')
+    .setName('Enable scrollbar')
     .setDesc('Display scrollbar in chatbox.')
     .addToggle((toggle) =>
         toggle.setValue(plugin.settings.appearance.enableScrollBar).onChange((value) => {
@@ -487,7 +487,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         })
     );
 
-    settingsContainer.createEl('h6', {text: 'Generate View'});
+    settingsContainer.createEl('h6', {text: 'Generate view'});
 
     let colorPicker9: ColorComponent;
     // const defaultDocscribeGenerateBackgroundColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor).trim();
@@ -496,10 +496,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     const defaultDocscribeGenerateFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor).trim();
 
     new Setting(settingsContainer)
-    .setName('Docscribe Generate Background Color')
+    .setName('Docscribe generate background color')
     .setDesc('Modify the background color of Docscribe Generate.')
     .addButton(button => button
-        .setButtonText('Restore Default')
+        .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
         .onClick(async () => {
@@ -532,10 +532,10 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     });
 
     new Setting(settingsContainer)
-    .setName('Docscribe Generate Font Color')
+    .setName('Docscribe generate font color')
     .setDesc('Modify the font color of Docscribe Generate.')
     .addButton(button => button
-        .setButtonText('Restore Default')
+        .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
         .onClick(async () => {

@@ -4,7 +4,7 @@ import DocscribeGPT from 'src/main';
 
 export function addOpenRouterConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', { text: 'OpenRouter' });
+    toggleSettingContainer.createEl('h2', { text: 'OpenRouter connection' });
 
     const initialState = plugin.settings.toggleOpenRouterSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -31,8 +31,8 @@ export function addOpenRouterConnectionSettings(containerEl: HTMLElement, plugin
     });
 
     new Setting(settingsContainer)
-    .setName('OpenRouter API Key')
-    .setDesc('Insert OpenRouter API Key.')
+    .setName('OpenRouter API key')
+    .setDesc('Insert OpenRouter API key.')
     .addText(text => text
         .setPlaceholder('insert-api-key')
         .setValue(plugin.settings.APIConnections.openRouter.APIKey ? `${plugin.settings.APIConnections.openRouter.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.openRouter.APIKey.slice(-4)}` : '')

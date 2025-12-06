@@ -4,7 +4,7 @@ import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 
 export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', { text: 'OpenAI' });
+    toggleSettingContainer.createEl('h2', { text: 'OpenAI connection' });
 
     const initialState = plugin.settings.toggleOpenAISettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -31,8 +31,8 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
     });
 
     new Setting(settingsContainer)
-    .setName('OpenAI API Key')
-    .setDesc('Insert OpenAI API Key.')
+    .setName('OpenAI API key')
+    .setDesc('Insert OpenAI API key.')
     .addText(text => text
         .setPlaceholder('insert-api-key')
         .setValue(plugin.settings.APIConnections.openAI.APIKey ? `${plugin.settings.APIConnections.openAI.APIKey.slice(0, 7)}-...${plugin.settings.APIConnections.openAI.APIKey.slice(-4)}` : '')
@@ -57,10 +57,10 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
     );
 
     new Setting(settingsContainer)
-        .setName('OpenAI-Based URL')
-        .setDesc('Enter your custom OpenAI-Based URL.')
+        .setName('OpenAI-based url')
+        .setDesc('Enter your custom OpenAI-based url.')
         .addButton(button => button
-            .setButtonText('Restore Default')
+            .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
             .onClick(async () => {

@@ -474,7 +474,7 @@ export default class DocscribeGPT extends Plugin {
 
 		this.addCommand({
             id: 'open-docscribe',
-            name: 'Open Docscribe Chatbot',
+            name: 'Open Docscribe chatbot',
             callback: () => {
                 this.activateView();
             }
@@ -488,7 +488,7 @@ export default class DocscribeGPT extends Plugin {
 
 		this.addCommand({
             id: 'rename-note-title',
-            name: 'Rename Note Title',
+            name: 'Rename note title',
             callback: () => {
 				renameTitleCommand(this, this.settings);
             }
@@ -509,7 +509,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pptx') {
 					menu.addItem((item) => {
 						item
-							.setTitle('Docscribe: Extract notes from PPTX')
+							.setTitle('Docscribe: Extract notes from pptx')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractStructuredText(arrayBuffer);
@@ -524,7 +524,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pdf') {
 					menu.addItem((item) => {
 						item
-							.setTitle('Docscribe: Extract notes from PDF')
+							.setTitle('Docscribe: Extract notes from pdf')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractTextFromPdf(arrayBuffer, 5000);
@@ -546,7 +546,7 @@ export default class DocscribeGPT extends Plugin {
 
 		this.addCommand({
             id: 'prompt-select-generate',
-            name: 'Prompt Select Generate',
+            name: 'Prompt select generate',
             callback: () => {
 				promptSelectGenerateCommand(this, this.settings);
             }
