@@ -28,7 +28,10 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
             settingsContainer.style.display = 'block';
             plugin.settings.toggleGeneralSettings = true;
         }
-        await plugin.saveSettings();
+        // fire-and-forget with error handling — listener itself returns void
+        plugin.saveSettings().catch(err => {
+            console.error('Failed to save settings:', err);
+        });
     });
 
     const createModelDropdown = (dropdown: DropdownComponent) => {
@@ -73,7 +76,10 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
     
         dropdown.onChange(async (value) => {
             plugin.settings.general.model = value;
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         });
     };
     
@@ -147,7 +153,10 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
             .setValue(plugin.settings.general.max_tokens)
             .onChange(async (value) => {
                 plugin.settings.general.max_tokens = value;
-                await plugin.saveSettings();
+                // fire-and-forget with error handling — listener itself returns void
+                plugin.saveSettings().catch(err => {
+                    console.error('Failed to save settings:', err);
+                });
             })
         );
 
@@ -177,10 +186,13 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
                     // Fallback to the default value if input is not a valid number
                     plugin.settings.general.temperature = DEFAULT_SETTINGS.general.temperature;
                 }
-                await plugin.saveSettings();
+                // fire-and-forget with error handling — listener itself returns void
+                plugin.saveSettings().catch(err => {
+                    console.error('Failed to save settings:', err);
+                });
             })
-            .inputEl.addEventListener('focusout', async () => {
-                SettingTab.display();
+            .inputEl.addEventListener('focusout', () => {
+                void SettingTab.display();
             })
         );
 
@@ -190,7 +202,10 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
         .addToggle((toggle) =>
             toggle.setValue(plugin.settings.general.enableReferenceCurrentNote).onChange((value) => {
                 plugin.settings.general.enableReferenceCurrentNote = value;
-                plugin.saveSettings();
+                // fire-and-forget with error handling — listener itself returns void
+                plugin.saveSettings().catch(err => {
+                    console.error('Failed to save settings:', err);
+                });
 
                 const referenceCurrentNoteElement = document.getElementById('referenceCurrentNote');
                 if (referenceCurrentNoteElement) {

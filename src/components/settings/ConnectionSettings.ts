@@ -31,7 +31,7 @@ export function addAPIConnectionSettings(containerEl: HTMLElement, plugin: Docsc
             settingsContainer.style.display = 'block';
             plugin.settings.toggleAPIConnectionSettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     addAnthropicConnectionSettings(settingsContainer, plugin, SettingTab);

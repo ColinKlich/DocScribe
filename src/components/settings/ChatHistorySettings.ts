@@ -26,7 +26,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
             settingsContainer.style.display = 'block';
             plugin.settings.toggleChatHistorySettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
@@ -54,10 +54,10 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
                         text.inputEl.style.borderColor = 'red'; 
                     }
                 }
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             })
-            .inputEl.addEventListener('focusout', async () => {
-                SettingTab.display();
+            .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
             })
         );
 
@@ -75,7 +75,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
                         plugin.settings.chatHistory.templateFilePath += '.md';
                     }
 
-                    await plugin.saveSettings();
+                    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
 
                     const allFiles = plugin.app.vault.getFiles(); // Retrieve all files from the vault
 

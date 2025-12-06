@@ -27,7 +27,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             settingsContainer.style.display = 'block';
             plugin.settings.toggleAppearanceSettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     settingsContainer.createEl('h6', {text: 'Chat View'});
@@ -70,7 +70,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             .onChange(async (value) => {
                 plugin.settings.appearance.userName = value ? value : DEFAULT_SETTINGS.appearance.userName;
                 text.inputEl.maxLength = 30;
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 const userNames = document.querySelectorAll('.userName') as NodeListOf<HTMLHeadingElement>;
                 userNames.forEach(userName => {
                     userName.textContent = plugin.settings.appearance.userName;
@@ -119,7 +119,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     // Modify the background color of the chatbot container
                     chatbotContainer.style.setProperty('--docscribe-chatbot-container-background-color', defaultValue);
                     messageContainer.style.backgroundColor = colorPicker2.getValue();
-                    await plugin.saveSettings();
+                    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 }
             })
         )
@@ -142,7 +142,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     chatbotContainer.style.setProperty('--docscribe-chatbot-container-background-color', hexValue);
                     messageContainer.style.backgroundColor = colorPicker2.getValue();
                 }
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
         });
 
@@ -161,7 +161,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             if (messageContainer) {
                 // Modify the background color of the chatbot container
                 messageContainer.style.setProperty('--docscribe-message-container-background-color', defaultValue);
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             }
         })
     )
@@ -182,7 +182,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             if (messageContainer) {
                 messageContainer.style.setProperty('--docscribe-message-container-background-color', hexValue);
             }
-            await plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         });
     });
 
@@ -204,7 +204,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                         const element = userMessage as HTMLElement;
                         element.style.setProperty('--docscribe-user-message-font-color', defaultValue);
                     });
-                    await plugin.saveSettings();
+                    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 }
             })
         )
@@ -230,7 +230,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     });
                 }
 
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
         });
 
@@ -252,7 +252,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                         const element = userMessage as HTMLElement;
                         element.style.setProperty('--docscribe-user-message-background-color', defaultValue);
                     });
-                    await plugin.saveSettings();
+                    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 }
             })
         )
@@ -278,7 +278,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     });
                 }
 
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
         });
 
@@ -300,7 +300,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     const element = botMessage as HTMLElement;
                     element.style.setProperty('--docscribe-bot-message-font-color', defaultValue);
                 });
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             }
         })
     )
@@ -326,7 +326,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 });
             }
 
-            await plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         });
     });
 
@@ -348,7 +348,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                         const element = botMessage as HTMLElement;
                         element.style.setProperty('--docscribe-bot-message-background-color', defaultValue);
                     });
-                    await plugin.saveSettings();
+                    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 }
             })
         )
@@ -373,7 +373,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                             element.style.setProperty('--docscribe-bot-message-background-color', hexValue);
                         });
                     }
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
     });
 
@@ -392,7 +392,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             if (textarea) {
                 textarea.style.setProperty('--docscribe-chatbox-font-color', defaultValue);
                 
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             }
         })
     )
@@ -415,7 +415,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 if (textarea) {
                     textarea.style.setProperty('--docscribe-chatbox-font-color', hexValue);
                 }
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
     });
     
@@ -435,7 +435,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 const element = chatbox as HTMLElement;
                 element.style.backgroundColor = defaultValue;
                 element.style.borderColor = defaultValue;
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             }
         })
     )
@@ -459,7 +459,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     element.style.setProperty('--docscribe-chatbox-background-color', hexValue);
                 }
 
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
     });
 
@@ -509,7 +509,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                             containers.forEach((container) => {
                                 const element = container as HTMLElement;
                                 element.style.setProperty('--docscribe-generate-background-color', DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
-                            });            await plugin.saveSettings();
+                            });            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         })
     )
     .addColorPicker(async (color) => {
@@ -527,7 +527,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     const element = container as HTMLElement;
                     element.style.setProperty('--docscribe-generate-background-color', hexValue);
                 });
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
     });
 
@@ -548,7 +548,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 element.style.color = defaultValue;
             });
             
-            await plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         })
     )
     .addColorPicker(async (color) => {
@@ -571,7 +571,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                     element.style.setProperty('--docscribe-generate-font-color', hexValue);
                 });
                 
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             });
         
 

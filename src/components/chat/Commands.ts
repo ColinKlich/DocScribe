@@ -359,7 +359,7 @@ export async function commandModel(input: string, settings: DocscribeSettings, p
       new Notice('Invalid model.');
     }
 
-    await plugin.saveSettings();
+    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
   }
 }
 
@@ -470,7 +470,7 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
       // new Notice(`Profile updated to '${profileAliases[inputValue]}'`);
       plugin.activateView();
       await updateSettingsFromFrontMatter(plugin, currentProfile);
-      await plugin.saveSettings();
+      plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     } else if (Object.values(profileAliases).map(v => v.toLowerCase()).includes(inputValue.toLowerCase())) {
         // If input matches a value in profileAliases (case-insensitive)
         const matchedProfile = Object.entries(profileAliases).find(([key, value]) => value.toLowerCase() === inputValue.toLowerCase());
@@ -492,13 +492,13 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
             
             plugin.activateView();
             await updateSettingsFromFrontMatter(plugin, currentProfile);
-            await plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         }
     } else {
         new Notice('Invalid profile.');
     }
 
-    await plugin.saveSettings();
+    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
   }
 
 }
@@ -585,7 +585,7 @@ const p = document.createElement('p');
       settings.prompts.prompt = ''; // Set to default or empty
       new Notice('Prompt cleared.');
 
-      await plugin.saveSettings();
+      plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     }
     
     const promptAliases: { [key: string]: string } = {};
@@ -617,7 +617,7 @@ const p = document.createElement('p');
       }
     }
 
-    await plugin.saveSettings();
+    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
   }
 
 }
@@ -643,7 +643,7 @@ export async function commandReference(input: string, settings: DocscribeSetting
     new Notice('Type `/ref on` or `/ref off` to turn on/off reference current note.');
   }
 
-  await plugin.saveSettings();
+  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
 }
 
 // `/temp "VALUE"` to change the temperature.
@@ -664,7 +664,7 @@ export async function commandTemperature(input: string, settings: DocscribeSetti
     new Notice(`Current temperature: ${settings.general.temperature}`);
   }
 
-  await plugin.saveSettings();
+  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
 }
 
 // `/maxtokens` to change max_tokens.
@@ -698,7 +698,7 @@ export async function commandMaxTokens(input: string, settings: DocscribeSetting
     }
   }
 
-  await plugin.saveSettings();
+  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
 }
 
 // `/append` to append current chat history to current active note.
@@ -964,7 +964,7 @@ if (settings.profiles.lastLoadedChatHistoryPath !== null) {
     }
     
     new Notice(`Saved to '${lastLoadedChatHistoryFile?.name}'`);
-    await plugin.saveSettings();
+    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
   } catch (error) {
     console.error('Failed to create note:', error);
   }
@@ -1151,7 +1151,7 @@ if (input.startsWith('/load')) {
 
             // Update the lastLoadedChatHistoryPath for the current profile
             settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
-            await plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
           }
           modal.close();
         });
@@ -1206,7 +1206,7 @@ if (input.startsWith('/load')) {
     
                 // Update the lastLoadedChatHistoryPath for the current profile
                 settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
               }
               modal.close();
             }
@@ -1258,7 +1258,7 @@ if (input.startsWith('/load')) {
   
               // Update the lastLoadedChatHistoryPath for the current profile
               settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
-              await plugin.saveSettings();
+              plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             }
             modal.close();
           });
@@ -1313,7 +1313,7 @@ if (input.startsWith('/load')) {
       
                   // Update the lastLoadedChatHistoryPath for the current profile
                   settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
-                  await plugin.saveSettings();
+                  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 }
                 modal.close();
               }
@@ -1363,7 +1363,7 @@ export async function removeMessageThread(plugin: DocscribeGPT, index: number) {
       // Update the lastLoadedChatHistoryPath for the current profile
       plugin.settings.profiles.lastLoadedChatHistory[profileIndex] = plugin.settings.profiles.lastLoadedChatHistoryPath;
 
-      await plugin.saveSettings();
+      plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
       new Notice('Chat history cleared.');
   } catch (error) {
       console.error('Error writing messageHistory.json', error);

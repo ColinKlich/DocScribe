@@ -28,7 +28,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
             settingsContainer.style.display = 'block';
             plugin.settings.togglePromptSettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
@@ -63,7 +63,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .setValue(plugin.settings.prompts.prompt || DEFAULT_SETTINGS.prompts.prompt)
         .onChange(async (value) => {
             plugin.settings.prompts.prompt = value ? value : DEFAULT_SETTINGS.prompts.prompt;
-            await plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         })
         
     });
@@ -93,10 +93,10 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                         text.inputEl.style.borderColor = 'red'; 
                     }
                 }
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             })
-            .inputEl.addEventListener('focusout', async () => {
-                SettingTab.display();
+            .inputEl.addEventListener('focusout', () => {
+                void SettingTab.display();
             })
         );
 }

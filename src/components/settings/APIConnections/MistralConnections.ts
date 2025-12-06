@@ -27,7 +27,7 @@ export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: D
             settingsContainer.style.display = 'block';
             plugin.settings.toggleMistralSettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
@@ -52,8 +52,8 @@ export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: D
             }
         })
         .inputEl.addEventListener('focusout', async () => {
-            await plugin.saveSettings();
-            SettingTab.display();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+            void SettingTab.display();
         })
     );
 }

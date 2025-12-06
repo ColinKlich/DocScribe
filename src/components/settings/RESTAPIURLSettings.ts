@@ -29,7 +29,7 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
             settingsContainer.style.display = 'block';
             plugin.settings.toggleRESTAPIURLSettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
@@ -41,11 +41,11 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
         .onChange(async (value) => {
             plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = [];
             plugin.settings.RESTAPIURLConnection.APIKey = value;
-            await plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
-        })
+.inputEl.addEventListener('focusout', () => {
+  void SettingTab.display();
+})
     );
 
     new Setting(settingsContainer)
@@ -69,8 +69,8 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
                 }
             })
         .inputEl.addEventListener('focusout', async () => {
-            await plugin.saveSettings();
-            SettingTab.display();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+            void SettingTab.display();
         })
     );
 

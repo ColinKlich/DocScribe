@@ -27,7 +27,7 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
             settingsContainer.style.display = 'block';
             plugin.settings.toggleOpenAISettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
@@ -51,8 +51,8 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
             }
         })
         .inputEl.addEventListener('focusout', async () => {
-            await plugin.saveSettings();
-            SettingTab.display();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+            void SettingTab.display();
         })
     );
 
@@ -66,8 +66,8 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
             .onClick(async () => {
                 plugin.settings.APIConnections.openAI.openAIBaseModels = [];
                 plugin.settings.APIConnections.openAI.openAIBaseUrl = DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl;
-                await plugin.saveSettings();
-                SettingTab.display();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+                void SettingTab.display();
             })
         )
         .addText(text => text
@@ -75,10 +75,10 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
             .setValue(plugin.settings.APIConnections.openAI.openAIBaseUrl || DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl)
             .onChange(async (value) => {
                     plugin.settings.APIConnections.openAI.openAIBaseUrl = value ? value : DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl;
-                    await plugin.saveSettings();
+                    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 })
             .inputEl.addEventListener('focusout', async () => {
-                SettingTab.display();
+                void SettingTab.display();
             })
         );
 }

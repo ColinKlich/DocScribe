@@ -27,7 +27,7 @@ export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin:
             settingsContainer.style.display = 'block';
             plugin.settings.toggleAnthropicSettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
@@ -51,8 +51,8 @@ export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin:
             }
         })
         .inputEl.addEventListener('focusout', async () => {
-            await plugin.saveSettings();
-            SettingTab.display();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+            void SettingTab.display();
         })
     );
 }

@@ -29,7 +29,10 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
             settingsContainer.style.display = 'block';
             plugin.settings.toggleOllamaSettings = true;
         }
-        await plugin.saveSettings();
+        // fire-and-forget with error handling — listener itself returns void
+        plugin.saveSettings().catch(err => {
+            console.error('Failed to save settings:', err);
+        });
     });
 
     new Setting(settingsContainer)
@@ -52,9 +55,9 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                         });
                     }
                 })
-            .inputEl.addEventListener('focusout', async () => {
-                await plugin.saveSettings();
-                SettingTab.display();
+            .inputEl.addEventListener('focusout', () => {
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+                void SettingTab.display();
             })
         )
 
@@ -85,7 +88,10 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
             advancedSettingsContainer.style.display = 'block';
             plugin.settings.toggleAdvancedSettings = true;
         }
-        await plugin.saveSettings();
+        // fire-and-forget with error handling — listener itself returns void
+        plugin.saveSettings().catch(err => {
+            console.error('Failed to save settings:', err);
+        });
     });
 
 
@@ -106,10 +112,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                     plugin.settings.OllamaConnection.ollamaParameters.mirostat = intValue.toString();
                 }
     
-                await plugin.saveSettings();
+                // fire-and-forget with error handling — listener itself returns void
+                plugin.saveSettings().catch(err => {
+                    console.error('Failed to save settings:', err);
+                });
             })
-            .inputEl.addEventListener('focusout', async () => {
-                SettingTab.display();
+            .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
             })
         );
 
@@ -131,10 +140,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta;
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
+        .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
         })
     );
 
@@ -156,10 +168,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau;
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
+        .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
         })
     );
 
@@ -180,10 +195,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.num_ctx = intValue.toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
+        .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
         })
     );
 
@@ -204,10 +222,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.num_gqa = intValue.toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
+        .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
         })
     );
 
@@ -228,10 +249,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.num_thread = intValue.toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
+        .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
         })
     );
 
@@ -252,10 +276,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n = intValue.toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
+        .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
         })
     );
 
@@ -277,10 +304,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty = floatValue.toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
+        .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
         })
     );
 
@@ -301,10 +331,13 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.seed = intValue.toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
+        .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
         })
     );
 
@@ -320,11 +353,14 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 // Split the input string by commas, trim whitespace, and ensure it's always stored as an array
                 const stopsArray = value ? value.split(',').map(s => s.trim()) : [...DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.stop];
                 plugin.settings.OllamaConnection.ollamaParameters.stop = stopsArray;
-                await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
             })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
-        })
+            .inputEl.addEventListener('focusout', () => {
+            void SettingTab.display();
+            })
     );
     
     
@@ -346,11 +382,14 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.tfs_z = floatValue.toFixed(2).toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
-        })
+.inputEl.addEventListener('focusout', () => {
+  void SettingTab.display();
+})
     );
 
     new Setting(advancedSettingsContainer)
@@ -370,11 +409,14 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.top_k = intValue.toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
-        })
+.inputEl.addEventListener('focusout', () => {
+  void SettingTab.display();
+})
     );
 
     new Setting(advancedSettingsContainer)
@@ -394,11 +436,14 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.top_p = floatValue.toFixed(2).toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
-        })
+.inputEl.addEventListener('focusout', () => {
+  void SettingTab.display();
+})
     );
 
     new Setting(advancedSettingsContainer)
@@ -418,11 +463,14 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.min_p = floatValue.toFixed(2).toString();
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
-        })
+.inputEl.addEventListener('focusout', () => {
+  void SettingTab.display();
+})
     );
 
     new Setting(advancedSettingsContainer)
@@ -456,11 +504,14 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
                 plugin.settings.OllamaConnection.ollamaParameters.keep_alive = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.keep_alive;
             }
 
-            await plugin.saveSettings();
+            // fire-and-forget with error handling — listener itself returns void
+            plugin.saveSettings().catch(err => {
+                console.error('Failed to save settings:', err);
+            });
         })
-        .inputEl.addEventListener('focusout', async () => {
-            SettingTab.display();
-        })
+.inputEl.addEventListener('focusout', () => {
+  void SettingTab.display();
+})
     );
 
 }

@@ -28,7 +28,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
             settingsContainer.style.display = 'block';
             plugin.settings.toggleProfileSettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
@@ -85,8 +85,8 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
             }
             plugin.activateView();
             await updateSettingsFromFrontMatter(plugin, currentProfile);
-            await plugin.saveSettings();
-            SettingTab.display();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+            void SettingTab.display();
         })
         
     });
@@ -116,10 +116,10 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
                         text.inputEl.style.borderColor = 'red'; 
                     }
                 }
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             })
-            .inputEl.addEventListener('focusout', async () => {
-                SettingTab.display();
+            .inputEl.addEventListener('focusout', () => {
+                void SettingTab.display();
             })
         );
 }

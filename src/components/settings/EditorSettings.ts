@@ -27,7 +27,7 @@ export async function addEditorSettings(containerEl: HTMLElement, plugin: Docscr
             settingsContainer.style.display = 'block';
             plugin.settings.toggleEditorSettings = true;
         }
-        await plugin.saveSettings();
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
@@ -38,7 +38,7 @@ export async function addEditorSettings(containerEl: HTMLElement, plugin: Docscr
             .setValue(plugin.settings.editor.systen_role !== undefined ? plugin.settings.editor.systen_role : DEFAULT_SETTINGS.editor.systen_role)
             .onChange(async (value) => {
                 plugin.settings.editor.systen_role = value !== undefined ? value : DEFAULT_SETTINGS.editor.systen_role;
-                await plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             })
         );
 
