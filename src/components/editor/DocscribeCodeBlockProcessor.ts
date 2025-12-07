@@ -88,16 +88,16 @@ export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeS
         }
 
         const container = el.createEl('div');
-        container.style.position = 'relative';
+        container.style.setProperty('position', 'relative');
 
         const DocscribeCodeBlockContainer = container.createEl('div', { cls: 'DocscribeCodeBlockContainer' });
         DocscribeCodeBlockContainer.dataset.callout = 'chat';
         DocscribeCodeBlockContainer.addClass('docscribe-code-block-container');
-        DocscribeCodeBlockContainer.style.backgroundColor = settings.appearance.DocscribeGenerateBackgroundColor;
+        DocscribeCodeBlockContainer.style.setProperty('background-color', settings.appearance.DocscribeGenerateBackgroundColor);
 
         const DocscribeCodeBlockContent = DocscribeCodeBlockContainer.createEl('div', { cls: 'DocscribeCodeBlockContent' });
         DocscribeCodeBlockContent.addClass('docscribe-code-block-content');
-        DocscribeCodeBlockContent.style.color = settings.appearance.DocscribeGenerateFontColor;
+        DocscribeCodeBlockContent.style.setProperty('color', settings.appearance.DocscribeGenerateFontColor);
 
         const bottomContainer = container.createEl('div', { cls: 'docscribe-bottom-container' });
 

@@ -468,13 +468,13 @@ export default class DocscribeGPT extends Plugin {
 			(leaf) => new DocscribeView(leaf, this.settings, this)
 		);
 
-		this.addRibbonIcon('bot', 'Docscribe Chatbot', () => {
+		this.addRibbonIcon('bot', 'DocScribe Chatbot', () => {
 			this.activateView();
 		});
 
 		this.addCommand({
             id: 'open-docscribe',
-            name: 'Open Docscribe chatbot',
+            name: 'Open DocScribe Chatbot',
             callback: () => {
                 this.activateView();
             }
@@ -509,7 +509,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pptx') {
 					menu.addItem((item) => {
 						item
-							.setTitle('Docscribe: Extract notes from pptx')
+							.setTitle('DocScribe: Extract notes from pptx')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractStructuredText(arrayBuffer);
@@ -524,7 +524,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pdf') {
 					menu.addItem((item) => {
 						item
-							.setTitle('Docscribe: Extract notes from pdf')
+							.setTitle('DocScribe: Extract notes from pdf')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractTextFromPdf(arrayBuffer, 5000);
@@ -538,7 +538,7 @@ export default class DocscribeGPT extends Plugin {
 	
 				menu.addItem((item) => {
 					item
-						.setTitle('Docscribe: Generate new title')
+						.setTitle('DocScribe: Generate new title')
 						.onClick(() => renameTitleCommand(this, this.settings));
 				});
 			})
@@ -568,7 +568,7 @@ export default class DocscribeGPT extends Plugin {
 		checkActiveFile = this.app.workspace.getActiveFile();
 	}
 
-	async onunload() {
+	onunload() {
 		this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT).forEach((leaf) => {
 			const DocscribeView = leaf.view as DocscribeView;
 	
@@ -601,7 +601,7 @@ export default class DocscribeGPT extends Plugin {
 	
 			setTimeout(() => {
 				textarea.focus();
-				textarea.style.opacity = '1';
+				textarea.style.setProperty('opacity', '1');
 			}, 50);
 		}
 	
@@ -942,10 +942,9 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					) as HTMLElement;
 
 					if (header) {
-						header.style.display = "block";
+						header.style.setProperty("display", "block");
 
-						referenceCurrentNoteElement.style.margin =
-							"-0.5rem 0 0.5rem 0";
+						referenceCurrentNoteElement.style.setProperty("margin", "-0.5rem 0 0.5rem 0");
 					}
 				} else {
 					const header = document.querySelector(
@@ -957,12 +956,9 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					) as HTMLElement;
 
 					if (header) {
-						header.style.display = "none";
-
-						messageContainer.style.maxHeight = "calc(100% - 60px)";
-
-						referenceCurrentNoteElement.style.margin =
-							"0.5rem 0 0.5rem 0";
+						header.style.setProperty("display", "none");
+						messageContainer.style.setProperty('max-height', 'calc(100% - 60px)');
+						referenceCurrentNoteElement.style.setProperty("margin", "-0.5rem 0 0.5rem 0");
 					}
 				}
 

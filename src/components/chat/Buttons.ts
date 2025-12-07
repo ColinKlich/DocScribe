@@ -30,7 +30,10 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
         }
 
         if (index !== -1) {
-            deleteMessage(plugin, index+1);
+            deleteMessage(plugin, index+1).catch((error) => {
+                console.error('Error deleting message:', error);
+            });
+            ;
             if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
                 try {
                     await fetchOpenAIAPIResponse(plugin, settings, index);
@@ -128,7 +131,10 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
             
                 if (index !== -1) {
                     messageHistory[index].content = textArea.value.trim();
-                    deleteMessage(plugin, index+1);
+                    deleteMessage(plugin, index+1).catch((error) => {
+                        console.error('Error deleting message:', error);
+                    });
+                    ;
 
                     // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
                     const regex = /(!?)\[\[(.*?)\]\]/g;
@@ -563,10 +569,14 @@ export function displayAppendButton(plugin: DocscribeGPT, settings: DocscribeSet
             // Check if the active file is different from the file of the last cursor position
             if ((checkActiveFile !== lastCursorPositionFile)) {
                 // Append to the bottom of the file
-                getActiveFileContent(plugin, settings);
+                getActiveFileContent(plugin, settings).catch((error) => {
+                    console.error('Error getting active file content:', error);
+                });
                 const existingContent = await plugin.app.vault.read(checkActiveFile);
                 const updatedContent = existingContent + '\n' + messageText;
-                plugin.app.vault.modify(checkActiveFile, updatedContent);
+                plugin.app.vault.modify(checkActiveFile, updatedContent).catch((error) => {
+                    console.error('Error modifying file:', error);
+                });
             } else {
                 // Append at the last cursor position
                 activeEditor?.replaceRange(messageText, lastCursorPosition);
@@ -611,8 +621,10 @@ export function displayTrashButton (plugin: DocscribeGPT) {
                 modal.contentEl.createEl('h2', { text: 'Delete message block.' });
                 modal.contentEl.createEl('p', { text: 'Are you sure you want to delete this message block?' });
                 const confirmDeleteButton = modal.contentEl.createEl('button', { text: 'Confirm delete', attr: { id: 'confirmDelete' } });
-                confirmDeleteButton?.addEventListener('click', async function () {
-                    deleteMessage(plugin, index);
+                confirmDeleteButton?.addEventListener('click', function () {
+                    deleteMessage(plugin, index).catch((error) => {
+                        console.error('Error deleting message:', error);
+                    });
                     new Notice('Message deleted.');
                     // hideAllDropdowns();
                     modal.close();

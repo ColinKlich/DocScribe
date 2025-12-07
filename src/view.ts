@@ -56,7 +56,7 @@ export class DocscribeView extends ItemView {
     }
 
     getDisplayText() {
-        return 'Docscribe chatbot';
+        return 'DocScribe chatbot';
     }
     
     async onOpen(): Promise<void> {
@@ -124,15 +124,15 @@ export class DocscribeView extends ItemView {
         }
         else {
             header.classList.add('hidden');
-            messageContainer.style.maxHeight = 'calc(100% - 60px)';
-            referenceCurrentNoteElement.style.margin = '0.5rem 0 0.5rem 0';
+            messageContainer.style.setProperty('max-height', 'calc(100% - 60px)');
+            referenceCurrentNoteElement.style.setProperty('margin', '0.5rem 0 0.5rem 0');
         }
         
         await loadData(this.plugin);
         
         messageContainer.id = 'messageContainer';
         
-        messageHistory.forEach(async (messageData) => {   
+        messageHistory.forEach(messageData => {   
             if (messageData.role == 'user') {
                 const userMessageDiv = displayUserMessage(this.plugin, this.settings, messageData.content);
                 messageContainer.appendChild(userMessageDiv);
@@ -152,7 +152,9 @@ export class DocscribeView extends ItemView {
             if (target.tagName === 'A' && target.classList.contains('internal-link')) {
                 const link = target as HTMLAnchorElement;
                 const linkName = link.getAttribute('data-href') || '';
-                this.plugin.app.workspace.openLinkText(linkName, '', false);
+                this.plugin.app.workspace.openLinkText(linkName, '', false).catch((error) => {
+                    console.error('Error opening link:', error);
+                });
             }
         });
         
@@ -171,10 +173,10 @@ export class DocscribeView extends ItemView {
 
         // Submit button
         const submitButton = document.createElement('button');
-        submitButton.textContent = 'send';
+        submitButton.textContent = 'Send';
         setIcon(submitButton, 'arrow-up');
         submitButton.classList.add('submit-button');
-        submitButton.title = 'send';
+        submitButton.title = 'Send';
 
 
         submitButton.addEventListener('click', () => {
@@ -312,7 +314,9 @@ export class DocscribeView extends ItemView {
         // // console.log(`Modified input: ${inputModified}`);
 
         if (this.preventEnter === false && !event.shiftKey && event.key === 'Enter') {
-            loadData(this.plugin);
+            loadData(this.plugin).catch((error) => {
+                console.error('Error loading data:', error);
+            });
             event.preventDefault();
             if (input.length === 0) {
                 return;
@@ -351,11 +355,13 @@ export class DocscribeView extends ItemView {
                     const parts = input.split(' '); // Splits the input on spaces
                     const baseCommand = parts[0]; // The base command is the first part
                 
-                    if (baseCommand.startsWith('/') && commandMap.hasOwnProperty(baseCommand)) {
+                    if (baseCommand.startsWith('/') && Object.prototype.hasOwnProperty.call(commandMap, baseCommand)) {
                         // This block handles recognized commands with or without parameters
                         const messageDiv = document.createElement('div');
                         messageDiv.textContent = input;
-                        addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index);
+                        addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index).catch((error) => {
+                            console.error('Error adding message:', error);
+                        });
                         const userMessageDiv = displayUserMessage(this.plugin, this.settings, input);
                         messageContainer.appendChild(userMessageDiv);
                         // // console.log('Command processed:', commandMap[baseCommand], 'with parameters:', parts.slice(1).join(' ')); // Logs the processed command and parameters
@@ -364,7 +370,9 @@ export class DocscribeView extends ItemView {
                         // // console.log('User input modified:', inputModified);
                         const messageDiv = document.createElement('div');
                         messageDiv.textContent = inputModified;
-                        addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index);
+                        addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index).catch((error) => {
+                            console.error('Error adding message:', error);
+                        });
                         const userMessageDiv = displayUserMessage(this.plugin, this.settings, input);
                         messageContainer.appendChild(userMessageDiv);
                     } else {
@@ -401,7 +409,7 @@ export class DocscribeView extends ItemView {
             }
 
             this.textareaElement.value = '';
-            this.textareaElement.style.height = '29px';
+            this.textareaElement.style.setProperty('height', '29px');
             this.textareaElement.value = this.textareaElement.value.trim();
             this.textareaElement.setSelectionRange(0, 0);
         }
@@ -414,13 +422,12 @@ export class DocscribeView extends ItemView {
     }
 
     handleInput(event: Event) {
-        this.textareaElement.style.height = '29px';
-        this.textareaElement.style.height = this.textareaElement.scrollHeight + 'px';
+        this.textareaElement.style.setProperty('height', '29px');
     }
 
     handleBlur(event: Event) {
         if (!this.textareaElement.value) {
-            this.textareaElement.style.height = '29px';
+            this.textareaElement.style.setProperty('height', '29px');
         }
     }
 
@@ -508,7 +515,7 @@ export class DocscribeView extends ItemView {
             }
 
         }
-        // // console.log('Docscribe settings:', this.settings);
+        // // console.log('DocScribe settings:', this.settings);
     }
 
     async onClose() {
@@ -517,7 +524,7 @@ export class DocscribeView extends ItemView {
 
     setChatboxContent(text: string) {
         this.textareaElement.value += `<context>${text}</context>`;
-        this.textareaElement.style.height = this.textareaElement.scrollHeight + 'px';
+        this.textareaElement.style.setProperty('height', 'auto');
     }
 
     public async sendSystemMessage(message: string) {
@@ -526,7 +533,9 @@ export class DocscribeView extends ItemView {
             const index = messageHistory.length - 1;
             const messageDiv = document.createElement('div');
             messageDiv.textContent = message;
-            addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index);
+            addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index).catch((error) => {
+                console.error('Error adding message:', error);
+            });
             const userMessageDiv = displayUserMessage(this.plugin, this.settings, message);
             messageContainer.appendChild(userMessageDiv);
             await this.Docscribechatbot();
@@ -537,7 +546,10 @@ export class DocscribeView extends ItemView {
 // Create data folder and load JSON file
 async function loadData(plugin: DocscribeGPT) {
     if (!await plugin.app.vault.adapter.exists(plugin.app.vault.configDir + '/plugins/docscribe/data/')) {
-        plugin.app.vault.adapter.mkdir(plugin.app.vault.configDir + '/plugins/docscribe/data/');
+        plugin.app.vault.adapter.mkdir(plugin.app.vault.configDir + '/plugins/docscribe/data/').catch((error) => {
+            console.error('Error creating data folder:', error);
+        });
+    ;
     }
 
     if (await plugin.app.vault.adapter.exists(fileNameMessageHistoryJson(plugin))) {

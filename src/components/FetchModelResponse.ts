@@ -1,4 +1,4 @@
-import { MarkdownRenderer, Notice, requestUrl, setIcon } from 'obsidian';
+import { MarkdownRenderer, requestUrl, setIcon } from 'obsidian';
 import BMOGPT, { DocscribeSettings } from '../main';
 import { messageHistory } from '../view';
 import { addMessage, addParagraphBreaks, updateUnresolvedInternalLinks } from './chat/Message';

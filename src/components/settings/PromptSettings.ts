@@ -72,7 +72,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .setName('Prompt folder path')
         .setDesc('Select a prompt from a specified folder.')
         .addText(text => text
-            .setPlaceholder('Docscribe/Prompts')
+            .setPlaceholder('DocScribe/Prompts')
             .setValue(plugin.settings.prompts.promptFolderPath || DEFAULT_SETTINGS.prompts.promptFolderPath)
             .onChange(async (value) => {
                 plugin.settings.prompts.promptFolderPath = value ? value : DEFAULT_SETTINGS.prompts.promptFolderPath;

@@ -70,7 +70,7 @@ export function createBotMessage(settings: DocscribeSettings): HTMLDivElement {
   return messageBlock;
 }
 
-export async function commandFalse() {
+export function commandFalse() {
   new Notice('Command not recognized. Type `/help` for commands.');
 
   const chatbox = document.querySelector('.chatbox textarea') as HTMLTextAreaElement;
@@ -227,7 +227,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 }
 
 // `/model "[VALUE]"` to change model.
-export async function commandModel(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export function commandModel(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
 
     // Get models as arrays
@@ -504,7 +504,7 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
 }
 
 // `/prompt "[VALUE]"` to change prompt.
-export async function commandPrompt(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export function commandPrompt(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
 
   if (!settings.prompts.promptFolderPath) {
@@ -623,7 +623,7 @@ const p = document.createElement('p');
 }
 
 // `/ref` to turn on/off referenceCurrentNote.
-export async function commandReference(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export function commandReference(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const referenceCurrentNoteElement = document.getElementById('referenceCurrentNote');
   const inputValue = input.split(' ')[1]?.toLowerCase();
 
@@ -647,7 +647,7 @@ export async function commandReference(input: string, settings: DocscribeSetting
 }
 
 // `/temp "VALUE"` to change the temperature.
-export async function commandTemperature(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export function commandTemperature(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const inputValue = input.split(' ')[1];
   const floatValue = parseFloat(inputValue);
 
@@ -668,7 +668,7 @@ export async function commandTemperature(input: string, settings: DocscribeSetti
 }
 
 // `/maxtokens` to change max_tokens.
-export async function commandMaxTokens(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export function commandMaxTokens(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   // let commandBotMessage = '';
   const commandParts = input.split(' ');
   const commandAction = commandParts[1] ? commandParts[1].toLowerCase() : '';
@@ -711,7 +711,7 @@ export async function commandAppend(plugin: DocscribeGPT, settings: DocscribeSet
     const existingContent = await plugin.app.vault.read(activeFile);
 
     // Retrieve user and chatbot names
-    const userNames = document.querySelectorAll('.userName') as NodeListOf<HTMLHeadingElement>;
+    const userNames = document.querySelectorAll('.userName');
 
     let userNameText = 'USER';
     if (userNames.length > 0) {
@@ -724,7 +724,7 @@ export async function commandAppend(plugin: DocscribeGPT, settings: DocscribeSet
         });
     }
 
-    const chatbotNames = document.querySelectorAll('.chatbotName') as NodeListOf<HTMLHeadingElement>;
+    const chatbotNames = document.querySelectorAll('.chatbotName');
     const chatbotNameText = chatbotNames.length > 0 && chatbotNames[0].textContent ? chatbotNames[0].textContent.toUpperCase() : 'ASSISTANT';
 
 
@@ -833,7 +833,7 @@ export async function commandSave(plugin: DocscribeGPT, settings: DocscribeSetti
   }
 
     // Retrieve user and chatbot names
-    const userNames = document.querySelectorAll('.userName') as NodeListOf<HTMLHeadingElement>;
+    const userNames = document.querySelectorAll('.userName');
 
     let userNameText = 'USER';
     if (userNames.length > 0) {
@@ -846,7 +846,7 @@ export async function commandSave(plugin: DocscribeGPT, settings: DocscribeSetti
         });
     }
 
-    const chatbotNames = document.querySelectorAll('.chatbotName') as NodeListOf<HTMLHeadingElement>;
+    const chatbotNames = document.querySelectorAll('.chatbotName');
     const chatbotNameText = chatbotNames.length > 0 && chatbotNames[0].textContent ? chatbotNames[0].textContent.toUpperCase() : 'ASSISTANT';
 
     // Check and read the JSON file
@@ -971,7 +971,7 @@ if (settings.profiles.lastLoadedChatHistoryPath !== null) {
 }
 
 // `/load` to load chat history.
-export async function commandLoad(input: string, plugin: DocscribeGPT, settings: DocscribeSettings) {
+export function commandLoad(input: string, plugin: DocscribeGPT, settings: DocscribeSettings) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
   const folderPath = plugin.settings.chatHistory.chatHistoryPath.trim() || DEFAULT_SETTINGS.chatHistory.chatHistoryPath;      
 

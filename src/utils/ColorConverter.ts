@@ -27,7 +27,7 @@ export function colorToHex(colorValue: string): string {
     } else if (colorValue.startsWith('rgb')) {
       // Convert RGB to HEX
       const sep = colorValue.indexOf(',') > -1 ? ',' : ' ';
-      const rgbArray = colorValue.substr(4).split(')')[0].split(sep);
+      const rgbArray = colorValue.slice(4).split(')')[0].split(sep);
   
       let r = (+rgbArray[0]).toString(16),
         g = (+rgbArray[1]).toString(16),

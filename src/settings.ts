@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, TFile } from 'obsidian';
+import { App, Modal, PluginSettingTab, Setting, TFile } from 'obsidian';
 import DocscribeGPT, { DEFAULT_SETTINGS, updateSettingsFromFrontMatter } from './main';
 import { addGeneralSettings } from './components/settings/GeneralSettings';
 import { addAppearanceSettings } from './components/settings/AppearanceSettings';
@@ -10,6 +10,36 @@ import { addRESTAPIURLSettings } from './components/settings/RESTAPIURLSettings'
 import { addEditorSettings } from './components/settings/EditorSettings';
 import { addPromptSettings } from './components/settings/PromptSettings';
 
+class ConfirmationModal extends Modal {
+    constructor(app: App, private onConfirm: () => void) {
+        super(app);
+    }
+
+    onOpen() {
+        const { contentEl } = this;
+        contentEl.createEl('h2', { text: 'Are you sure?' });
+        contentEl.createEl('p', { text: 'This will reset all Docscribe settings to their default values.' });
+
+        new Setting(contentEl)
+            .addButton(btn => btn
+                .setButtonText('Reset')
+                .setCta()
+                .onClick(() => {
+                    this.onConfirm();
+                    this.close();
+                }))
+            .addButton(btn => btn
+                .setButtonText('Cancel')
+                .onClick(() => {
+                    this.close();
+                }));
+    }
+
+    onClose() {
+        this.contentEl.empty();
+    }
+}
+
 export class DocscribeSettingTab extends PluginSettingTab {
 	plugin: DocscribeGPT;
 
@@ -18,12 +48,13 @@ export class DocscribeSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	async display(): Promise<void> {
+	display(): void {
 		// Display settings information
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl('h1', { text: 'Docscribe settings' });
+		// eslint-disable-next-line obsidianmd/settings-tab/no-manual-html-headings
+		containerEl.createEl('h1', { text: 'DocScribe settings' });
 
 		// Create a container for the links
 		const linkContainer = containerEl.createEl('div', { cls: 'settings-links' });
@@ -84,10 +115,9 @@ export class DocscribeSettingTab extends PluginSettingTab {
 			cls: 'settings-reset-button'
 		});
 
-		resetButton.addEventListener('click', async (event) => {
+		resetButton.addEventListener('click', (event) => {
 			event.preventDefault();
-			const confirmReset = confirm('Are you sure you want to reset all settings to default?');
-			if (confirmReset) {
+			const onConfirm = async () => {
 				const profilePathFile = this.plugin.settings.profiles.profileFolderPath + '/' + this.plugin.settings.profiles.profile;
 				const profilePath = this.plugin.app.vault.getAbstractFileByPath(profilePathFile);
 				if (!(profilePath instanceof TFile)) {
@@ -131,17 +161,9 @@ export class DocscribeSettingTab extends PluginSettingTab {
 						new DocscribeSettingTab(this.app, this.plugin).display();
 					}
 				});
-			}
+			};
+			new ConfirmationModal(this.app, onConfirm).open();
 		});
-
-		// const resetNotice = containerEl.createEl('p', {
-		// 	text: 'Please reset your settings if you have recently updated from version <2.0.0.',
-		// 	attr: {
-		// 		style: 'font-size: 0.7rem; text-align: center;'
-		// 	}
-		// });
-
-		// containerEl.appendChild(resetNotice);
 	}
 }
 

@@ -29,7 +29,7 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
             plugin.settings.toggleGeneralSettings = true;
         }
         // fire-and-forget with error handling — listener itself returns void
-        plugin.saveSettings().catch(err => {
+        await plugin.saveSettings().catch(err => {
             console.error('Failed to save settings:', err);
         });
     });
@@ -133,9 +133,7 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
                 }
     
                 // After fetching all models, recreate the dropdown
-                if (modelDropdown) {
-                    createModelDropdown(modelDropdown);
-                }
+                createModelDropdown(modelDropdown);
     
                 new Notice('Models reloaded.');
             })

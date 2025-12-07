@@ -27,7 +27,7 @@ export async function addEditorSettings(containerEl: HTMLElement, plugin: Docscr
             settingsContainer.classList.remove('hidden');
             plugin.settings.toggleEditorSettings = true;
         }
-        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+        await plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)

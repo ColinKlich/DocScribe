@@ -33,7 +33,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
         .setName('Chat history folder path')
         .setDesc('Save your chat history in a specified folder.')
         .addText(text => text
-            .setPlaceholder('Docscribe/History')
+            .setPlaceholder('DocScribe/History')
             .setValue(plugin.settings.chatHistory.chatHistoryPath || DEFAULT_SETTINGS.chatHistory.chatHistoryPath)
             .onChange(async (value) => {
                 plugin.settings.chatHistory.chatHistoryPath = value ? value : DEFAULT_SETTINGS.chatHistory.chatHistoryPath;
