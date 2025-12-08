@@ -14,73 +14,77 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
 
     let lastClickedElement: HTMLElement | null = null;
 
-    regenerateButton.addEventListener('click', async function (event) {
-        event.stopPropagation();
-        lastClickedElement = event.target as HTMLElement;
+    regenerateButton.addEventListener('click', function (event) {
+        (async () => {
+            event.stopPropagation();
+            lastClickedElement = event.target as HTMLElement;
 
-        while (lastClickedElement && !lastClickedElement.classList.contains('userMessage')) {
-            lastClickedElement = lastClickedElement.parentElement;
-        }
+            while (lastClickedElement && !lastClickedElement.classList.contains('userMessage')) {
+                lastClickedElement = lastClickedElement.parentElement;
+            }
 
-        let index = -1;
+            let index = -1;
 
-        if (lastClickedElement) {
-            const userMessages = Array.from(document.querySelectorAll('#messageContainer .userMessage'));
-            index = userMessages.indexOf(lastClickedElement) * 2;
-        }
+            if (lastClickedElement) {
+                const userMessages = Array.from(document.querySelectorAll('#messageContainer .userMessage'));
+                index = userMessages.indexOf(lastClickedElement) * 2;
+            }
 
-        if (index !== -1) {
-            deleteMessage(plugin, index+1).catch((error) => {
-                console.error('Error deleting message:', error);
-            });
-            ;
-            if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
-                try {
-                    await fetchOpenAIAPIResponse(plugin, settings, index, component);
+            if (index !== -1) {
+                deleteMessage(plugin, index+1).catch((error) => {
+                    console.error('Error deleting message:', error);
+                });
+                ;
+                if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
+                    try {
+                        await fetchOpenAIAPIResponse(plugin, settings, index, component);
+                    }
+                    catch (error) {
+                        new Notice('Error occurred while fetching completion: ' + error.message);
+                        // console.log(error.message);
+                    }
                 }
-                catch (error) {
-                    new Notice('Error occurred while fetching completion: ' + error.message);
-                    // console.log(error.message);
+                else if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
+                    await fetchOllamaResponse(plugin, settings, index, component);
+                }
+                else if (settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
+                    await fetchRESTAPIURLResponse(plugin, settings, index, component);
+                }
+                else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
+                    await fetchOpenRouterResponse(plugin, settings, index, component);
+                }
+                else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
+                    try {
+                        await fetchMistralResponse(plugin, settings, index, component);
+                    }
+                    catch (error) {
+                        console.error('Mistral error:', error);
+                    }
+                }
+                else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
+                    try {
+                        await fetchGoogleGeminiResponse(plugin, settings, index, component);
+                    }
+                    catch (error) {
+                        console.error('Google Gemini error:', error);
+                    
+                    }
+                }
+                else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
+                    try {
+                        await fetchAnthropicResponse(plugin, settings, index, component);
+                    }
+                    catch (error) {
+                        console.error('Anthropic error:', error);
+                    }
                 }
             }
-            else if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
-                await fetchOllamaResponse(plugin, settings, index, component);
+            else {
+                new Notice('No models detected.');
             }
-            else if (settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
-                await fetchRESTAPIURLResponse(plugin, settings, index, component);
-            }
-            else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
-                await fetchOpenRouterResponse(plugin, settings, index, component);
-            }
-            else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
-                try {
-                    await fetchMistralResponse(plugin, settings, index, component);
-                }
-                catch (error) {
-                    console.error('Mistral error:', error);
-                }
-            }
-            else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
-                try {
-                    await fetchGoogleGeminiResponse(plugin, settings, index, component);
-                }
-                catch (error) {
-                    console.error('Google Gemini error:', error);
-                
-                }
-            }
-            else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
-                try {
-                    await fetchAnthropicResponse(plugin, settings, index, component);
-                }
-                catch (error) {
-                    console.error('Anthropic error:', error);
-                }
-            }
-        }
-        else {
-            new Notice('No models detected.');
-        }
+        })().catch(err => {
+            console.error("Error in click handler:", err);
+        });
     });
     return regenerateButton;
 }
@@ -120,165 +124,168 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
             lastClickedElement = lastClickedElement.parentElement;
         }
 
-        textareaEditButton.addEventListener('click', async function () {
-            userPre.textContent = textArea.value.trim();
-            editContainer.replaceWith(userPre);
+        textareaEditButton.addEventListener('click', function () {
+            (async () => {
+                userPre.textContent = textArea.value.trim();
+                editContainer.replaceWith(userPre);
 
-            if (lastClickedElement) {
-                const userMessages = Array.from(document.querySelectorAll('#messageContainer .userMessage'));
-            
-                const index = userMessages.indexOf(lastClickedElement) * 2;
-            
-                if (index !== -1) {
-                    messageHistory[index].content = textArea.value.trim();
-                    deleteMessage(plugin, index+1).catch((error) => {
-                        console.error('Error deleting message:', error);
-                    });
-                    ;
+                if (lastClickedElement) {
+                    const userMessages = Array.from(document.querySelectorAll('#messageContainer .userMessage'));
+                
+                    const index = userMessages.indexOf(lastClickedElement) * 2;
+                
+                    if (index !== -1) {
+                        messageHistory[index].content = textArea.value.trim();
+                        deleteMessage(plugin, index+1).catch((error) => {
+                            console.error('Error deleting message:', error);
+                        });
+                        ;
 
-                    // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
-                    const regex = /(!?)!!\[\[(.*?)\]\]/g;
-                    let matches;
-                    let inputModified = messageHistory[index].content;
+                        // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
+                        const regex = /(!?)!!\[\[(.*?)\]\]/g;
+                        let matches;
+                        let inputModified = messageHistory[index].content;
 
-                    // Store all replacements to be made
-                    const replacements = new Map<string, string>();
+                        // Store all replacements to be made
+                        const replacements = new Map<string, string>();
 
-                    while ((matches = regex.exec(messageHistory[index].content)) !== null) {
-                        const exclamation = matches[1]; // Capture the optional exclamation mark
-                        const linktext = matches[2];
-                        // Split the linktext into path and subpath
-                        const [path, subpath] = linktext.split('#');
-                        
-                        const file = plugin.app.metadataCache.getFirstLinkpathDest(path, '');
-                        
-                        if (file && file instanceof TFile) {
-                            try {
-                                const filePath = file.path; // Assuming file object has a path property
-                                const fileExtension = filePath.split('.').pop();
+                        while ((matches = regex.exec(messageHistory[index].content)) !== null) {
+                            const exclamation = matches[1]; // Capture the optional exclamation mark
+                            const linktext = matches[2];
+                            // Split the linktext into path and subpath
+                            const [path, subpath] = linktext.split('#');
                             
-                                // Check if the file extension is .md
-                                if (fileExtension !== 'md') {
-                                    const isImageFile = /\.(jpg|jpeg|png|gif|webp|bmp|tiff|tif|svg)$/i.test(filePath);
+                            const file = plugin.app.metadataCache.getFirstLinkpathDest(path, '');
+                            
+                            if (file && file instanceof TFile) {
+                                try {
+                                    const filePath = file.path; // Assuming file object has a path property
+                                    const fileExtension = filePath.split('.').pop();
+                                
+                                    // Check if the file extension is .md
+                                    if (fileExtension !== 'md') {
+                                        const isImageFile = /\.(jpg|jpeg|png|gif|webp|bmp|tiff|tif|svg)$/i.test(filePath);
 
-                                    if (!plugin.settings.OllamaConnection.ollamaModels.includes(plugin.settings.general.model)) {
-                                        replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>ERROR: File cannot be read.</note-rendered>`);
-                                    } else if (plugin.settings.OllamaConnection.ollamaModels.includes(plugin.settings.general.model)) {
-                                        if (!isImageFile) {
+                                        if (!plugin.settings.OllamaConnection.ollamaModels.includes(plugin.settings.general.model)) {
                                             replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>ERROR: File cannot be read.</note-rendered>`);
+                                        } else if (plugin.settings.OllamaConnection.ollamaModels.includes(plugin.settings.general.model)) {
+                                            if (!isImageFile) {
+                                                replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>ERROR: File cannot be read.</note-rendered>`);
+                                            }
                                         }
+                                        continue; // Skip to the next iteration
                                     }
-                                    continue; // Skip to the next iteration
-                                }
 
-                                const content = await plugin.app.vault.read(file);
-                                let contentToInsert = content;
+                                    const content = await plugin.app.vault.read(file);
+                                    let contentToInsert = content;
 
-                                // If there is a subpath, find the relevant section
-                                if (subpath) {
-                                    const lines = content.split('\n');
-                                    let inSubpath = false;
-                                    const subpathContent = [];
-                                    let subpathLevel = 0;
+                                    // If there is a subpath, find the relevant section
+                                    if (subpath) {
+                                        const lines = content.split('\n');
+                                        let inSubpath = false;
+                                        const subpathContent = [];
+                                        let subpathLevel = 0;
 
-                                    for (const line of lines) {
-                                        if (line.startsWith('#')) {
-                                            const match = line.match(/^#+/);
-                                            const headingLevel = match ? match[0].length : 0;
+                                        for (const line of lines) {
+                                            if (line.startsWith('#')) {
+                                                const match = line.match(/^#+/);
+                                                const headingLevel = match ? match[0].length : 0;
 
-                                            if (inSubpath) {
-                                                if (headingLevel <= subpathLevel) {
-                                                    break;
+                                                if (inSubpath) {
+                                                    if (headingLevel <= subpathLevel) {
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (!inSubpath && line.toLowerCase().includes(subpath.toLowerCase())) {
+                                                    inSubpath = true;
+                                                    subpathLevel = headingLevel;
                                                 }
                                             }
 
-                                            if (!inSubpath && line.toLowerCase().includes(subpath.toLowerCase())) {
-                                                inSubpath = true;
-                                                subpathLevel = headingLevel;
+                                            if (inSubpath) {
+                                                subpathContent.push(line);
                                             }
                                         }
 
-                                        if (inSubpath) {
-                                            subpathContent.push(line);
-                                        }
+                                        contentToInsert = subpathContent.join('\n');
                                     }
 
-                                    contentToInsert = subpathContent.join('\n');
+                                    // Prepare the replacement content
+                                    replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>${contentToInsert}</note-rendered>`);
+                                } catch (err) {
+                                    console.error(`Failed to read the content of "${path}": ${err}`);
                                 }
-
-                                // Prepare the replacement content
-                                replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>${contentToInsert}</note-rendered>`);
-                            } catch (err) {
-                                console.error(`Failed to read the content of "${path}": ${err}`);
+                            } else {
+                                // Handle case where the file does not exist or is not a TFile
+                                replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>File cannot be read.</note-rendered>`);
                             }
-                        } else {
-                            // Handle case where the file does not exist or is not a TFile
-                            replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>File cannot be read.</note-rendered>`);
                         }
-                    }
 
-                    // Apply all replacements to inputModified
-                    for (const [original, replacement] of replacements) {
-                        inputModified = inputModified.split(original).join(replacement);
-                    }
+                        // Apply all replacements to inputModified
+                        for (const [original, replacement] of replacements) {
+                            inputModified = inputModified.split(original).join(replacement);
+                        }
 
-                    // Remove duplicates in the final output
-                    inputModified = inputModified.replace(/(<note-rendered>File cannot be read. <\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
+                        // Remove duplicates in the final output
+                        inputModified = inputModified.replace(/(<note-rendered>File cannot be read. <\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
 
 
-                    // // console.log(`Modified input: ${inputModified}`);
-                    messageHistory[index].content = inputModified;
+                        // // console.log(`Modified input: ${inputModified}`);
+                        messageHistory[index].content = inputModified;
 
 
-                    if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
-                        await fetchOllamaResponse(plugin, settings, index, component);
+                        if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
+                            await fetchOllamaResponse(plugin, settings, index, component);
+                        }
+                        else if (settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
+                            await fetchRESTAPIURLResponse(plugin, settings, index, component);
+                        }
+                        else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
+                            try {
+                                await fetchAnthropicResponse(plugin, settings, index, component);
+                            }
+                            catch (error) {
+                                console.error('Anthropic error:', error);
+                            }
+                        }
+                        else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
+                            try {
+                                await fetchGoogleGeminiResponse(plugin, settings, index, component);
+                            }
+                            catch (error) {
+                                console.error('Google Gemini error:', error);
+                            
+                            }
+                        }
+                        else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
+                            try {
+                                await fetchMistralResponse(plugin, settings, index, component);
+                            }
+                            catch (error) {
+                                console.error('Mistral error:', error);
+                            }
+                        }
+                        else if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
+                            try {
+                                await fetchOpenAIAPIResponse(plugin, settings, index, component);
+                            }
+                            catch (error) {
+                                new Notice('Error occurred while fetching completion: ' + error.message);
+                                //// console.log(error.message);
+                            }
+                        }
+                        else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
+                            await fetchOpenRouterResponse(plugin, settings, index, component);
+                        }
                     }
-                    else if (settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
-                        await fetchRESTAPIURLResponse(plugin, settings, index, component);
-                    }
-                    else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
-                        try {
-                            await fetchAnthropicResponse(plugin, settings, index, component);
-                        }
-                        catch (error) {
-                            console.error('Anthropic error:', error);
-                        }
-                    }
-                    else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
-                        try {
-                            await fetchGoogleGeminiResponse(plugin, settings, index, component);
-                        }
-                        catch (error) {
-                            console.error('Google Gemini error:', error);
-                        
-                        }
-                    }
-                    else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
-                        try {
-                            await fetchMistralResponse(plugin, settings, index, component);
-                        }
-                        catch (error) {
-                            console.error('Mistral error:', error);
-                        }
-                    }
-                    else if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
-                        try {
-                            await fetchOpenAIAPIResponse(plugin, settings, index, component);
-                        }
-                        catch (error) {
-                            new Notice('Error occurred while fetching completion: ' + error.message);
-                            //// console.log(error.message);
-                        }
-                    }
-                    else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
-                        await fetchOpenRouterResponse(plugin, settings, index, component);
+                    else {
+                        new Notice('No models detected.');
                     }
                 }
-                else {
-                    new Notice('No models detected.');
-                }
-            }
-
+            })().catch(err => {
+                console.error("Error in click handler:", err);
+            });
         });
 
         cancelButton.addEventListener('click', function () {
@@ -343,137 +350,140 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string, com
             // console.log('messageBlock not found.');
         }
 
-        textareaEditButton.addEventListener('click', async function () {
-            message = textArea.value;
-            editContainer.remove();
-            messageBlock?.remove();
-            messageBlock = document.createElement('div');
-            messageBlock.className = 'messageBlock';
-            lastClickedElement?.appendChild(messageBlock);
+        textareaEditButton.addEventListener('click', function () {
+            (async () => {
+                message = textArea.value;
+                editContainer.remove();
+                messageBlock?.remove();
+                messageBlock = document.createElement('div');
+                messageBlock.className = 'messageBlock';
+                lastClickedElement?.appendChild(messageBlock);
 
-            await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', component);
-            addParagraphBreaks(messageBlock);
+                await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', component);
+                addParagraphBreaks(messageBlock);
 
-            const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
-            copyCodeBlocks.forEach((copyCodeBlock) => {
-                copyCodeBlock.textContent = 'Copy';
-                setIcon(copyCodeBlock, 'Copy');
-            });
+                const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
+                copyCodeBlocks.forEach((copyCodeBlock) => {
+                    copyCodeBlock.textContent = 'Copy';
+                    setIcon(copyCodeBlock, 'Copy');
+                });
 
-            if (lastClickedElement) {
-                const allMessages = Array.from(document.querySelectorAll('#messageContainer div.userMessage, #messageContainer div.botMessage'));
-                const index = allMessages.indexOf(lastClickedElement);
+                if (lastClickedElement) {
+                    const allMessages = Array.from(document.querySelectorAll('#messageContainer div.userMessage, #messageContainer div.botMessage'));
+                    const index = allMessages.indexOf(lastClickedElement);
 
-                if (index !== -1) {
-                    // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
-                    const regex = /(!?)!!\[\[(.*?)\]\]/g;
-                    let matches;
-                    let inputModified = textArea.value;
+                    if (index !== -1) {
+                        // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
+                        const regex = /(!?)!!\[\[(.*?)\]\]/g;
+                        let matches;
+                        let inputModified = textArea.value;
 
-                    // Store all replacements to be made
-                    const replacements = new Map<string, string>();
+                        // Store all replacements to be made
+                        const replacements = new Map<string, string>();
 
-                    while ((matches = regex.exec(textArea.value)) !== null) {
-                        const exclamation = matches[1]; // Capture the optional exclamation mark
-                        const linktext = matches[2];
-                        // Split the linktext into path and subpath
-                        const [path, subpath] = linktext.split('#');
-                        
-                        const file = plugin.app.metadataCache.getFirstLinkpathDest(path, '');
-                        
-                        if (file && file instanceof TFile) {
-                            try {
-                                const filePath = file.path; // Assuming file object has a path property
-                                const fileExtension = filePath.split('.').pop();
+                        while ((matches = regex.exec(textArea.value)) !== null) {
+                            const exclamation = matches[1]; // Capture the optional exclamation mark
+                            const linktext = matches[2];
+                            // Split the linktext into path and subpath
+                            const [path, subpath] = linktext.split('#');
                             
-                                // Check if the file extension is .md
-                                if (fileExtension !== 'md') {
-                                    const isImageFile = /\.(jpg|jpeg|png|gif|webp|bmp|tiff|tif|svg)$/i.test(filePath);
+                            const file = plugin.app.metadataCache.getFirstLinkpathDest(path, '');
+                            
+                            if (file && file instanceof TFile) {
+                                try {
+                                    const filePath = file.path; // Assuming file object has a path property
+                                    const fileExtension = filePath.split('.').pop();
+                                
+                                    // Check if the file extension is .md
+                                    if (fileExtension !== 'md') {
+                                        const isImageFile = /\.(jpg|jpeg|png|gif|webp|bmp|tiff|tif|svg)$/i.test(filePath);
 
-                                    if (!plugin.settings.OllamaConnection.ollamaModels.includes(plugin.settings.general.model)) {
-                                        replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>ERROR: File cannot be read.</note-rendered>`);
-                                    } else if (plugin.settings.OllamaConnection.ollamaModels.includes(plugin.settings.general.model)) {
-                                        if (!isImageFile) {
+                                        if (!plugin.settings.OllamaConnection.ollamaModels.includes(plugin.settings.general.model)) {
                                             replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>ERROR: File cannot be read.</note-rendered>`);
+                                        } else if (plugin.settings.OllamaConnection.ollamaModels.includes(plugin.settings.general.model)) {
+                                            if (!isImageFile) {
+                                                replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>ERROR: File cannot be read.</note-rendered>`);
+                                            }
                                         }
+                                        continue; // Skip to the next iteration
                                     }
-                                    continue; // Skip to the next iteration
-                                }
 
-                                const content = await plugin.app.vault.read(file);
-                                let contentToInsert = content;
+                                    const content = await plugin.app.vault.read(file);
+                                    let contentToInsert = content;
 
-                                // If there is a subpath, find the relevant section
-                                if (subpath) {
-                                    const lines = content.split('\n');
-                                    let inSubpath = false;
-                                    const subpathContent = [];
-                                    let subpathLevel = 0;
+                                    // If there is a subpath, find the relevant section
+                                    if (subpath) {
+                                        const lines = content.split('\n');
+                                        let inSubpath = false;
+                                        const subpathContent = [];
+                                        let subpathLevel = 0;
 
-                                    for (const line of lines) {
-                                        if (line.startsWith('#')) {
-                                            const match = line.match(/^#+/);
-                                            const headingLevel = match ? match[0].length : 0;
+                                        for (const line of lines) {
+                                            if (line.startsWith('#')) {
+                                                const match = line.match(/^#+/);
+                                                const headingLevel = match ? match[0].length : 0;
 
-                                            if (inSubpath) {
-                                                if (headingLevel <= subpathLevel) {
-                                                    break;
+                                                if (inSubpath) {
+                                                    if (headingLevel <= subpathLevel) {
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (!inSubpath && line.toLowerCase().includes(subpath.toLowerCase())) {
+                                                    inSubpath = true;
+                                                    subpathLevel = headingLevel;
                                                 }
                                             }
 
-                                            if (!inSubpath && line.toLowerCase().includes(subpath.toLowerCase())) {
-                                                inSubpath = true;
-                                                subpathLevel = headingLevel;
+                                            if (inSubpath) {
+                                                subpathContent.push(line);
                                             }
                                         }
 
-                                        if (inSubpath) {
-                                            subpathContent.push(line);
-                                        }
+                                        contentToInsert = subpathContent.join('\n');
                                     }
 
-                                    contentToInsert = subpathContent.join('\n');
+                                    // Prepare the replacement content
+                                    replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>${contentToInsert}</note-rendered>`);
+                                } catch (err) {
+                                    console.error(`Failed to read the content of "${path}": ${err}`);
                                 }
-
-                                // Prepare the replacement content
-                                replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>${contentToInsert}</note-rendered>`);
-                            } catch (err) {
-                                console.error(`Failed to read the content of "${path}": ${err}`);
+                            } else {
+                                // Handle case where the file does not exist or is not a TFile
+                                replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>File cannot be read.</note-rendered>`);
                             }
-                        } else {
-                            // Handle case where the file does not exist or is not a TFile
-                            replacements.set(matches[0], `${exclamation}[[${matches[2]}]]<note-rendered>File cannot be read.</note-rendered>`);
+                        }
+
+                        // Apply all replacements to inputModified
+                        for (const [original, replacement] of replacements) {
+                            inputModified = inputModified.split(original).join(replacement);
+                        }
+
+                        // Remove duplicates in the final output
+                        inputModified = inputModified.replace(/(<note-rendered>File cannot be read. <\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
+
+
+                        // // console.log(`Modified input: ${inputModified}`);
+                        messageHistory[index].content = inputModified;
+
+                        const jsonString = JSON.stringify(messageHistory, null, 4);
+
+                        try {
+                            await plugin.app.vault.adapter.write(fileNameMessageHistoryJson(plugin), jsonString);
+                        } catch (error) {
+                            console.error('Error writing to message history file:', error);
                         }
                     }
-
-                    // Apply all replacements to inputModified
-                    for (const [original, replacement] of replacements) {
-                        inputModified = inputModified.split(original).join(replacement);
-                    }
-
-                    // Remove duplicates in the final output
-                    inputModified = inputModified.replace(/(<note-rendered>File cannot be read. <\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
-
-
-                    // // console.log(`Modified input: ${inputModified}`);
-                    messageHistory[index].content = inputModified;
-
-                    const jsonString = JSON.stringify(messageHistory, null, 4);
-
-                    try {
-                        await plugin.app.vault.adapter.write(fileNameMessageHistoryJson(plugin), jsonString);
-                    } catch (error) {
-                        console.error('Error writing to message history file:', error);
+                    else {
+                        new Notice('No models detected.');
                     }
                 }
-                else {
-                    new Notice('No models detected.');
-                }
-            }
-
+            })().catch(err => {
+                console.error("Error in click handler:", err);
+            });
         });
 
-        cancelButton.addEventListener('click', async function () {
+        cancelButton.addEventListener('click', function () {
             editContainer.remove();
             messageBlock?.remove();
             messageBlock = document.createElement('div');
@@ -488,10 +498,12 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string, com
             const regexRenderedNote = /<note-rendered>[\s\S]*?<\/note-rendered>/g;
             message = message.replace(regexRenderedNote, '').trim();
 
-            await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', component);
+            MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', component).catch((error) => {
+                console.error('Error rendering message:', error);
+            });
             addParagraphBreaks(messageBlock);
             
-            const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+            const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
             copyCodeBlocks.forEach((copyCodeBlock) => {
                 copyCodeBlock.textContent = 'Copy';
                 setIcon(copyCodeBlock, 'Copy');
@@ -564,32 +576,35 @@ export function displayAppendButton(plugin: DocscribeGPT, settings: DocscribeSet
 
     const messageText = message;
 
-    appendButton.addEventListener('click', async function (event) {
-        if (checkActiveFile?.extension === 'md') {
-            // Check if the active file is different from the file of the last cursor position
-            if ((checkActiveFile !== lastCursorPositionFile)) {
-                // Append to the bottom of the file
-                getActiveFileContent(plugin, settings).catch((error) => {
-                    console.error('Error getting active file content:', error);
-                });
-                const existingContent = await plugin.app.vault.read(checkActiveFile);
-                const updatedContent = existingContent + '\n' + messageText;
-                plugin.app.vault.modify(checkActiveFile, updatedContent).catch((error) => {
-                    console.error('Error modifying file:', error);
-                });
-            } else {
-                // Append at the last cursor position
-                activeEditor?.replaceRange(messageText, lastCursorPosition);
-            }
-
+    appendButton.addEventListener('click', function (event) {
+        (async () => {
             event.stopPropagation();
-            new Notice('Appended response.');
-        }
-        else {
-            new Notice('No active markdown file detected.');
-        }
+            if (checkActiveFile?.extension === 'md') {
+                try {
+                    // Check if the active file is different from the file of the last cursor position
+                    if ((checkActiveFile !== lastCursorPositionFile)) {
+                        // Append to the bottom of the file
+                        await getActiveFileContent(plugin, settings);
+                        const existingContent = await plugin.app.vault.read(checkActiveFile);
+                        const updatedContent = existingContent + '\n' + messageText;
+                        await plugin.app.vault.modify(checkActiveFile, updatedContent);
+                    } else {
+                        // Append at the last cursor position
+                        activeEditor?.replaceRange(messageText, lastCursorPosition);
+                    }
+                    new Notice('Appended response.');
+                } catch (error) {
+                    console.error('Error appending to file:', error);
+                    new Notice('Error appending to file.');
+                }
+            }
+            else {
+                new Notice('No active markdown file detected.');
+            }
+        })().catch(err => {
+            console.error("Error in click handler:", err);
+        });
     });
-
     return appendButton;
 }
 

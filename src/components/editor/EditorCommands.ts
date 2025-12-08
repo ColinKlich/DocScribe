@@ -31,8 +31,10 @@ export async function renameTitleCommand(plugin: DocscribeGPT, settings: Docscri
     
         while (!uniqueNameFound) {
             modelRenameTitle = await fetchModelRenameTitle(settings, fileContent);
-        
-            if (!fileNameExists(modelRenameTitle)) {
+            if (!modelRenameTitle) {
+                throw new Error('Failed to generate a title from the model.');
+            }
+            if (!fileNameExists(modelRenameTitle) && modelRenameTitle == typeof String) {
                 uniqueNameFound = true;
             }
         }
@@ -40,7 +42,9 @@ export async function renameTitleCommand(plugin: DocscribeGPT, settings: Docscri
         const fileName = folderName + modelRenameTitle + fileExtension;
     
         if (activeFile) {
-            plugin.app.vault.rename(activeFile, fileName);
+            plugin.app.vault.rename(activeFile, fileName).catch((error) => {
+                console.error('Error renaming file:', error);
+            });
         }
 
         new Notice('Renamed note title.');

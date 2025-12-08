@@ -65,9 +65,9 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
 
         // Change submit button to send icon
         const submitButton = document.querySelector('.submit-button') as HTMLElement;
-        submitButton.textContent = 'send';
+        submitButton.textContent = 'Send';
         setIcon(submitButton, 'arrow-up');
-        submitButton.title = 'send';
+        submitButton.title = 'Send';
         
         if (!messageObj.content.includes('commandBotMessage') && !messageObj.content.includes('errorBotMessage')) {
             const editButton = displayBotEditButton(plugin, messageObj.content, this);
@@ -97,7 +97,7 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
         
                 const replacedLangaugeBlocks = new Set<string>();
 
-                getBlockLanguage.forEach(async block => {
+                getBlockLanguage.forEach(block => {
                     if (!block.querySelector('.rendered-markdown-output') && messageType === 'botMessage') {
                         const blockToMarkdown = htmlToMarkdown(block as HTMLElement || '');
                         const markdownNode = document.createElement('div');
@@ -150,7 +150,9 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
                 
                         // Save the updated message history
                         const updatedJsonString = JSON.stringify(messageHistory, null, 4);
-                        await plugin.app.vault.adapter.write(fileNameMessageHistoryJson(plugin), updatedJsonString);
+                        plugin.app.vault.adapter.write(fileNameMessageHistoryJson(plugin), updatedJsonString).catch((error) => {
+                            console.error('Error writing to message history file:', error);
+                        });
                     }
                 });
 
@@ -159,7 +161,7 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
 
                 const replacedNoteBlocks = new Set<string>();
 
-                getNoteContent.forEach(async link => {
+                getNoteContent.forEach(link => {
                     if (!link.querySelector('.rendered-markdown-output')) {
                         const blockToMarkdown = htmlToMarkdown(link as HTMLElement || '');
                         const markdownNode = document.createElement('div');
@@ -206,7 +208,9 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
                 
                         // Save the updated message history
                         const updatedJsonString = JSON.stringify(messageHistory, null, 4);
-                        await plugin.app.vault.adapter.write(fileNameMessageHistoryJson(plugin), updatedJsonString);
+                        plugin.app.vault.adapter.write(fileNameMessageHistoryJson(plugin), updatedJsonString).catch((error) => {
+                            console.error('Error writing to message history file:', error);
+                        });
                     }
                 });
                 

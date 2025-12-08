@@ -2,7 +2,6 @@ import { DataWriteOptions, Plugin, TFile} from 'obsidian';
 import { DocscribeView, VIEW_TYPE_CHATBOT, populateModelDropdown } from './view';
 import { DocscribeSettingTab } from './settings';
 import { promptSelectGenerateCommand, renameTitleCommand } from './components/editor/EditorCommands';
-import { colorToHex, isValidHexColor } from './utils/ColorConverter';
 import { DocscribeCodeBlockProcessor } from './components/editor/DocscribeCodeBlockProcessor';
 import { extractStructuredText } from './utils/PptxExtractor';
 import { extractTextFromPdf } from './utils/PdfExtractor';
@@ -253,7 +252,9 @@ export default class DocscribeGPT extends Plugin {
 
 		// Check if the 'Default.md' file exists, create it if not
 		if (!await this.app.vault.adapter.exists(defaultFilePath)) {
-			this.app.vault.create(defaultFilePath, '');
+			this.app.vault.create(defaultFilePath, '').catch((error) => {
+				console.error('Error creating default profile:', error);
+			});
 			// console.log('Default profile created.');
 		}
 
@@ -265,7 +266,9 @@ export default class DocscribeGPT extends Plugin {
 				// Check if the file content is empty
 				if (fileContent.trim() === '') {
 					// File content is empty, proceed with default front matter and appending content
-					defaultFrontMatter(this, file);
+					defaultFrontMatter(this, file).catch((error) => {
+						console.error('Error handling create event:', error);
+					});
 				}
 
 				// Fetching files from the specified folder (profiles)
@@ -324,7 +327,9 @@ export default class DocscribeGPT extends Plugin {
 
 				if (file instanceof TFile && file.path.startsWith(folderPath)) {
 					const filenameMessageHistory = this.app.vault.configDir + '/plugins/docscribe/data/' + 'messageHistory_' + file.name.replace('.md', '.json');
-					this.app.vault.adapter.remove(filenameMessageHistory);
+					this.app.vault.adapter.remove(filenameMessageHistory).catch((error) => {
+						console.error('Error handling delete event:', error);
+					});
 
 					const profileIndex = profileFiles.findIndex((profileFile) => profileFile.name > file.name);
 
@@ -332,7 +337,9 @@ export default class DocscribeGPT extends Plugin {
 
 					if (file.path === defaultFilePath) {
 						this.settings = DEFAULT_SETTINGS;
-						this.app.vault.create(defaultFilePath, '');
+						this.app.vault.create(defaultFilePath, '').catch((error) => {
+							console.error('Error creating default profile:', error);
+						});
 						await updateSettingsFromFrontMatter(this, defaultProfile);
 					}
 					else {
@@ -468,15 +475,19 @@ export default class DocscribeGPT extends Plugin {
 			(leaf) => new DocscribeView(leaf, this.settings, this)
 		);
 
-		this.addRibbonIcon('bot', 'DocScribe Chatbot', () => {
-			this.activateView();
+		this.addRibbonIcon('bot', 'DocScribe chatbot', () => {
+			this.activateView().catch((error) => {
+				console.error('Error activating view:', error);
+			})
 		});
 
 		this.addCommand({
             id: 'open-chatbot-view',
-            name: 'Open Chatbot',
+            name: 'Open chatbot',
             callback: () => {
-                this.activateView();
+                this.activateView().catch((error) => {
+				console.error('Error activating view:', error);
+				});
             }
         });
 
@@ -484,7 +495,9 @@ export default class DocscribeGPT extends Plugin {
             id: 'rename-note-title',
             name: 'Rename note title',
             callback: () => {
-				renameTitleCommand(this, this.settings);
+				renameTitleCommand(this, this.settings).catch((error) => {	
+				console.error('Error executing renameTitleCommand:', error);
+				});
             }
             // hotkeys: [
 			// 	{
@@ -503,7 +516,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pptx') {
 					menu.addItem((item) => {
 						item
-							.setTitle('DocScribe: Extract notes from pptx')
+							.setTitle('DocScribe: extract notes from pptx')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractStructuredText(arrayBuffer);
@@ -511,7 +524,8 @@ export default class DocscribeGPT extends Plugin {
  + extractedText;
 								await this.activateView();
 								const view = this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0].view as DocscribeView;
-								view.sendSystemMessage(prompt);
+								view.sendSystemMessage(prompt).catch((error) => {
+				console.error('Error sending system message:', error);});
 							});
 					});
 				}
@@ -519,7 +533,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pdf') {
 					menu.addItem((item) => {
 						item
-							.setTitle('DocScribe: Extract notes from pdf')
+							.setTitle('DocScribe: extract notes from pdf')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractTextFromPdf(arrayBuffer, 5000);
@@ -527,14 +541,15 @@ export default class DocscribeGPT extends Plugin {
  + extractedText;
 								await this.activateView();
 								const view = this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0].view as DocscribeView;
-								view.sendSystemMessage(prompt);
+								view.sendSystemMessage(prompt).catch((error) => {
+				console.error('Error sending system message:', error);});
 							});
 					});
 				}
 	
 				menu.addItem((item) => {
 					item
-						.setTitle('DocScribe: Generate new title')
+						.setTitle('DocScribe: generate new title')
 						.onClick(() => renameTitleCommand(this, this.settings));
 				});
 			})
@@ -544,7 +559,9 @@ export default class DocscribeGPT extends Plugin {
             id: 'prompt-select-generate',
             name: 'Prompt select generate',
             callback: () => {
-				promptSelectGenerateCommand(this, this.settings);
+				promptSelectGenerateCommand(this, this.settings).catch((error) => {
+				console.error('Error executing promptSelectGenerateCommand:', error);
+				});
             }
             // hotkeys: [
 			// 	{
@@ -569,7 +586,9 @@ export default class DocscribeGPT extends Plugin {
 			const DocscribeView = leaf.view as DocscribeView;
 	
 			if (DocscribeView) {
-				this.saveSettings();
+				this.saveSettings().catch((error) => {
+				console.error('Error saving settings:', error);
+				});
 			}
 			
 		});
@@ -587,7 +606,9 @@ export default class DocscribeGPT extends Plugin {
 
 		this.app.workspace.revealLeaf(
 			this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0]
-		);
+		).catch((error) => {
+			console.error('Error revealing leaf:', error);
+		});
 	
 		// Focus on the textarea
 		const textarea = document.querySelector('.chatbox textarea') as HTMLTextAreaElement;
@@ -597,13 +618,16 @@ export default class DocscribeGPT extends Plugin {
 	
 			setTimeout(() => {
 				textarea.focus();
-				textarea.style.setProperty('opacity', '1');
+				textarea.addClass("visible");
+				//style.setProperty('opacity', '1');
 			}, 50);
 		}
 	
 		this.app.workspace.revealLeaf(
 			this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0]
-		);
+		).catch((error) => {
+			console.error('Error revealing leaf:', error);
+		});
 	
 		const messageContainer = document.querySelector('#messageContainer');
 		if (messageContainer) {
@@ -626,7 +650,9 @@ export default class DocscribeGPT extends Plugin {
 		console.warn('Current profile is not a valid file:', currentProfileFile);
 		return;
 		}
-		updateFrontMatter(this, currentProfile);
+		updateFrontMatter(this, currentProfile).catch((error) => {
+			console.error('Error updating frontmatter:', error);
+		});
 
 		// Update the model dropdown in the header
 		const header = document.querySelector('#header') as HTMLElement;
@@ -694,7 +720,9 @@ export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
         console.error('Error processing frontmatter:', error);
     }
 
-	plugin.app.vault.append(file, DEFAULT_SETTINGS.general.system_role);
+	plugin.app.vault.append(file, DEFAULT_SETTINGS.general.system_role).catch((error) => {
+		console.error('Error appending default system role to profile:', error);
+	});
 }
 
 export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: TFile){
@@ -743,10 +771,14 @@ export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: 
     };
 
     try {
-        plugin.app.fileManager.processFrontMatter(file, updateSettings, writeOptions);
+        plugin.app.fileManager.processFrontMatter(file, updateSettings, writeOptions).catch((error) => {
+			console.error('Error processing frontmatter:', error);
+		});
 		const fileContent = (await plugin.app.vault.read(file)).replace(/^---\s*[\s\S]*?---/, '').trim();
 		plugin.settings.general.system_role = fileContent;
-		updateProfile(plugin, file);
+		updateProfile(plugin, file).catch((error) => {
+			console.error('Error updating profile after frontmatter update:', error);
+		});
     }
     catch (error) {
         console.error('Error processing frontmatter:', error);
@@ -800,7 +832,9 @@ export async function updateFrontMatter(plugin: DocscribeGPT, file: TFile){
 
     try {
         await plugin.app.fileManager.processFrontMatter(file, modifyFrontMatter, writeOptions);
-		updateProfile(plugin, file);
+		updateProfile(plugin, file).catch((error) => {
+			console.error('Error updating profile after frontmatter update:', error);
+		});
     }
     catch (error) {
         console.error('Error processing frontmatter:', error);
@@ -887,33 +921,17 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 
 				frontmatter.user_name = plugin.settings.appearance.userName;
 
-				const userNames = document.querySelectorAll(
-					".userName"
-				) as NodeListOf<HTMLHeadingElement>;
+				const userNames: NodeListOf<HTMLHeadingElement> = document.querySelectorAll(".userName");
 
 				userNames.forEach((userName) => {
 					userName.textContent = plugin.settings.appearance.userName;
 				});
 
-				// if (frontmatter.chatbot_name) {
-
-				// plugin.settings.appearance.chatbotName = frontmatter.chatbot_name.toUpperCase().substring(0, 30);
-
-				// } else {
-
-				// 	plugin.settings.appearance.chatbotName = DEFAULT_SETTINGS.appearance.chatbotName;
-
-				// }
-
-				// frontmatter.chatbot_name = plugin.settings.appearance.chatbotName;
-
 				const chatbotNameHeading = document.querySelector(
 					"#chatbotNameHeading"
 				) as HTMLHeadingElement;
 
-				const chatbotNames = document.querySelectorAll(
-					".chatbotName"
-				) as NodeListOf<HTMLHeadingElement>;
+				const chatbotNames: NodeListOf<HTMLHeadingElement> = document.querySelectorAll(".chatbotName");
 
 				if (chatbotNameHeading) {
 					chatbotNameHeading.textContent =
@@ -938,9 +956,10 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					) as HTMLElement;
 
 					if (header) {
-						header.style.setProperty("display", "block");
+						header.addClass("visible");
 
-						referenceCurrentNoteElement.style.setProperty("margin", "-0.5rem 0 0.5rem 0");
+						referenceCurrentNoteElement.addClass("referenceCurrentNote");
+						//style.setProperty("margin", "1rem 0 0.5rem 0");
 					}
 				} else {
 					const header = document.querySelector(
@@ -952,9 +971,11 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					) as HTMLElement;
 
 					if (header) {
-						header.style.setProperty("display", "none");
-						messageContainer.style.setProperty('max-height', 'calc(100% - 60px)');
-						referenceCurrentNoteElement.style.setProperty("margin", "-0.5rem 0 0.5rem 0");
+						header.addClass("hidden");
+						messageContainer.addClass('message-container');
+						//style.setProperty('max-height', 'calc(100% - 60px)');
+						referenceCurrentNoteElement.addClass("referenceCurrentNote");
+						//style.setProperty("margin", "-0.5rem 0 0.5rem 0");
 					}
 				}
 
@@ -1217,6 +1238,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 
 
 function updateStyles(frontmatter: any, settings: DocscribeSettings) {
+	/*
 	const root = document.documentElement;
 
 	if (isValidHexColor(frontmatter.chatbot_container_background_color)) {
@@ -1458,4 +1480,5 @@ function updateStyles(frontmatter: any, settings: DocscribeSettings) {
 			colorToHex(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor)
 		);
 	}
+	*/
 }

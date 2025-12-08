@@ -39,6 +39,7 @@ If your plugin does not need CSS, delete this file.
 	flex-direction: column;
 	max-width: 800px;
 	margin: auto;
+	overflow: hidden;
     background-color: var(--docscribe-chatbot-container-background-color);
 }
 
@@ -83,7 +84,22 @@ If your plugin does not need CSS, delete this file.
 	-ms-user-select: text;
 	-o-user-select: text;
 	user-select: text;
-	max-height: calc(100% - 120px);
+	min-height: 0;
+	word-wrap: break-word;
+    background-color: var(--docscribe-message-container-background-color);
+}
+.messageContainer {
+	margin-top: 0px;
+	flex-grow: 1;
+	overflow-y: auto;
+	-webkit-touch-callout: default;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	-o-user-select: text;
+	user-select: text;
+	min-height: 0;
 	word-wrap: break-word;
     background-color: var(--docscribe-message-container-background-color);
 }
@@ -296,9 +312,20 @@ button.copy-code-button:hover,
 	align-items: flex-end;
 	justify-content: center;
 	margin: 13px 3.5%;
-	padding: 3px;
-	background-color: var(--docscribe-chatbox-background-color);
+	padding: 12px;
+	background-color: #1a1a1a !important;
 	border-radius: 5px;
+	flex-shrink: 0;
+	position: relative;
+	z-index: 10;
+	min-height: auto;
+	width: calc(100% - 27px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+	border: 1px solid #333 !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+	backdrop-filter: none;
+	gap: 8px;
 }
 
 .chatbox textarea {
@@ -307,11 +334,16 @@ button.copy-code-button:hover,
 	background-color: var(--docscribe-chatbox-background-color);
 	border-color: var(--docscribe-chatbox-background-color);
 	width: 100%;
-	height: 29px;
+	height: 32px;
 	max-height: 150px;
 	resize: none;
 	font-size: 16px;
 	overflow-y: auto;
+	padding: 6px 10px;
+	visibility: visible !important;
+	opacity: 1 !important;
+	border-radius: 3px;
+	flex-grow: 1;
 }
 
 .chatbox textarea::placeholder {
@@ -338,9 +370,16 @@ button.copy-code-button:hover,
 	border: none;
 	border-radius: 50%;
 	padding: 8px;
-	max-width: 30px;
+	width: 36px;
+	height: 36px;
 	cursor: pointer;
-	margin: 0 3px;
+	margin: 0;
+	visibility: visible;
+	opacity: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
 }
 
 .chatbox .submit-button:hover {

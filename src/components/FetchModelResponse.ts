@@ -268,7 +268,7 @@ export async function fetchAnthropicResponse(plugin: BMOGPT, settings: Docscribe
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
 
-                const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+                const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
                 copyCodeBlocks.forEach((copyCodeBlock) => {
                     copyCodeBlock.textContent = 'Copy';
                     setIcon(copyCodeBlock, 'copy');
@@ -348,14 +348,14 @@ export async function fetchGoogleGeminiResponse(
 
     const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-    const generationConfig = {
-      temperature: parseFloat(settings.general.temperature) || 0.7,
-      maxOutputTokens: settings.general.max_tokens || 4096,
-      topP: 0.8,
-      topK: 10,
-      // Optional: disable "thinking" for 2.5 models
-      // thinkingConfig: { thinkingBudget: 0 }
-    };
+    // const generationConfig = {
+    //   temperature: parseFloat(settings.general.temperature) || 0.7,
+    //   maxOutputTokens: settings.general.max_tokens || 4096,
+    //   topP: 0.8,
+    //   topK: 10,
+    //   // Optional: disable "thinking" for 2.5 models
+    //   // thinkingConfig: { thinkingBudget: 0 }
+    // };
 
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
@@ -388,7 +388,7 @@ export async function fetchGoogleGeminiResponse(
       addParagraphBreaks(messageBlock);
       updateUnresolvedInternalLinks(plugin, messageBlock);
 
-      const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+      const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
       copyCodeBlocks.forEach(btn => {
         btn.textContent = 'Copy';
         setIcon(btn, 'copy');
@@ -467,7 +467,7 @@ export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSe
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
 
-                const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+                const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
                 copyCodeBlocks.forEach((copyCodeBlock) => {
                     copyCodeBlock.textContent = 'Copy';
                     setIcon(copyCodeBlock, 'copy');
@@ -565,7 +565,7 @@ export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: Docscribe
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
 
-                const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+                const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
                 copyCodeBlocks.forEach((copyCodeBlock) => {
                     copyCodeBlock.textContent = 'Copy';
                     setIcon(copyCodeBlock, 'copy');

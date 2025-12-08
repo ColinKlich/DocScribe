@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf, TFile, MarkdownView, Editor, EditorPosition, setIcon, Vault, Component } from 'obsidian';
+import { ItemView, WorkspaceLeaf, TFile, MarkdownView, Editor, EditorPosition, setIcon } from 'obsidian';
 import {DEFAULT_SETTINGS, DocscribeSettings} from './main';
 import DocscribeGPT from './main';
 import { commandMap, executeCommand } from './components/chat/Commands';
@@ -124,8 +124,7 @@ export class DocscribeView extends ItemView {
         }
         else {
             header.classList.add('hidden');
-            messageContainer.style.setProperty('max-height', 'calc(100% - 60px)');
-            referenceCurrentNoteElement.style.setProperty('margin', '0.5rem 0 0.5rem 0');
+            messageContainer.addClass('messageContainer');
         }
         
         await loadData(this.plugin);
@@ -157,9 +156,6 @@ export class DocscribeView extends ItemView {
                 });
             }
         });
-        
-        const parentElement = document.getElementById('parentElementId');
-        parentElement?.appendChild(messageContainer);
 
         const chatbox = chatbotContainer.createEl('div', {
             attr: {
@@ -180,13 +176,15 @@ export class DocscribeView extends ItemView {
 
 
         submitButton.addEventListener('click', () => {
-            this.handleKeyup(new KeyboardEvent('keyup', { key: 'Enter' }), true);
+            this.handleKeyup(new KeyboardEvent('keyup', { key: 'Enter' }), true).catch((error) => {
+                console.error('Error handling submit button click:', error);
+            });
         });
 
         chatbox.appendChild(textarea);
         chatbox.appendChild(submitButton);
         
-        this.textareaElement = textarea as HTMLTextAreaElement;
+        this.textareaElement = textarea;
         this.addEventListeners();
 
         // Scroll to bottom of messageContainer
@@ -383,7 +381,7 @@ export class DocscribeView extends ItemView {
                 
 
                 if (input.startsWith('/')) {
-                    executeCommand(input, this.settings, this.plugin);
+                    void executeCommand(input, this.settings, this.plugin);
 
 
                     if (!excludedCommands.some(cmd => input.startsWith(cmd))) {
@@ -409,7 +407,8 @@ export class DocscribeView extends ItemView {
             }
 
             this.textareaElement.value = '';
-            this.textareaElement.style.setProperty('height', '29px');
+            this.textareaElement.addClass('chatbox-textarea');
+            //setProperty('height', '29px');
             this.textareaElement.value = this.textareaElement.value.trim();
             this.textareaElement.setSelectionRange(0, 0);
         }
@@ -422,12 +421,14 @@ export class DocscribeView extends ItemView {
     }
 
     handleInput(event: Event) {
-        this.textareaElement.style.setProperty('height', '29px');
+        this.textareaElement.addClass('chatbox-textarea');
+        //style.setProperty('height', '29px');
     }
 
     handleBlur(event: Event) {
         if (!this.textareaElement.value) {
-            this.textareaElement.style.setProperty('height', '29px');
+            this.textareaElement.addClass('chatbox-textarea');
+            //style.setProperty('height', '29px');
         }
     }
 
@@ -449,10 +450,18 @@ export class DocscribeView extends ItemView {
             }
         };
 
-        activeWindow.addEventListener('click', updateCursorPosition);
-        activeWindow.addEventListener('keyup', updateCursorPosition);
-        activeWindow.addEventListener('keydown', updateCursorPosition);
-        activeWindow.addEventListener('input', updateCursorPosition);
+        activeWindow.addEventListener('click', () => {
+            void updateCursorPosition();
+        });
+        activeWindow.addEventListener('keyup', () => {
+            void updateCursorPosition();
+        });
+        activeWindow.addEventListener('keydown', () => {
+            void updateCursorPosition();
+        });
+        activeWindow.addEventListener('input', () => {
+            void updateCursorPosition();
+        });
     }
 
     
@@ -524,7 +533,8 @@ export class DocscribeView extends ItemView {
 
     setChatboxContent(text: string) {
         this.textareaElement.value += `<context>${text}</context>`;
-        this.textareaElement.style.setProperty('height', 'auto');
+        this.textareaElement.addClass('chatbox-textarea');
+        //style.setProperty('height', 'auto');
     }
 
     public async sendSystemMessage(message: string) {
@@ -639,9 +649,11 @@ export function populateModelDropdown(plugin: DocscribeGPT, settings: DocscribeS
         }
     });
 
-    modelOptions.addEventListener('change', async function() {
+    modelOptions.addEventListener('change', function() {
         plugin.settings.general.model = this.value;
-        await plugin.saveSettings();
+        plugin.saveSettings().catch((error) => {
+            console.error('Error saving settings:', error);
+        });
     });
 
     return modelOptions;

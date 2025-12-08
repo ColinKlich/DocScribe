@@ -34,7 +34,9 @@ export function displayBotMessage(plugin: DocscribeGPT, settings: DocscribeSetti
     const regexRenderedNote = /<note-rendered>[\s\S]*?<\/note-rendered>/g;
     message = message.replace(regexRenderedNote, '').trim();
 
-    MarkdownRenderer.render(plugin.app, message, messageBlockDiv, '', component);
+    MarkdownRenderer.render(plugin.app, message, messageBlockDiv, '', component).catch((error) => {
+        console.error('Error rendering message:', error);
+    });
 
     // Add buttons to the bot message
     if (!message.includes('commandBotMessage') && !message.includes('errorBotMessage')) {
@@ -48,7 +50,7 @@ export function displayBotMessage(plugin: DocscribeGPT, settings: DocscribeSetti
         addParagraphBreaks(messageBlockDiv); 
     } 
     
-    const copyCodeBlocks = messageBlockDiv.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+    const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlockDiv.querySelectorAll('.copy-code-button');
     copyCodeBlocks.forEach((copyCodeBlock) => {
         copyCodeBlock.textContent = 'Copy';
         setIcon(copyCodeBlock, 'copy');
@@ -120,7 +122,9 @@ export function displayCommandBotMessage(plugin: DocscribeGPT, settings: Docscri
 
     const index = messageHistory.length - 1;
 
-    addMessage(plugin, message, 'botMessage', settings, index);
+    addMessage(plugin, message, 'botMessage', settings, index).catch((error) => {
+        console.error('Error adding message:', error);
+    });
 
     return botMessageDiv;
 }
@@ -156,7 +160,9 @@ export function displayErrorBotMessage(plugin: DocscribeGPT, settings: Docscribe
 
     const index = messageHistory.length - 1;
 
-    addMessage(plugin, messageBlockDiv, 'botMessage', this.settings, index);
+    addMessage(plugin, messageBlockDiv, 'botMessage', this.settings, index).catch((error) => {
+        console.error('Error adding message:', error);
+    });
 
     return botMessageDiv;
 }

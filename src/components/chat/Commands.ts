@@ -106,7 +106,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(header);
 
   const generalCommandHeader = document.createElement('h4');
-  generalCommandHeader.textContent = 'General Commands';
+  generalCommandHeader.textContent = 'General commands';
   generalCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(generalCommandHeader);
 
@@ -128,17 +128,17 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(commandRefOffP);
 
   const commandMaxTokensP = document.createElement('p');
-  commandMaxTokensP.createEl('code', { text: '/maxtokens [VALUE]' });
+  commandMaxTokensP.createEl('code', { text: '/maxtokens [value]' });
   commandMaxTokensP.append(' - Set max tokens.');
   displayCommandBotMessageDiv.appendChild(commandMaxTokensP);
 
   const commandTempP = document.createElement('p');
-  commandTempP.createEl('code', { text: '/temp [VALUE]' });
+  commandTempP.createEl('code', { text: '/temp [value]' });
   commandTempP.append(' - Change temperature range from 0 to 2.');
   displayCommandBotMessageDiv.appendChild(commandTempP);
 
   const profileCommandHeader = document.createElement('h4');
-  profileCommandHeader.textContent = 'Profile Commands';
+  profileCommandHeader.textContent = 'Profile commands';
   profileCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(profileCommandHeader);
 
@@ -148,12 +148,12 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(commandProfileListP);
 
   const commandProfileChangeP = document.createElement('p');
-  commandProfileChangeP.createEl('code', { text: '/profile [PROFILE-NAME] or [VALUE]' });
+  commandProfileChangeP.createEl('code', { text: '/profile [profile-name] or [value]' });
   commandProfileChangeP.append(' - Change profile.');
   displayCommandBotMessageDiv.appendChild(commandProfileChangeP);
 
   const modelCommandHeader = document.createElement('h4');
-  modelCommandHeader.textContent = 'Model Commands';
+  modelCommandHeader.textContent = 'Model commands';
   modelCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(modelCommandHeader);
 
@@ -163,12 +163,12 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(commandModelListP);
 
   const commandModelChangeP = document.createElement('p');
-  commandModelChangeP.createEl('code', { text: '/model [MODEL-NAME] or [VALUE]' });
+  commandModelChangeP.createEl('code', { text: '/model [model-name] or [value]' });
   commandModelChangeP.append(' - Change model.');
   displayCommandBotMessageDiv.appendChild(commandModelChangeP);
 
   const promptCommandHeader = document.createElement('h4');
-  promptCommandHeader.textContent = 'Prompt Commands';
+  promptCommandHeader.textContent = 'Prompt commands';
   promptCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(promptCommandHeader);
 
@@ -178,7 +178,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(commandPromptListP);
 
   const commandPromptChangeP = document.createElement('p');
-  commandPromptChangeP.createEl('code', { text: '/prompt [PROMPT-NAME] or [VALUE]' });
+  commandPromptChangeP.createEl('code', { text: '/prompt [prompt-name] or [value]' });
   commandPromptChangeP.append(' - Change prompts.');
   displayCommandBotMessageDiv.appendChild(commandPromptChangeP);
 
@@ -188,7 +188,7 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
   displayCommandBotMessageDiv.appendChild(commandPromptClearP);
 
   const editorCommandHeader = document.createElement('h4');
-  editorCommandHeader.textContent = 'Editor Commands';
+  editorCommandHeader.textContent = 'Editor commands';
   editorCommandHeader.addClass('text-align-left');
   displayCommandBotMessageDiv.appendChild(editorCommandHeader);
 
@@ -221,13 +221,13 @@ export function commandHelp(plugin: DocscribeGPT, settings: DocscribeSettings) {
 
   const index = messageHistory.length - 1;
 
-  addMessage(plugin, messageBlockDiv, 'botMessage', settings, index);
+  addMessage(plugin, messageBlockDiv, 'botMessage', settings, index).catch(err => {console.error('Failed to add message:', err);});
 
   messageContainer.appendChild(botMessageDiv);
 }
 
 // `/model "[VALUE]"` to change model.
-export function commandModel(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export async function commandModel(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
 
     // Get models as arrays
@@ -278,12 +278,12 @@ export function commandModel(input: string, settings: DocscribeSettings, plugin:
     displayCommandBotMessageDiv.className = 'commandBotMessage';
 
     const header = document.createElement('h3');
-    header.textContent = 'Model List';
+    header.textContent = 'Model list';
     header.addClass('text-align-center');
     displayCommandBotMessageDiv.appendChild(header);
 
     const currentModelP = document.createElement('p');
-    currentModelP.createEl('b', { text: 'Current Model:' });
+    currentModelP.createEl('b', { text: 'Current model:' });
     currentModelP.append(` ${currentModel}`);
     currentModelP.addClass('text-align-center');
     displayCommandBotMessageDiv.appendChild(currentModelP);
@@ -331,7 +331,7 @@ export function commandModel(input: string, settings: DocscribeSettings, plugin:
 
     const index = messageHistory.length - 1;
 
-    addMessage(plugin, messageBlockDiv, 'botMessage', settings, index);
+    addMessage(plugin, messageBlockDiv, 'botMessage', settings, index).catch(err => {console.error('Failed to add message:', err);});
 
     messageContainer.appendChild(botMessageDiv);
   }
@@ -359,7 +359,11 @@ export function commandModel(input: string, settings: DocscribeSettings, plugin:
       new Notice('Invalid model.');
     }
 
-    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+    try {
+      await plugin.saveSettings();
+    } catch (err) {
+      console.error('Failed to save settings:', err);
+    }
   }
 }
 
@@ -389,10 +393,10 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
   if (!input.split(' ')[1]) {
 
     // Loop through files and create list items, removing the file extension
-    const fileListItems = files.map(file => {
-      const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, ''); // Removing the last dot and what follows
-      return `<li>${fileNameWithoutExtension}</li>`;
-    }).join('');
+    // const fileListItems = files.map(file => {
+    //   const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, ''); // Removing the last dot and what follows
+    //   return `<li>${fileNameWithoutExtension}</li>`;
+    // }).join('');
 
     // Check if currentProfile is empty, and set it to "Empty" if it is
     if (!currentProfile) {
@@ -468,9 +472,13 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
       settings.profiles.lastLoadedChatHistoryPath = settings.profiles.lastLoadedChatHistory[profileIndex];
 
       // new Notice(`Profile updated to '${profileAliases[inputValue]}'`);
-      plugin.activateView();
-      await updateSettingsFromFrontMatter(plugin, currentProfile);
-      plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+      try {
+        await plugin.activateView();
+        await updateSettingsFromFrontMatter(plugin, currentProfile);
+        await plugin.saveSettings();
+      } catch (err) {
+        console.error('Error during profile update:', err);
+      }
     } else if (Object.values(profileAliases).map(v => v.toLowerCase()).includes(inputValue.toLowerCase())) {
         // If input matches a value in profileAliases (case-insensitive)
         const matchedProfile = Object.entries(profileAliases).find(([key, value]) => value.toLowerCase() === inputValue.toLowerCase());
@@ -490,21 +498,29 @@ export async function commandProfile(input: string, settings: DocscribeSettings,
       
             settings.profiles.lastLoadedChatHistoryPath = settings.profiles.lastLoadedChatHistory[profileIndex];
             
-            plugin.activateView();
-            await updateSettingsFromFrontMatter(plugin, currentProfile);
-            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+            try {
+                await plugin.activateView();
+                await updateSettingsFromFrontMatter(plugin, currentProfile);
+                await plugin.saveSettings();
+            } catch (err) {
+                console.error('Error during profile update:', err);
+            }
         }
     } else {
         new Notice('Invalid profile.');
     }
 
-    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+    try {
+        await plugin.saveSettings();
+    } catch (err) {
+        console.error('Failed to save settings:', err);
+    }
   }
 
 }
 
 // `/prompt "[VALUE]"` to change prompt.
-export function commandPrompt(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export async function commandPrompt(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const messageContainer = document.querySelector('#messageContainer') as HTMLDivElement;
 
   if (!settings.prompts.promptFolderPath) {
@@ -527,10 +543,10 @@ const p = document.createElement('p');
   if (!input.split(' ')[1]) {
 
     // Loop through files and create list items, removing the file extension
-    const fileListItems = files.map(file => {
-      const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, ''); // Removing the last dot and what follows
-      return `<li>${fileNameWithoutExtension}</li>`;
-    }).join('');
+    // const fileListItems = files.map(file => {
+    //   const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, ''); // Removing the last dot and what follows
+    //   return `<li>${fileNameWithoutExtension}</li>`;
+    // }).join('');
 
     let currentPrompt = settings.prompts.prompt;
 
@@ -585,7 +601,11 @@ const p = document.createElement('p');
       settings.prompts.prompt = ''; // Set to default or empty
       new Notice('Prompt cleared.');
 
-      plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+      try {
+        await plugin.saveSettings();
+      } catch (err) {
+        console.error('Failed to save settings:', err);
+      }
     }
     
     const promptAliases: { [key: string]: string } = {};
@@ -617,13 +637,17 @@ const p = document.createElement('p');
       }
     }
 
-    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+    try {
+        await plugin.saveSettings();
+    } catch (err) {
+        console.error('Failed to save settings:', err);
+    }
   }
 
 }
 
 // `/ref` to turn on/off referenceCurrentNote.
-export function commandReference(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export async function commandReference(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const referenceCurrentNoteElement = document.getElementById('referenceCurrentNote');
   const inputValue = input.split(' ')[1]?.toLowerCase();
 
@@ -643,11 +667,15 @@ export function commandReference(input: string, settings: DocscribeSettings, plu
     new Notice('Type `/ref on` or `/ref off` to turn on/off reference current note.');
   }
 
-  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+  try {
+    await plugin.saveSettings();
+  } catch (err) {
+    console.error('Failed to save settings:', err);
+  }
 }
 
 // `/temp "VALUE"` to change the temperature.
-export function commandTemperature(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export async function commandTemperature(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   const inputValue = input.split(' ')[1];
   const floatValue = parseFloat(inputValue);
 
@@ -664,11 +692,15 @@ export function commandTemperature(input: string, settings: DocscribeSettings, p
     new Notice(`Current temperature: ${settings.general.temperature}`);
   }
 
-  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+  try {
+    await plugin.saveSettings();
+  } catch (err) {
+    console.error('Failed to save settings:', err);
+  }
 }
 
 // `/maxtokens` to change max_tokens.
-export function commandMaxTokens(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
+export async function commandMaxTokens(input: string, settings: DocscribeSettings, plugin: DocscribeGPT) {
   // let commandBotMessage = '';
   const commandParts = input.split(' ');
   const commandAction = commandParts[1] ? commandParts[1].toLowerCase() : '';
@@ -692,13 +724,17 @@ export function commandMaxTokens(input: string, settings: DocscribeSettings, plu
   } else {
     // No action specified
     if (settings.general.max_tokens === '') {
-      new Notice('Current max tokens: Empty');
+      new Notice('Current max tokens: empty');
     } else {
       new Notice(`Current max tokens: ${settings.general.max_tokens}`);
     }
   }
 
-  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+  try {
+    await plugin.saveSettings();
+  } catch (err) {
+    console.error('Failed to save settings:', err);
+  }
 }
 
 // `/append` to append current chat history to current active note.
@@ -771,7 +807,7 @@ export async function commandAppend(plugin: DocscribeGPT, settings: DocscribeSet
     new Notice('Appended conversation.');
   }
   else {
-    new Notice('No active Markdown file detected.');
+    new Notice('No active markdown file detected.');
   }
 }
 
@@ -949,7 +985,7 @@ if (settings.profiles.lastLoadedChatHistoryPath !== null) {
           settings.profiles.lastLoadedChatHistoryPath = file.path;
           settings.profiles.lastLoadedChatHistory[profileIndex] = file.path;
           // Open the newly created note in a new pane
-          plugin.app.workspace.openLinkText(fileName, '', true, { active: true });
+          plugin.app.workspace.openLinkText(fileName, '', true, { active: true }).catch(err => {console.error('Failed to open newly created note:', err);});
         }
     } else {
       // Update the existing note with the formatted Markdown content
@@ -959,8 +995,8 @@ if (settings.profiles.lastLoadedChatHistoryPath !== null) {
 
       // Log the active files to the console
       if (activeFile?.path !== lastLoadedChatHistoryFile.path) {
-        plugin.app.workspace.openLinkText(lastLoadedChatHistoryFile.path, lastLoadedChatHistoryFile.path, true, { active: true });
-      }
+        void plugin.app.workspace.openLinkText(lastLoadedChatHistoryFile.path, lastLoadedChatHistoryFile.path, true, { active: true });   
+    }
     }
     
     new Notice(`Saved to '${lastLoadedChatHistoryFile?.name}'`);
@@ -1017,7 +1053,7 @@ if (!input.split(' ')[1]) {
 
   const headerEl = document.createElement('h2');
   headerEl.className = 'text-align-center';
-  headerEl.textContent = 'Chat History';
+  headerEl.textContent = 'Chat history';
   commandBotMessageEl.appendChild(headerEl);
 
   const pEl = document.createElement('p');
@@ -1112,7 +1148,7 @@ if (input.startsWith('/load')) {
     
       const updatedJsonString = JSON.stringify(messageHistory, null, 4);
       await plugin.app.vault.adapter.write(fileNameMessageHistoryJson(plugin), updatedJsonString);
-      plugin.activateView();
+      plugin.activateView().catch(err => {console.error('Failed to activate view:', err);});
       return true;
     };
     
@@ -1125,7 +1161,7 @@ if (input.startsWith('/load')) {
       modalContent.classList.add('modal-content');
     
       const heading = document.createElement('h2');
-      heading.textContent = 'Load Chat History';
+      heading.textContent = 'Load chat history';
       modalContent.appendChild(heading);
     
       if (matchingFiles.length === 1) {
@@ -1139,21 +1175,25 @@ if (input.startsWith('/load')) {
         confirmLoadButton.textContent = 'Confirm';
         modalContent.appendChild(confirmLoadButton);
     
-        confirmLoadButton?.addEventListener('click', async function () {
-          const selectedFile = matchingFiles[0];
-          const chatHistoryFilePath = selectedFile.path;
-          const success = await loadChatHistory(chatHistoryFilePath);
-          if (success) {
-            new Notice(`Switched to '${selectedFile.path}' chat history.`);
-            lastLoadedChatHistoryFile = selectedFile;
+        confirmLoadButton?.addEventListener('click', function () {
+          (async () => {
+            const selectedFile = matchingFiles[0];
+            const chatHistoryFilePath = selectedFile.path;
+            const success = await loadChatHistory(chatHistoryFilePath);
+            if (success) {
+              new Notice(`Switched to '${selectedFile.path}' chat history.`);
+              lastLoadedChatHistoryFile = selectedFile;
 
-            settings.profiles.lastLoadedChatHistoryPath = selectedFile.path;
+              settings.profiles.lastLoadedChatHistoryPath = selectedFile.path;
 
-            // Update the lastLoadedChatHistoryPath for the current profile
-            settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
-            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
-          }
-          modal.close();
+              // Update the lastLoadedChatHistoryPath for the current profile
+              settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
+              plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+            }
+            modal.close();
+          })().catch(err => {
+            console.error("Error in click handler:", err);
+          });
         });
       } else {
         // Display file options for multiple matching files
@@ -1190,27 +1230,31 @@ if (input.startsWith('/load')) {
         confirmLoadButton.textContent = 'Load';
         modalContent.appendChild(confirmLoadButton);
     
-        confirmLoadButton?.addEventListener('click', async function () {
-          const selectedRadio = optionsContainer.querySelector('input[type="radio"]:checked') as HTMLInputElement;
-          if (selectedRadio) {
-            const selectedFilePath = selectedRadio.value;
-            const selectedFile = matchingFiles.find(file => file.path === selectedFilePath);
-            if (selectedFile) {
-              const chatHistoryFilePath = selectedFile.path;
-              const success = await loadChatHistory(chatHistoryFilePath);
-              if (success) {
-                new Notice(`Switched to '${selectedFile.path}' chat history.`);
-                lastLoadedChatHistoryFile = selectedFile;
-    
-                settings.profiles.lastLoadedChatHistoryPath = selectedFile.path;
-    
-                // Update the lastLoadedChatHistoryPath for the current profile
-                settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
-                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+        confirmLoadButton?.addEventListener('click', function () {
+          (async () => {
+            const selectedRadio = optionsContainer.querySelector('input[type="radio"]:checked') as HTMLInputElement;
+            if (selectedRadio) {
+              const selectedFilePath = selectedRadio.value;
+              const selectedFile = matchingFiles.find(file => file.path === selectedFilePath);
+              if (selectedFile) {
+                const chatHistoryFilePath = selectedFile.path;
+                const success = await loadChatHistory(chatHistoryFilePath);
+                if (success) {
+                  new Notice(`Switched to '${selectedFile.path}' chat history.`);
+                  lastLoadedChatHistoryFile = selectedFile;
+      
+                  settings.profiles.lastLoadedChatHistoryPath = selectedFile.path;
+      
+                  // Update the lastLoadedChatHistoryPath for the current profile
+                  settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
+                  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+                }
+                modal.close();
               }
-              modal.close();
             }
-          }
+          })().catch(err => {
+            console.error("Error in click handler:", err);
+          });
         });
       }
     
@@ -1232,7 +1276,7 @@ if (input.startsWith('/load')) {
         modalContent.classList.add('modal-content');
     
         const heading = document.createElement('h2');
-        heading.textContent = 'Load Chat History';
+        heading.textContent = 'Load chat history';
         modalContent.appendChild(heading);
     
         if (matchingFiles.length === 1) {
@@ -1246,21 +1290,25 @@ if (input.startsWith('/load')) {
           confirmLoadButton.textContent = 'Confirm';
           modalContent.appendChild(confirmLoadButton);
     
-          confirmLoadButton?.addEventListener('click', async function () {
-            const selectedFile = matchingFiles[0];
-            const chatHistoryFilePath = selectedFile.path;
-            const success = await loadChatHistory(chatHistoryFilePath);
-            if (success) {
-              new Notice(`Switched to '${selectedFile.path}' chat history.`);
-              lastLoadedChatHistoryFile = selectedFile;
-  
-              settings.profiles.lastLoadedChatHistoryPath = selectedFile.path;
-  
-              // Update the lastLoadedChatHistoryPath for the current profile
-              settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
-              plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
-            }
-            modal.close();
+          confirmLoadButton?.addEventListener('click', function () {
+            (async () => {
+              const selectedFile = matchingFiles[0];
+              const chatHistoryFilePath = selectedFile.path;
+              const success = await loadChatHistory(chatHistoryFilePath);
+              if (success) {
+                new Notice(`Switched to '${selectedFile.path}' chat history.`);
+                lastLoadedChatHistoryFile = selectedFile;
+    
+                settings.profiles.lastLoadedChatHistoryPath = selectedFile.path;
+    
+                // Update the lastLoadedChatHistoryPath for the current profile
+                settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+              }
+              modal.close();
+            })().catch(err => {
+                console.error("Error in click handler:", err);
+            });
           });
         } else {
           // Display file options for multiple matching files
@@ -1297,27 +1345,31 @@ if (input.startsWith('/load')) {
           confirmLoadButton.textContent = 'Load';
           modalContent.appendChild(confirmLoadButton);
     
-          confirmLoadButton?.addEventListener('click', async function () {
-            const selectedRadio = optionsContainer.querySelector('input[type="radio"]:checked') as HTMLInputElement;
-            if (selectedRadio) {
-              const selectedFilePath = selectedRadio.value;
-              const selectedFile = matchingFiles.find(file => file.path === selectedFilePath);
-              if (selectedFile) {
-                const chatHistoryFilePath = selectedFile.path;
-                const success = await loadChatHistory(chatHistoryFilePath);
-                if (success) {
-                  new Notice(`Switched to '${selectedFile.path}' chat history.`);
-                  lastLoadedChatHistoryFile = selectedFile;
-      
-                  settings.profiles.lastLoadedChatHistoryPath = selectedFile.path;
-      
-                  // Update the lastLoadedChatHistoryPath for the current profile
-                  settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
-                  plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+          confirmLoadButton?.addEventListener('click', function () {
+            (async () => {
+              const selectedRadio = optionsContainer.querySelector('input[type="radio"]:checked') as HTMLInputElement;
+              if (selectedRadio) {
+                const selectedFilePath = selectedRadio.value;
+                const selectedFile = matchingFiles.find(file => file.path === selectedFilePath);
+                if (selectedFile) {
+                  const chatHistoryFilePath = selectedFile.path;
+                  const success = await loadChatHistory(chatHistoryFilePath);
+                  if (success) {
+                    new Notice(`Switched to '${selectedFile.path}' chat history.`);
+                    lastLoadedChatHistoryFile = selectedFile;
+        
+                    settings.profiles.lastLoadedChatHistoryPath = selectedFile.path;
+        
+                    // Update the lastLoadedChatHistoryPath for the current profile
+                    settings.profiles.lastLoadedChatHistory[profileIndex] = settings.profiles.lastLoadedChatHistoryPath;
+                    plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+                  }
+                  modal.close();
                 }
-                modal.close();
               }
-            }
+            })().catch(err => {
+                console.error("Error in click handler:", err);
+            });
           });
         }
     

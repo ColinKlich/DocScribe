@@ -18,7 +18,7 @@ class ConfirmationModal extends Modal {
     onOpen() {
         const { contentEl } = this;
         contentEl.createEl('h2', { text: 'Are you sure?' });
-        contentEl.createEl('p', { text: 'This will reset all Docscribe settings to their default values.' });
+        contentEl.createEl('p', { text: 'This will reset all DocScribe settings to their default values.' });
 
         new Setting(contentEl)
             .addButton(btn => btn
@@ -51,11 +51,12 @@ export class DocscribeSettingTab extends PluginSettingTab {
 	display(): void {
 		// Display settings information
 		const { containerEl } = this;
-		containerEl.empty();
+		//containerEl.createEl('h1', { text: 'DocScribe settings' });
+		new Setting(containerEl)
+			.setName('DocScribe settings')
+			.setDesc('Configure DocScribe settings to customize your experience.');
 
-		containerEl.createEl('h1', { text: 'DocScribe settings' });
-
-		// Create a container for the links
+		// Create a container for the links		
 		const linkContainer = containerEl.createEl('div', { cls: 'settings-links' });
 
 		// Define link data
@@ -74,7 +75,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 				});
 			}
 
-			const linkEl = linkContainer.createEl('a', {
+			linkContainer.createEl('a', {
 				text: link.text,
 				href: link.href,
 				cls: 'settings-link'
@@ -143,8 +144,12 @@ export class DocscribeSettingTab extends PluginSettingTab {
 					}
 					else {
 						const filenameMessageHistory = this.app.vault.configDir + '/plugins/docscribe/data/' + 'messageHistory_' + defaultProfilePath.name.replace('.md', '.json');
-						this.app.vault.adapter.remove(filenameMessageHistory);
-						this.plugin.app.fileManager.trashFile(profilePath);
+						this.app.vault.adapter.remove(filenameMessageHistory).catch((error) => {
+							console.error('Error handling rename event:', error);
+						});
+						this.plugin.app.fileManager.trashFile(profilePath).catch((error) => {
+							console.error('Error handling rename event:', error);
+						});
 						this.plugin.settings.profiles.profile = DEFAULT_SETTINGS.profiles.profile;
 						await updateSettingsFromFrontMatter(this.plugin, defaultProfilePath);
 						await this.plugin.saveSettings();
@@ -161,7 +166,7 @@ export class DocscribeSettingTab extends PluginSettingTab {
 					}
 				});
 			};
-			new ConfirmationModal(this.app, onConfirm).open();
+			new ConfirmationModal(this.app, () => { void onConfirm(); }).open();
 		});
 	}
 }

@@ -1,4 +1,4 @@
-import { Notice, requestUrl } from 'obsidian';
+import { requestUrl } from 'obsidian';
 import { Ollama } from 'ollama';
 import OpenAI from 'openai';
 import { DocscribeSettings } from 'src/main';
@@ -35,8 +35,7 @@ export async function fetchModelRenameTitle(settings: DocscribeSettings, referen
         
                 return title;
             } catch (error) {
-                new Notice('Error generating title:', error);
-                console.error('Error generating title:', error);
+                console.error('Error making Ollama API request:', error);
                 throw error;
             }
         }        
@@ -102,8 +101,7 @@ export async function fetchModelRenameTitle(settings: DocscribeSettings, referen
                 return title;
             
               } catch (error) {
-                new Notice(error);
-                console.error(error);
+                console.error('Error making API request:', error);
                 throw error;
               }
         }
@@ -230,7 +228,7 @@ export async function fetchModelRenameTitle(settings: DocscribeSettings, referen
             throw new Error('Invalid model selected for renaming note title. Please check your settings.');
         }
     } catch (error) {
-        // console.log('ERROR');
-        throw new Error(error.response?.data?.error || error.message);
+        console.error('Error in fetchModelRenameTitle:', error);
+        throw error;
     }
 }
