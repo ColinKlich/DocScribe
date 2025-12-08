@@ -2,7 +2,7 @@ import { Setting, SettingTab, setIcon } from 'obsidian';
 import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 
 
-export async function addEditorSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
+export function addEditorSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'Editor settings'});
 
@@ -15,7 +15,7 @@ export async function addEditorSettings(containerEl: HTMLElement, plugin: Docscr
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -27,12 +27,12 @@ export async function addEditorSettings(containerEl: HTMLElement, plugin: Docscr
             settingsContainer.classList.remove('hidden');
             plugin.settings.toggleEditorSettings = true;
         }
-        await plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
+        plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
     });
 
     new Setting(settingsContainer)
         .setName('Editor system role')
-        .setDesc('System role for Docscribe generate and \'Prompt Select Generate\' command.')
+        .setDesc('System role for DocScribe generate and \'prompt select generate\' command.')
         .addTextArea(text => text
             .setPlaceholder('You are a helpful assistant.')
             .setValue(plugin.settings.editor.systen_role !== undefined ? plugin.settings.editor.systen_role : DEFAULT_SETTINGS.editor.systen_role)

@@ -14,7 +14,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -33,7 +33,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
         .setName('Chat history folder path')
         .setDesc('Save your chat history in a specified folder.')
         .addText(text => text
-            .setPlaceholder('DocScribe/History')
+            .setPlaceholder('DocScribe history')
             .setValue(plugin.settings.chatHistory.chatHistoryPath || DEFAULT_SETTINGS.chatHistory.chatHistoryPath)
             .onChange(async (value) => {
                 plugin.settings.chatHistory.chatHistoryPath = value ? value : DEFAULT_SETTINGS.chatHistory.chatHistoryPath;
@@ -104,7 +104,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
         .addToggle((toggle) =>
             toggle.setValue(plugin.settings.chatHistory.allowRenameNoteTitle).onChange((value) => {
                 plugin.settings.chatHistory.allowRenameNoteTitle = value;
-                plugin.saveSettings();
+                plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             })
         );
 }

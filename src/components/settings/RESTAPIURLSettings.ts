@@ -17,7 +17,7 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -36,7 +36,7 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
     .setName('API key')
     .setDesc('Insert API key (optional).')
     .addText(text => text
-        .setPlaceholder('insert-api-key')
+        .setPlaceholder('Insert-API-key')
         .setValue(plugin.settings.RESTAPIURLConnection.APIKey ? `${plugin.settings.RESTAPIURLConnection.APIKey.slice(0, 6)}-...${plugin.settings.RESTAPIURLConnection.APIKey.slice(-4)}` : '')
         .onChange(async (value) => {
             plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = [];
@@ -49,10 +49,10 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
     );
 
     new Setting(settingsContainer)
-    .setName('REST API url')
-    .setDesc(addDescriptionLink('Enter your REST API url.', 'https://github.com/colinklich/docscribe/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
+    .setName('REST API URL')
+    .setDesc(addDescriptionLink('Enter your REST API URL.', 'Https://github.com/colinklich/docscribe/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
     .addText(text => text
-        .setPlaceholder('http://localhost:1234/v1')
+        .setPlaceholder('Http://localhost:1234/v1')
         .setValue(plugin.settings.RESTAPIURLConnection.RESTAPIURL || DEFAULT_SETTINGS.RESTAPIURLConnection.RESTAPIURL)
         .onChange(async (value) => {
                 plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = [];
@@ -61,14 +61,18 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
                     plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = [];
                 } else {
                     const models = await fetchRESTAPIURLModels(plugin);
-                    models.forEach((model: string) => {
-                        if (!plugin.settings.RESTAPIURLConnection.RESTAPIURLModels.includes(model)) {
-                            plugin.settings.RESTAPIURLConnection.RESTAPIURLModels.push(model);
-                        }
-                    });
+                    if (!models) {
+                        plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = [];
+                    } else {
+                        models.forEach((model: string) => {
+                            if (!plugin.settings.RESTAPIURLConnection.RESTAPIURLModels.includes(model)) {
+                                plugin.settings.RESTAPIURLConnection.RESTAPIURLModels.push(model);
+                            }
+                        });
+                }
                 }
             })
-        .inputEl.addEventListener('focusout', async () => {
+        .inputEl.addEventListener('focusout', () => {
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             void SettingTab.display();
         })

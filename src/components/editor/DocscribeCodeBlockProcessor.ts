@@ -241,9 +241,9 @@ export function DocscribeCodeBlockProcessor(plugin: Plugin, settings: DocscribeS
 
         // Render the filtered content as Markdown
         if (source.includes('<response>') && source.includes('</response>')) {
-            await MarkdownRenderer.render(plugin.app, contentToRender, DocscribeCodeBlockContent, '/', plugin);
+            await MarkdownRenderer.render(plugin.app, contentToRender, DocscribeCodeBlockContent, '/', this);
         } else {
-            await MarkdownRenderer.render(plugin.app, prompt, DocscribeCodeBlockContent, '/', plugin);
+            await MarkdownRenderer.render(plugin.app, prompt, DocscribeCodeBlockContent, '/', this);
         }
     });
 }

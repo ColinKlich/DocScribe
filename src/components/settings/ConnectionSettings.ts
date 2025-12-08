@@ -8,7 +8,7 @@ import { addOpenRouterConnectionSettings } from './APIConnections/OpenRouterConn
 
 export function addAPIConnectionSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
-    toggleSettingContainer.createEl('h2', { text: 'API connections' });
+    toggleSettingContainer.createEl('h2', { text: 'Api connections' });
 
     const initialState = plugin.settings.toggleAPIConnectionSettings;
     const chevronIcon = toggleSettingContainer.createEl('span', { cls: 'chevron-icon' });
@@ -19,7 +19,7 @@ export function addAPIConnectionSettings(containerEl: HTMLElement, plugin: Docsc
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state

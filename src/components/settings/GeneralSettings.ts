@@ -3,7 +3,7 @@ import DocscribeGPT, { DEFAULT_SETTINGS } from 'src/main';
 import { fetchGoogleGeminiModels, fetchMistralModels, fetchOllamaModels, fetchOpenAIBaseModels, fetchOpenRouterModels, fetchRESTAPIURLModels } from '../FetchModelList';
 import { ANTHROPIC_MODELS } from 'src/view';
 
-export async function addGeneralSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
+export function addGeneralSettings(containerEl: HTMLElement, plugin: DocscribeGPT, SettingTab: SettingTab) {
     const toggleSettingContainer = containerEl.createDiv({ cls: 'toggleSettingContainer' });
     toggleSettingContainer.createEl('h2', {text: 'General settings'});
 
@@ -16,7 +16,7 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -28,8 +28,8 @@ export async function addGeneralSettings(containerEl: HTMLElement, plugin: Docsc
             settingsContainer.classList.remove('hidden');
             plugin.settings.toggleGeneralSettings = true;
         }
-        // fire-and-forget with error handling — listener itself returns void
-        await plugin.saveSettings().catch(err => {
+
+        plugin.saveSettings().catch(err => {
             console.error('Failed to save settings:', err);
         });
     });

@@ -19,7 +19,7 @@ export default defineConfig([
       "obsidianmd/ui/sentence-case": [
         "warn",
         {
-          brands: ["DocScribe", "Obsidian"],
+          brands: ["DocScribe", "Obsidian", "OpenAI", "Ollama", "REST", "API", "JSON","URL", "Anthropic", "Google", "Gemini", "GPT-4", "GPT-3.5", "Claude", 'Mistral', "Mistral AI", "OpenRouter"],
           acronyms: ["OK"],
           enforceCamelCaseLower: true,
         },

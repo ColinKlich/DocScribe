@@ -100,7 +100,9 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
         else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
             try {
                 const response = await fetchAnthropicResponseEditor(settings, select); 
+                if ( response) {
                 view.editor.replaceSelection(response);
+                }
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
@@ -112,16 +114,20 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
                 const response = await fetchGoogleGeminiDataEditor(settings, select); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
+                if (response) {
                 view.editor.replaceSelection(response);
+                
 
                 // Calculate new cursor position based on the length of the response
                 const cursorEnd = { 
                     line: cursorStart.line, 
                     ch: cursorStart.ch + response?.length 
                 };
+            
 
                 // Keep the new text selected
                 view.editor.setSelection(cursorStart, cursorEnd);
+            }
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);
@@ -133,6 +139,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
                 const response = await fetchMistralDataEditor(settings, select); 
                 // Replace the current selection with the response
                 const cursorStart = view.editor.getCursor('from');
+                if (response) {
                 view.editor.replaceSelection(response);
 
                 // Calculate new cursor position based on the length of the response
@@ -143,6 +150,7 @@ export async function promptSelectGenerateCommand(plugin: DocscribeGPT, settings
 
                 // Keep the new text selected
                 view.editor.setSelection(cursorStart, cursorEnd);
+            }
             }
             catch (error) {
                 new Notice('Error occurred while fetching completion: ' + error.message);

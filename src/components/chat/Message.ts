@@ -70,7 +70,7 @@ export async function addMessage(plugin: DocscribeGPT, input: HTMLElement, messa
         submitButton.title = 'send';
         
         if (!messageObj.content.includes('commandBotMessage') && !messageObj.content.includes('errorBotMessage')) {
-            const editButton = displayBotEditButton(plugin, messageObj.content);
+            const editButton = displayBotEditButton(plugin, messageObj.content, this);
             const copyBotButton = displayBotCopyButton(settings, messageObj.content);
             const appendButton = displayAppendButton(plugin, settings, messageObj.content);
             buttonContainerDiv.appendChild(editButton);

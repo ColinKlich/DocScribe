@@ -1,5 +1,4 @@
 import { PDFParse } from 'pdf-parse';
-import { Notice } from 'obsidian';
 
 PDFParse.setWorker(`https://cdn.jsdelivr.net/npm/pdf-parse@latest/dist/pdf-parse/web/pdf.worker.min.mjs`);
 /**
@@ -12,54 +11,45 @@ PDFParse.setWorker(`https://cdn.jsdelivr.net/npm/pdf-parse@latest/dist/pdf-parse
 export async function extractTextFromPdf(pdfFileBuffer: ArrayBuffer,timeoutMs = 30000): Promise<string> {
   if (!pdfFileBuffer || pdfFileBuffer.byteLength === 0) {
     const msg = 'Invalid input: Empty or null ArrayBuffer provided';
-    throw new Notice(msg); 
+    throw new Error(msg); 
   }
 
   const data = new Uint8Array(pdfFileBuffer);
-  let parser: any = null;
-  let timer: any = null;
+  let parser: PDFParse | null = null;
+  let timer: NodeJS.Timeout | null = null;
 
   try {
     const textPromise = (async () => {
       // pdf-parse accepts a Buffer/Uint8Array; convert to Buffer for Node/Electron
       const buffer = Buffer.from(data);
-      // Create parser instance. Use any cast because types may vary between versions.
-      parser = new (PDFParse as any)({ data: buffer });
+      // Create parser instance.
+      parser = new PDFParse({ data: buffer });
+      if (!parser) {
+        throw new Error('Failed to create PDF parser instance');
+      }
       const result = await parser.getText();
+      parser.destroy().catch(() => {});
       // result.text is expected to contain the extracted text
-      return result && typeof result.text === 'string' ? result.text : String(result);
+      return result && typeof result.text === 'string' ? result.text : '';
     })();
 
     const resultText = await Promise.race<string>([
       textPromise,
       new Promise<string>((_, reject) => {
         timer = setTimeout(() => {
-          try {
-            if (parser && typeof parser.destroy === 'function') {
-              parser.destroy();
-            }
-          } catch (e) {
-            // ignore
-          }
           reject(new Error(`PDF extraction timed out after ${timeoutMs}ms`));
         }, timeoutMs);
       }),
     ]);
-
+    
     return resultText;
-  } catch (err: any) {
-    const friendly = `PDF extraction error: ${err.message}`;
-    throw new Notice(friendly);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    const friendly = `PDF extraction error: ${message}`;
+    throw new Error(friendly);
   } finally {
     if (timer) {
       clearTimeout(timer);
-    }
-    try {
-      if (parser && typeof parser.destroy === 'function') {
-        await parser.destroy();
-      }
-    } catch (e) {
-      // ignore destroy errors
     }
   }
 }

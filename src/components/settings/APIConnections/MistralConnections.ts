@@ -15,7 +15,7 @@ export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: D
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -34,7 +34,7 @@ export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: D
     .setName('Mistral API key')
     .setDesc('Insert Mistral API key.')
     .addText(text => text
-        .setPlaceholder('insert-api-key')
+        .setPlaceholder('Insert-API-key')
         .setValue(plugin.settings.APIConnections.mistral.APIKey ? `${plugin.settings.APIConnections.mistral.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.mistral.APIKey.slice(-4)}` : '')
         .onChange(async (value) => {
             plugin.settings.APIConnections.mistral.mistralModels = [];
@@ -44,14 +44,16 @@ export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: D
             }
             else {
                 const models = await fetchMistralModels(plugin);
+                if (models) {
                 models.forEach((model: string) => {
                     if (!plugin.settings.APIConnections.mistral.mistralModels.includes(model)) {
                         plugin.settings.APIConnections.mistral.mistralModels.push(model);
                     }
                 });
+                }
             }
         })
-        .inputEl.addEventListener('focusout', async () => {
+        .inputEl.addEventListener('focusout', () => {
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             void SettingTab.display();
         })

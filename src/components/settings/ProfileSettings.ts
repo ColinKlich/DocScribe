@@ -16,7 +16,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -46,7 +46,9 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
             const dataFolderPath = plugin.app.vault.configDir + '/plugins/docscribe/data/';
             
             if (!plugin.app.vault.getAbstractFileByPath(dataFolderPath)) {
-                plugin.app.vault.adapter.mkdir(dataFolderPath);
+                plugin.app.vault.adapter.mkdir(dataFolderPath).catch((err) => {
+                    console.error('Failed to create data folder:', err);
+                });
             }
         
             files.forEach((file) => {
@@ -57,13 +59,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
         
                     plugin.app.vault.create(newFilePath, '')
                     .catch((err) => {
-                        // If the file already exists, log a message
-                        if (err.message === 'File already exists.') {
-                            // // console.log(`File ${newFilePath} already exists. Skipping creation.`);
-                        } else {
-                            // For any other error, rethrow it
-                            throw err;
-                        }
+                        console.error('Failed to create message history file:', err);
                     });
 
                     // Adding the file name as a dropdown option
@@ -83,7 +79,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
                 console.warn('Profile file is not a valid TFile:', profileFilePath);
             return; // or throw, or handle as appropriate in your context
             }
-            plugin.activateView();
+            plugin.activateView().catch(err => {console.error('Failed to activate view:', err);});
             await updateSettingsFromFrontMatter(plugin, currentProfile);
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             void SettingTab.display();
@@ -95,7 +91,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
         .setName('Profile folder path')
         .setDesc('Select a profile from a specified folder.')
         .addText(text => text
-            .setPlaceholder('DocScribe/Profiles')
+            .setPlaceholder('DocScribe profiles')
             .setValue(plugin.settings.profiles.profileFolderPath || DEFAULT_SETTINGS.profiles.profileFolderPath)
             .onChange(async (value) => {
                 plugin.settings.profiles.profileFolderPath = value ? value : DEFAULT_SETTINGS.profiles.profileFolderPath;

@@ -17,7 +17,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -36,10 +36,10 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     });
 
     new Setting(settingsContainer)
-        .setName('Ollama REST API url')
+        .setName('Ollama REST API URL')
         .setDesc(addDescriptionLink('Enter your REST API URL. Update ', 'https://ollama.com/', 'to version >=0.1.42 to avoid CORS restriction.', 'Ollama'))
         .addText(text => text
-            .setPlaceholder('http://localhost:11434')
+            .setPlaceholder("Https://localhost:11434")
             .setValue(plugin.settings.OllamaConnection.RESTAPIURL || DEFAULT_SETTINGS.OllamaConnection.RESTAPIURL)
             .onChange(async (value) => {
                     plugin.settings.OllamaConnection.ollamaModels = [];
@@ -77,7 +77,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     advancedSettingsContainer.classList.toggle('hidden', !advancedInitialState);
 
     // Toggle visibility for Advanced Settings
-    advancedToggleSettingContainer.addEventListener('click', async () => {
+    advancedToggleSettingContainer.addEventListener('click', () => {
         const isOpen = !advancedSettingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(advancedChevronIcon, 'chevron-right'); // Close state
@@ -96,8 +96,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
 
 
     new Setting(advancedSettingsContainer)
-        .setName('mirostat')
-        .setDesc('Enable Mirostat sampling for controlling perplexity. (default: 0, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)')
+        .setName('Mirostat')
+        .setDesc('Enable mirostat sampling for controlling perplexity. (default: 0, 0 = disabled, 1 = mirostat, 2 = mirostat 2.0)')
         .addText(text => text
             .setPlaceholder('0')
             .setValue(plugin.settings.OllamaConnection.ollamaParameters.mirostat || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat)
@@ -123,8 +123,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         );
 
     new Setting(advancedSettingsContainer)
-    .setName('mirostat_eta')
-    .setDesc('Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive. (Default: 0.1)')
+    .setName('Mirostat eta')
+    .setDesc('Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive. (default: 0.1)')
     .addText(text => text
         .setPlaceholder('0.1')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta)
@@ -151,8 +151,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('mirostat_tau')
-    .setDesc('Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text. (Default: 5.0)')
+    .setName('Mirostat tau')
+    .setDesc('Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text. (default: 5.0)')
     .addText(text => text
         .setPlaceholder('5.00')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau)
@@ -179,8 +179,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('num_ctx')
-    .setDesc('Sets the size of the context window used to generate the next token. (Default: 2048)')
+    .setName('Num ctx')
+    .setDesc('Sets the size of the context window used to generate the next token. (default: 2048)')
     .addText(text => text
         .setPlaceholder('2048')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.num_ctx || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx)
@@ -206,8 +206,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('num_gqa')
-    .setDesc('The number of GQA groups in the transformer layer. Required for some models, for example it is 8 for llama2:70b.')
+    .setName('Num gqa')
+    .setDesc('The number of gqa groups in the transformer layer. Required for some models, for example it is 8 for llama2:70b.')
     .addText(text => text
         .setPlaceholder('0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.num_gqa || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa)
@@ -233,8 +233,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('num_thread')
-    .setDesc('Sets the number of threads to use during computation. By default, Ollama will detect this for optimal performance. It is recommended to set this value to the number of physical CPU cores your system has (as opposed to the logical number of cores).')
+    .setName('Num thread')
+    .setDesc('Sets the number of threads to use during computation. By default, Ollama will detect this for optimal performance. It is recommended to set this value to the number of physical cpu cores your system has (as opposed to the logical number of cores).')
     .addText(text => text
         .setPlaceholder('0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.num_thread || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread)
@@ -260,8 +260,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('repeat_last_n')
-    .setDesc('Sets how far back for the model to look back to prevent repetition. (Default: 64, 0 = disabled, -1 = num_ctx)')
+    .setName('Repeat last n')
+    .setDesc('Sets how far back for the model to look back to prevent repetition. (default: 64, 0 = disabled, -1 = num_ctx)')
     .addText(text => text
         .setPlaceholder('64')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n)
@@ -287,8 +287,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('repeat_penalty')
-    .setDesc('Sets how strongly to penalize repetitions. A higher value (e.g., 1.5) will penalize repetitions more strongly, while a lower value (e.g., 0.9) will be more lenient. (Default: 1.1)')
+    .setName('Repeat penalty')
+    .setDesc('Sets how strongly to penalize repetitions. A higher value (e.g., 1.5) will penalize repetitions more strongly, while a lower value (e.g., 0.9) will be more lenient. (default: 1.1)')
     .addText(text => text
         .setPlaceholder('1.1')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty)
@@ -315,7 +315,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('seed')
+    .setName('Seed')
     .setDesc('Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt.')
     .addText(text => text
         .setPlaceholder('0')
@@ -342,10 +342,10 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('stop')
-    .setDesc('Sets the stop sequences to use. When this pattern is encountered, the LLM will stop generating text and return. Multiple stop patterns may be set by specifying them as a comma-separated list in the input field.')
+    .setName('Stop')
+    .setDesc('Sets the stop sequences to use. When this pattern is encountered, the llm will stop generating text and return. Multiple stop patterns may be set by specifying them as a comma-separated list in the input field.')
     .addText(text => text
-        .setPlaceholder('stop, \\n, user:')
+        .setPlaceholder('Stop, \\n, user:')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.stop && Array.isArray(plugin.settings.OllamaConnection.ollamaParameters.stop) 
                    ? plugin.settings.OllamaConnection.ollamaParameters.stop.join(', ') 
                    : DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.stop.join(', '))
@@ -366,7 +366,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     
 
     new Setting(advancedSettingsContainer)
-    .setName('tfs_z')
+    .setName('Tfs z')
     .setDesc('Tail free sampling is used to reduce the impact of less probable tokens from the output. A higher value (e.g., 2.0) will reduce the impact more, while a value of 1.0 disables this setting. (default: 1)')
     .addText(text => text
         .setPlaceholder('1.0')
@@ -393,8 +393,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('top_k')
-    .setDesc('Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)')
+    .setName('Top k')
+    .setDesc('Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (default: 40)')
     .addText(text => text
         .setPlaceholder('40')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.top_k || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k)
@@ -420,8 +420,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('top_p')
-    .setDesc('Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)')
+    .setName('Top p')
+    .setDesc('Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (default: 0.9)')
     .addText(text => text
         .setPlaceholder('1.0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.top_p || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p)
@@ -447,8 +447,8 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('min_p')
-    .setDesc('Alternative to the top_p, and aims to ensure a balance of quality and variety. The parameter p represents the minimum probability for a token to be considered, relative to the probability of the most likely token. (Default: 0.0)')
+    .setName('Min p')
+    .setDesc('Alternative to the top_p, and aims to ensure a balance of quality and variety. The parameter p represents the minimum probability for a token to be considered, relative to the probability of the most likely token. (default: 0.0)')
     .addText(text => text
         .setPlaceholder('0.0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.min_p || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p)
@@ -474,7 +474,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     );
 
     new Setting(advancedSettingsContainer)
-    .setName('keep_alive')
+    .setName('Keep alive')
     .setDesc('If set to a positive duration (e.g. 20m, 1hr or 30), the model will stay loaded for the provided duration in seconds. If set to a negative duration (e.g. -1), the model will stay loaded indefinitely. If set to 0, the model will be unloaded immediately once finished. If not set, the model will stay loaded for 5 minutes by default.')
     .addText(text => text
         .setPlaceholder('30s')

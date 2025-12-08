@@ -1,4 +1,4 @@
-import { MarkdownRenderer, requestUrl, setIcon } from 'obsidian';
+import { Component, MarkdownRenderer, requestUrl, setIcon } from 'obsidian';
 import BMOGPT, { DocscribeSettings } from '../main';
 import { messageHistory } from '../view';
 import { addMessage, addParagraphBreaks, updateUnresolvedInternalLinks } from './chat/Message';
@@ -9,7 +9,7 @@ import { GoogleGenAI } from '@google/genai';
 
 // Fetch response from Ollama
 // NOTE: Abort does not work for requestUrl
-export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
+export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number, component: Component) {
     const ollamaRESTAPIURL = settings.OllamaConnection.RESTAPIURL;
 
     if (!ollamaRESTAPIURL) {
@@ -64,12 +64,12 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
                     targetBotMessage?.removeChild(loadingEl);
                 }
 
-                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', plugin);
+                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', component);
                 
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
 
-                const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+                const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
                 copyCodeBlocks.forEach((copyCodeBlock) => {
                     copyCodeBlock.textContent = 'Copy';
                     setIcon(copyCodeBlock, 'copy');
@@ -93,7 +93,9 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
 
         const messageDiv = document.createElement('div');
         messageDiv.textContent = message.trim();
-        addMessage(plugin, messageDiv, 'botMessage', settings, index);
+        addMessage(plugin, messageDiv, 'botMessage', settings, index).catch((error) => {
+            console.error('Error adding message:', error);
+        });
 
     } catch (error) {
         // Handle other errors
@@ -110,7 +112,7 @@ export async function fetchOllamaResponse(plugin: BMOGPT, settings: DocscribeSet
 
 
 // Fetch response from openai-based rest api url
-export async function fetchRESTAPIURLResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
+export async function fetchRESTAPIURLResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number, component: Component) {
     const prompt = await getPrompt(plugin, settings);
     const noImageMessageHistory = messageHistory.map(({ role, content }) => ({ role, content: typeof content === 'string' ? content.replace(/<[^>]*>/g, '') : content }));
     const filteredMessageHistory = filterMessageHistory(noImageMessageHistory);
@@ -161,12 +163,12 @@ export async function fetchRESTAPIURLResponse(plugin: BMOGPT, settings: Docscrib
                     targetBotMessage?.removeChild(loadingEl);
                 }
 
-                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', plugin);
+                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', component);
                 
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
 
-                const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+                const copyCodeBlocks : NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
                 copyCodeBlocks.forEach((copyCodeBlock) => {
                     copyCodeBlock.textContent = 'Copy';
                     setIcon(copyCodeBlock, 'copy');
@@ -189,7 +191,9 @@ export async function fetchRESTAPIURLResponse(plugin: BMOGPT, settings: Docscrib
             message = message.replace(pattern, '').trim();
         });
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        addMessage(plugin, message.trim(), 'botMessage', settings, index).catch((error) => {
+            console.error('Error adding message:', error);
+        });
         return;
 
     } catch (error) {
@@ -206,7 +210,7 @@ export async function fetchRESTAPIURLResponse(plugin: BMOGPT, settings: Docscrib
 
 
 // Fetch response from Anthropic
-export async function fetchAnthropicResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
+export async function fetchAnthropicResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number, component: Component) {
     const prompt = await getPrompt(plugin, settings);
 
     const noImageMessageHistory = messageHistory.map(({ role, content }) => ({ role, content: typeof content === 'string' ? content.replace(/<[^>]*>/g, '') : content }));
@@ -259,7 +263,7 @@ export async function fetchAnthropicResponse(plugin: BMOGPT, settings: Docscribe
                     targetBotMessage?.removeChild(loadingEl);
                 }
 
-                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', plugin);
+                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', component);
 
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
@@ -287,7 +291,9 @@ export async function fetchAnthropicResponse(plugin: BMOGPT, settings: Docscribe
             message = message.replace(pattern, '').trim();
         });
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        addMessage(plugin, message.trim(), 'botMessage', settings, index).catch((error) => {
+            console.error('Error adding message:', error);
+        });
         return;
 
     } catch (error) {
@@ -314,7 +320,8 @@ function convertToGeminiHistory(messages: { role: string; content: string }[]) {
 export async function fetchGoogleGeminiResponse(
   plugin: BMOGPT,
   settings: DocscribeSettings,
-  index: number
+  index: number,
+  component: Component
 ) {
   const prompt = await getPrompt(plugin, settings);
   const filteredMessageHistory = filterMessageHistory(messageHistory);
@@ -377,7 +384,7 @@ export async function fetchGoogleGeminiResponse(
 
     if (messageBlock) {
       if (loadingEl) targetBotMessage?.removeChild(loadingEl);
-      await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', plugin);
+      await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', component);
       addParagraphBreaks(messageBlock);
       updateUnresolvedInternalLinks(plugin, messageBlock);
 
@@ -392,7 +399,9 @@ export async function fetchGoogleGeminiResponse(
     targetBotMessage?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     const messageDiv = document.createElement('div');
     messageDiv.textContent = message.trim();
-    addMessage(plugin, messageDiv, 'botMessage', settings, index);
+    addMessage(plugin, messageDiv, 'botMessage', settings, index).catch((error) => {
+      console.error('Error adding message:', error);
+    });
 
   } catch (error) {
     console.error('Error fetching Google Gemini response:', error);
@@ -400,7 +409,7 @@ export async function fetchGoogleGeminiResponse(
 }
 
 // Fetch Mistral AI Response
-export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
+export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number, component: Component) {
     const prompt = await getPrompt(plugin, settings);
     const noImageMessageHistory = messageHistory.map(({ role, content }) => ({ role, content: typeof content === 'string' ? content.replace(/<[^>]*>/g, '') : content }));
     const filteredMessageHistory = filterMessageHistory(noImageMessageHistory);
@@ -453,7 +462,7 @@ export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSe
                     targetBotMessage?.removeChild(loadingEl);
                 }
                 
-                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', plugin);
+                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', component);
                 
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
@@ -481,7 +490,9 @@ export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSe
             message = message.replace(pattern, '').trim();
         });
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        addMessage(plugin, message.trim(), 'botMessage', settings, index).catch((error) => {
+            console.error('Error adding message:', error);
+        });
         return;
 
     } catch (error) {
@@ -497,7 +508,7 @@ export async function fetchMistralResponse(plugin: BMOGPT, settings: DocscribeSe
 }
 
 // Fetch OpenAI-Based API
-export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
+export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number, component: Component) {
 
     const prompt = await getPrompt(plugin, settings);
 
@@ -549,7 +560,7 @@ export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: Docscribe
                     targetBotMessage?.removeChild(loadingEl);
                 }
 
-                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', plugin);
+                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', component);
 
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
@@ -577,7 +588,10 @@ export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: Docscribe
             regexPatterns.forEach(pattern => {
                 message = message.replace(pattern, '').trim();
             });
-            addMessage(plugin, message.trim(), 'botMessage', settings, index);
+            addMessage(plugin, message.trim(), 'botMessage', settings, index).catch((error) => {
+                console.error('Error adding message:', error);
+            });
+            return;
         }
 
     } catch (error) {
@@ -593,7 +607,7 @@ export async function fetchOpenAIAPIResponse(plugin: BMOGPT, settings: Docscribe
 }
 
 // Fetch response from OpenRouter
-export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number) {
+export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: DocscribeSettings, index: number, component: Component) {
     const prompt = await getPrompt(plugin, settings);  
     const filteredMessageHistory = filterMessageHistory(messageHistory);
     const messageHistoryAtIndex = removeConsecutiveUserRoles(filteredMessageHistory);
@@ -644,12 +658,12 @@ export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: Docscrib
                     targetBotMessage?.removeChild(loadingEl);
                 }
 
-                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', plugin);
+                await MarkdownRenderer.render(plugin.app, message || '', messageBlock as HTMLElement, '/', component);
                 
                 addParagraphBreaks(messageBlock);
                 updateUnresolvedInternalLinks(plugin, messageBlock);
 
-                const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
+                const copyCodeBlocks: NodeListOf<HTMLElement> = messageBlock.querySelectorAll('.copy-code-button');
                 copyCodeBlocks.forEach((copyCodeBlock) => {
                     copyCodeBlock.textContent = 'Copy';
                     setIcon(copyCodeBlock, 'copy');
@@ -672,7 +686,9 @@ export async function fetchOpenRouterResponse(plugin: BMOGPT, settings: Docscrib
             message = message.replace(pattern, '').trim();
         });
 
-        addMessage(plugin, message.trim(), 'botMessage', settings, index);
+        addMessage(plugin, message.trim(), 'botMessage', settings, index).catch((error) => {
+            console.error('Error adding message:', error);
+        });
         return;
 
     } catch (error) {

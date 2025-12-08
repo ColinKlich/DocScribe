@@ -16,7 +16,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -35,7 +35,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .setName('Prompt')
     .setDesc('Select a prompt to provide additional context to the system role.')
     .addDropdown(dropdown => {
-        dropdown.addOption('', '--EMPTY--');
+        dropdown.addOption('', '--empty--');
 
         if (plugin.settings.prompts.promptFolderPath !== '') {
             // Fetching files from the specified folder
@@ -72,7 +72,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .setName('Prompt folder path')
         .setDesc('Select a prompt from a specified folder.')
         .addText(text => text
-            .setPlaceholder('DocScribe/Prompts')
+            .setPlaceholder('DocScribe prompts')
             .setValue(plugin.settings.prompts.promptFolderPath || DEFAULT_SETTINGS.prompts.promptFolderPath)
             .onChange(async (value) => {
                 plugin.settings.prompts.promptFolderPath = value ? value : DEFAULT_SETTINGS.prompts.promptFolderPath;

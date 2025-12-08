@@ -15,7 +15,7 @@ export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plug
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -34,7 +34,7 @@ export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plug
     .setName('Google Gemini API key')
     .setDesc('Insert Google Gemini API key.')
     .addText(text => text
-        .setPlaceholder('insert-api-key')
+        .setPlaceholder('Insert-API-key')
         .setValue(plugin.settings.APIConnections.googleGemini.APIKey ? `${plugin.settings.APIConnections.googleGemini.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.googleGemini.APIKey.slice(-4)}` : '')
         .onChange(async (value) => {
             plugin.settings.APIConnections.googleGemini.geminiModels = [];
@@ -44,14 +44,16 @@ export function addGoogleGeminiConnectionSettings(containerEl: HTMLElement, plug
             }
             else {
                 const models = await fetchGoogleGeminiModels(plugin);
+                if (models) {
                 models.forEach((model: string) => {
                     if (!plugin.settings.APIConnections.googleGemini.geminiModels.includes(model)) {
                         plugin.settings.APIConnections.googleGemini.geminiModels.push(model);
                     }
                 });
             }
+            }
         })
-        .inputEl.addEventListener('focusout', async () => {
+        .inputEl.addEventListener('focusout', () => {
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             void SettingTab.display();
         })

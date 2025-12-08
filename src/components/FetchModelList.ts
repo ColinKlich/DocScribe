@@ -31,8 +31,7 @@ export async function fetchRESTAPIURLModels(plugin: DocscribeGPT) {
     try {
         new URL(RESTAPIURL);
     } catch (error) {
-        console.error('Invalid REST API URL:', RESTAPIURL);
-        return;
+        throw new Error('Invalid REST API URL' + error);
     }
 
     try {
@@ -46,12 +45,12 @@ export async function fetchRESTAPIURLModels(plugin: DocscribeGPT) {
         });
 
         // Check if the response is valid
-        if (response.json && (response.json.data || Array.isArray(response.json))) {
-            let models;
-            if (Array.isArray(response.json)) {
-                models = response.json.map((model: { id: number; }) => model.id);
+        if (response && Array.isArray(response)) {
+            let models: string[];
+            if (Array.isArray(response)) {
+                models = response.map((model: { id: string; }) => model.id);
             } else {
-                models = response.json.data.map((model: { id: number; }) => model.id);
+                throw new Error('Unexpected API response structure');
             }
 
             plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = models;
@@ -61,7 +60,6 @@ export async function fetchRESTAPIURLModels(plugin: DocscribeGPT) {
         console.error('Error making API request:', error);
         throw error;
     }
-    
 }
 
 // Anthropic API models are static. No need to fetch them.
@@ -80,7 +78,7 @@ export async function fetchGoogleGeminiModels(plugin: DocscribeGPT) {
 
         // Check if the response is valid and has data
         if (response.json && response.json.models) {
-                        const models = response.json.models.map((model: { name: string; }) => model.name).filter((model: string) => model.startsWith('models/gemini') && !model.includes('1.0') && !model.includes('1.5'));
+            let models : string[] = response.json.models.map((model: { name: string; }) => model.name).filter((model: string) => model.startsWith('models/gemini') && !model.includes('1.0') && !model.includes('1.5'));
             
             // Store the models in your plugin's settings or handle them as needed
             plugin.settings.APIConnections.googleGemini.geminiModels = models;
@@ -104,7 +102,7 @@ export async function fetchMistralModels(plugin: DocscribeGPT) {
 
         // Check if the response is valid
         if (response.json && response.json.data) {
-            const models = response.json.data.map((model: { id: number; }) => model.id);
+            const models: string[] = response.json.data.map((model: { id: string; }) => model.id);
             plugin.settings.APIConnections.mistral.mistralModels = models;
             // console.log(models);
             return models;
@@ -149,11 +147,11 @@ export async function fetchOpenRouterModels(plugin: DocscribeGPT) {
 
         // Check if the response is valid
         if (response.json && (response.json.data || Array.isArray(response.json))) {
-            let models;
+            let models: string[];
             if (Array.isArray(response.json)) {
-                models = response.json.map((model: { id: number; }) => model.id);
+                models = response.json.map((model: { id: string; }) => model.id);
             } else {
-                models = response.json.data.map((model: { id: number; }) => model.id);
+                models = response.json.data.map((model: { id: string; }) => model.id);
             }
 
             plugin.settings.APIConnections.openRouter.openRouterModels = models;

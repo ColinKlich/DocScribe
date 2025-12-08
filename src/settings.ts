@@ -53,7 +53,6 @@ export class DocscribeSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		// eslint-disable-next-line obsidianmd/settings-tab/no-manual-html-headings
 		containerEl.createEl('h1', { text: 'DocScribe settings' });
 
 		// Create a container for the links

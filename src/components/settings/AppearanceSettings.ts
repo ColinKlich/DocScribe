@@ -15,7 +15,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -38,7 +38,6 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     .addToggle((toggle) =>
         toggle.setValue(plugin.settings.appearance.enableHeader).onChange((value) => {
             plugin.settings.appearance.enableHeader = value;
-            const referenceCurrentNoteElement = document.querySelector('#referenceCurrentNote') as HTMLElement;
 
             if (value === true) {
                 const header = document.querySelector('#header') as HTMLElement;
@@ -50,14 +49,14 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 }
             } else {
                 const header = document.querySelector('#header') as HTMLElement;
-                const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
+
                 if (header) {
                     header.addClass('hidden');
                     document.body.removeClass('header-visible');
                     document.body.addClass('header-hidden');
                 }
             }
-            plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         })
     );
     
@@ -71,7 +70,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 plugin.settings.appearance.userName = value ? value : DEFAULT_SETTINGS.appearance.userName;
                 text.inputEl.maxLength = 30;
                 plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
-                const userNames = document.querySelectorAll('.userName') as NodeListOf<HTMLHeadingElement>;
+                const userNames = document.querySelectorAll('.userName');
                 userNames.forEach(userName => {
                     userName.textContent = plugin.settings.appearance.userName;
                 });
@@ -482,7 +481,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
                 }
             }
             
-            plugin.saveSettings();
+            plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         })
     );
 
@@ -495,8 +494,8 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     const defaultDocscribeGenerateFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor).trim();
 
     new Setting(settingsContainer)
-    .setName('Docscribe generate background color')
-    .setDesc('Modify the background color of Docscribe Generate.')
+    .setName('DocScribe generate background color')
+    .setDesc('Modify the background color of DocScribe generate.')
     .addButton(button => button
         .setButtonText('Restore default')
         .setIcon('rotate-cw')
@@ -531,8 +530,8 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     });
 
     new Setting(settingsContainer)
-    .setName('Docscribe generate font color')
-    .setDesc('Modify the font color of Docscribe Generate.')
+    .setName('DocScribe generate font color')
+    .setDesc('Modify the font color of DocScribe generate.')
     .addButton(button => button
         .setButtonText('Restore default')
         .setIcon('rotate-cw')

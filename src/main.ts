@@ -473,17 +473,11 @@ export default class DocscribeGPT extends Plugin {
 		});
 
 		this.addCommand({
-            id: 'open-docscribe',
-            name: 'Open DocScribe Chatbot',
+            id: 'open-chatbot-view',
+            name: 'Open Chatbot',
             callback: () => {
                 this.activateView();
             }
-            // hotkeys: [
-			// 	{
-			// 		modifiers: ['Mod'],
-			// 		key: '0',
-			// 	},
-            // ],
         });
 
 		this.addCommand({
@@ -513,7 +507,8 @@ export default class DocscribeGPT extends Plugin {
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractStructuredText(arrayBuffer);
-								const prompt = "Please output the topics from the following text in well-formatted markdown:\n\n" + extractedText;
+								const prompt = "You are an expert technical writer helping produce structured, concise, high-quality notes. You are given raw text extracted from slides or a PDF. Clean it up and produce notes that are readable, logically ordered, and formatted in Markdown. Your goals: (1) Present information clearly. (2) Structure sections logically (Headings, bullet points, subpoints). (3) Remove duplicate text, slide numbers, watermarks, page artifacts, and formatting junk. (4) Expand slide bullets into readable sentences only when needed for clarity. (5) Preserve key terminology, definitions, formulas, and examples. (6) If text is fragmented, reorganize it logically. Output Requirements: Use Markdown headings: #, ##, ###, ####. Use bullet lists when appropriate. Use numbered lists for sequences or steps. Include key takeaways in bold. Include formulas in fenced code blocks. Use tables when applicable. Include short examples when helpful. Include diagrams as text (e.g., 'Flow → Request → Processing → Output')."
+ + extractedText;
 								await this.activateView();
 								const view = this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0].view as DocscribeView;
 								view.sendSystemMessage(prompt);
@@ -528,7 +523,8 @@ export default class DocscribeGPT extends Plugin {
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractTextFromPdf(arrayBuffer, 5000);
-								const prompt = "Please summarize the following text in well-formatted markdown:\n\n" + extractedText;
+								const prompt = "You are an expert technical writer helping produce structured, concise, high-quality notes. You are given raw text extracted from slides or a PDF. Clean it up and produce notes that are readable, logically ordered, and formatted in Markdown. Your goals: (1) Present information clearly. (2) Structure sections logically (Headings, bullet points, subpoints). (3) Remove duplicate text, slide numbers, watermarks, page artifacts, and formatting junk. (4) Expand slide bullets into readable sentences only when needed for clarity. (5) Preserve key terminology, definitions, formulas, and examples. (6) If text is fragmented, reorganize it logically. Output Requirements: Use Markdown headings: #, ##, ###, ####. Use bullet lists when appropriate. Use numbered lists for sequences or steps. Include key takeaways in bold. Include formulas in fenced code blocks. Use tables when applicable. Include short examples when helpful. Include diagrams as text (e.g., 'Flow → Request → Processing → Output')."
+ + extractedText;
 								await this.activateView();
 								const view = this.app.workspace.getLeavesOfType(VIEW_TYPE_CHATBOT)[0].view as DocscribeView;
 								view.sendSystemMessage(prompt);
@@ -648,7 +644,7 @@ export default class DocscribeGPT extends Plugin {
 
 export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
     // Define a callback function to modify the frontmatter
-    const setDefaultFrontMatter = async (frontmatter: any) => {
+    const setDefaultFrontMatter = (frontmatter: any) => {
         // Add or modify properties in the frontmatter
         frontmatter.model = DEFAULT_SETTINGS.general.model;
         frontmatter.max_tokens = parseInt(DEFAULT_SETTINGS.general.max_tokens);
@@ -703,7 +699,7 @@ export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
 
 export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: TFile){
     // Define a callback function to modify the frontmatter
-    const updateSettings = async (frontmatter: any) => {
+    const updateSettings = (frontmatter: any) => {
         // Add or modify properties in the frontmatter
         plugin.settings.general.model = frontmatter.model;
 		plugin.settings.general.max_tokens = frontmatter.max_tokens;
@@ -747,7 +743,7 @@ export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: 
     };
 
     try {
-        await plugin.app.fileManager.processFrontMatter(file, updateSettings, writeOptions);
+        plugin.app.fileManager.processFrontMatter(file, updateSettings, writeOptions);
 		const fileContent = (await plugin.app.vault.read(file)).replace(/^---\s*[\s\S]*?---/, '').trim();
 		plugin.settings.general.system_role = fileContent;
 		updateProfile(plugin, file);
@@ -759,7 +755,7 @@ export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: 
 
 export async function updateFrontMatter(plugin: DocscribeGPT, file: TFile){
     // Define a callback function to modify the frontmatter
-    const modifyFrontMatter = async (frontmatter: any) => {
+    const modifyFrontMatter = (frontmatter: any) => {
         // Add or modify properties in the frontmatter
         frontmatter.model = plugin.settings.general.model;
         frontmatter.max_tokens = parseInt(plugin.settings.general.max_tokens);

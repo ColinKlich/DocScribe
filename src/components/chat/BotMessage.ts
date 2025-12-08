@@ -2,9 +2,9 @@ import DocscribeGPT, { DocscribeSettings, DEFAULT_SETTINGS } from 'src/main';
 import { colorToHex } from 'src/utils/ColorConverter';
 import { displayAppendButton, displayBotCopyButton, displayBotEditButton } from './Buttons';
 import { addMessage, addParagraphBreaks } from './Message';
-import { MarkdownRenderer, setIcon } from 'obsidian';
+import { Component, MarkdownRenderer, setIcon } from 'obsidian';
 
-export function displayBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], message: string) {
+export function displayBotMessage(plugin: DocscribeGPT, settings: DocscribeSettings, messageHistory: { role: string; content: string }[], message: string, component: Component) {
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'botMessage';
 
@@ -34,11 +34,11 @@ export function displayBotMessage(plugin: DocscribeGPT, settings: DocscribeSetti
     const regexRenderedNote = /<note-rendered>[\s\S]*?<\/note-rendered>/g;
     message = message.replace(regexRenderedNote, '').trim();
 
-    MarkdownRenderer.render(plugin.app, message, messageBlockDiv, '', plugin);
+    MarkdownRenderer.render(plugin.app, message, messageBlockDiv, '', component);
 
     // Add buttons to the bot message
     if (!message.includes('commandBotMessage') && !message.includes('errorBotMessage')) {
-        const editButton = displayBotEditButton(plugin, message);
+        const editButton = displayBotEditButton(plugin, message, component);
         const copyBotButton = displayBotCopyButton(settings, message);
         const appendButton = displayAppendButton(plugin, settings, message);
         buttonContainerDiv.appendChild(editButton);

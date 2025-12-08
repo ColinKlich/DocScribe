@@ -33,6 +33,37 @@ There are two ways to do this:
 
 DocScribe will then extract the text from the PowerPoint, send it to the LLM, and display the generated notes in the chat window.
 
+## Default Prompt
+
+DocScribe uses a specific prompt to instruct the LLM on how to process the extracted text. You can customize this prompt using the `/prompt` command, but the default is designed to produce high-quality, structured notes.
+
+The prompt is:
+```
+You are an expert technical writer helping produce structured, concise, high-quality notes.
+
+You are given raw text extracted from slides or a PDF. Clean it up and produce
+notes that are readable, logically ordered, and formatted in Markdown.
+
+### Your goals:
+1) Present information clearly.
+2) Structure sections logically (Headings, bullet points, subpoints).
+3) Remove duplicate text, slide numbers, watermarks, page artifacts, and formatting junk.
+4) Expand slide bullets into readable sentences **only when needed for clarity**.
+5) Preserve key terminology, definitions, formulas, and examples.
+6) If text is fragmented, reorganize it logically.
+
+### Output Requirements:
+- Use Markdown headings: `#`, `##`, `###`, `####`
+- Use bullet lists when appropriate
+- Use numbered lists for sequences or steps
+- Include key takeaways in bold
+- Include formulas in fenced code blocks
+- Use tables when applicable
+- Include short examples when helpful
+- Include diagrams as text (e.g., "Flow → Request → Processing → Output")
+```
+This prompt is concatenated with the text extracted from your document before being sent to the LLM.
+
 ## Upcoming Features
 
 We are constantly working to improve DocScribe. Here's what's coming soon:

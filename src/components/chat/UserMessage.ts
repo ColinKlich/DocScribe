@@ -1,8 +1,9 @@
 import DocscribeGPT, { DocscribeSettings, DEFAULT_SETTINGS } from 'src/main';
 import { colorToHex } from 'src/utils/ColorConverter';
 import { displayUserEditButton, displayTrashButton, displayUserCopyButton, regenerateUserButton } from './Buttons';
+import { Component } from 'obsidian';
 
-export function displayUserMessage(plugin: DocscribeGPT, settings: DocscribeSettings, message: string) {
+export function displayUserMessage(plugin: DocscribeGPT, settings: DocscribeSettings, message: string, component: Component) {
     let trimmedMessage = message.trim();
 
     const userMessageDiv = document.createElement('div');
@@ -34,8 +35,8 @@ export function displayUserMessage(plugin: DocscribeGPT, settings: DocscribeSett
 
     preUserMessage.append(trimmedMessage);
 
-    const regenerateButton = regenerateUserButton(plugin, settings);
-    const editButton = displayUserEditButton(plugin, settings, userPre);
+    const regenerateButton = regenerateUserButton(plugin, settings, component);
+    const editButton = displayUserEditButton(plugin, settings, userPre, component);
     const copyUserButton = displayUserCopyButton(userPre);
     const trashButton = displayTrashButton(plugin);
 

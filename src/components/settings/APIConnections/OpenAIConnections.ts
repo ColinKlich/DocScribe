@@ -15,7 +15,7 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -34,7 +34,7 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
     .setName('OpenAI API key')
     .setDesc('Insert OpenAI API key.')
     .addText(text => text
-        .setPlaceholder('insert-api-key')
+        .setPlaceholder('Insert-API-key')
         .setValue(plugin.settings.APIConnections.openAI.APIKey ? `${plugin.settings.APIConnections.openAI.APIKey.slice(0, 7)}-...${plugin.settings.APIConnections.openAI.APIKey.slice(-4)}` : '')
         .onChange(async (value) => {
             plugin.settings.APIConnections.openAI.openAIBaseModels = [];
@@ -50,15 +50,15 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
                 });
             }
         })
-        .inputEl.addEventListener('focusout', async () => {
+        .inputEl.addEventListener('focusout', () => {
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             void SettingTab.display();
         })
     );
 
     new Setting(settingsContainer)
-        .setName('OpenAI-based url')
-        .setDesc('Enter your custom OpenAI-based url.')
+        .setName('OpenAI URL')
+        .setDesc('Enter your custom OpenAI URL.')
         .addButton(button => button
             .setButtonText('Restore default')
             .setIcon('rotate-cw')
@@ -77,7 +77,7 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
                     plugin.settings.APIConnections.openAI.openAIBaseUrl = value ? value : DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl;
                     plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 })
-            .inputEl.addEventListener('focusout', async () => {
+            .inputEl.addEventListener('focusout', () => {
                 void SettingTab.display();
             })
         );

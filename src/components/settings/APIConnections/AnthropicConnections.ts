@@ -15,7 +15,7 @@ export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin:
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -32,9 +32,9 @@ export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin:
 
     new Setting(settingsContainer)
     .setName('Anthropic API key')
-    .setDesc('Insert Anthropic API key. Warning: Anthropic models cannot be aborted. Please use with caution.')
+    .setDesc('Insert Anthropic API key.')
     .addText(text => text
-        .setPlaceholder('insert-api-key')
+        .setPlaceholder('Insert-API-key')
         .setValue(plugin.settings.APIConnections.anthropic.APIKey ? `${plugin.settings.APIConnections.anthropic.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.anthropic.APIKey.slice(-4)}` : '')
         .onChange(async (value) => {
             plugin.settings.APIConnections.anthropic.anthropicModels = [];
@@ -50,7 +50,7 @@ export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin:
                 });
             }
         })
-        .inputEl.addEventListener('focusout', async () => {
+        .inputEl.addEventListener('focusout', () => {
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             void SettingTab.display();
         })

@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf, TFile, MarkdownView, Editor, EditorPosition, setIcon, Vault } from 'obsidian';
+import { ItemView, WorkspaceLeaf, TFile, MarkdownView, Editor, EditorPosition, setIcon, Vault, Component } from 'obsidian';
 import {DEFAULT_SETTINGS, DocscribeSettings} from './main';
 import DocscribeGPT from './main';
 import { commandMap, executeCommand } from './components/chat/Commands';
@@ -134,12 +134,12 @@ export class DocscribeView extends ItemView {
         
         messageHistory.forEach(messageData => {   
             if (messageData.role == 'user') {
-                const userMessageDiv = displayUserMessage(this.plugin, this.settings, messageData.content);
+                const userMessageDiv = displayUserMessage(this.plugin, this.settings, messageData.content, this);
                 messageContainer.appendChild(userMessageDiv);
             }
         
             if (messageData.role == 'assistant') {
-                const botMessageDiv = displayBotMessage(this.plugin, this.settings, messageHistory, messageData.content);
+                const botMessageDiv = displayBotMessage(this.plugin, this.settings, messageHistory, messageData.content, this);
 
                 updateUnresolvedInternalLinks(this.plugin, botMessageDiv);
                 messageContainer.appendChild(botMessageDiv);
@@ -213,7 +213,7 @@ export class DocscribeView extends ItemView {
         const index = messageHistory.length - 1;
 
         // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
-        const regex = /(!?)!!\[\[(.*?)\]\]/g;
+        const regex = /(!\[\[(.*?)\]\])/g;
         let matches;
         let inputModified = input;
 
@@ -307,7 +307,7 @@ export class DocscribeView extends ItemView {
         }
 
         // Remove duplicates in the final output
-        inputModified = inputModified.replace(/(<note-rendered>File cannot be read.<\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
+        inputModified = inputModified.replace(/(<note-rendered>File cannot be read.<!-- -->)/g, '<note-rendered>File cannot be read.</note-rendered>');
 
 
 
@@ -326,10 +326,10 @@ export class DocscribeView extends ItemView {
             if (messageContainer) {
                 const excludedCommands = [
                     '/c', 
-                    '/clear', 
+                    '/clear',
                     '/s', 
-                    '/stop', 
-                    '/save', 
+                    '/stop',
+                    '/save',
                     '/load ',
                     '/m ',
                     '/model ',
@@ -362,7 +362,7 @@ export class DocscribeView extends ItemView {
                         addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index).catch((error) => {
                             console.error('Error adding message:', error);
                         });
-                        const userMessageDiv = displayUserMessage(this.plugin, this.settings, input);
+                        const userMessageDiv = displayUserMessage(this.plugin, this.settings, input, this);
                         messageContainer.appendChild(userMessageDiv);
                         // // console.log('Command processed:', commandMap[baseCommand], 'with parameters:', parts.slice(1).join(' ')); // Logs the processed command and parameters
                     } else if (!baseCommand.startsWith('/')) {
@@ -373,7 +373,7 @@ export class DocscribeView extends ItemView {
                         addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index).catch((error) => {
                             console.error('Error adding message:', error);
                         });
-                        const userMessageDiv = displayUserMessage(this.plugin, this.settings, input);
+                        const userMessageDiv = displayUserMessage(this.plugin, this.settings, input, this);
                         messageContainer.appendChild(userMessageDiv);
                     } else {
                         // // console.log('Unknown command ignored:', input);
@@ -463,7 +463,7 @@ export class DocscribeView extends ItemView {
         this.textareaElement.removeEventListener('blur', this.handleBlur.bind(this));
     }
 
-    async Docscribechatbot() {      
+    async Docscribechatbot() {
         await getActiveFileContent(this.plugin, this.settings);
         const index = messageHistory.length - 1;
 
@@ -482,25 +482,25 @@ export class DocscribeView extends ItemView {
         else {
             // Fetch OpenAI API
             if (this.settings.OllamaConnection.ollamaModels.includes(this.settings.general.model)) {
-                await fetchOllamaResponse(this.plugin, this.settings, index);
+                await fetchOllamaResponse(this.plugin, this.settings, index, this);
             }
             else if (this.settings.RESTAPIURLConnection.RESTAPIURLModels.includes(this.settings.general.model)){
-                await fetchRESTAPIURLResponse(this.plugin, this.settings, index);
+                await fetchRESTAPIURLResponse(this.plugin, this.settings, index, this);
             }
             else if (ANTHROPIC_MODELS.includes(this.settings.general.model)) {
-                await fetchAnthropicResponse(this.plugin, this.settings, index);
+                await fetchAnthropicResponse(this.plugin, this.settings, index, this);
             }
             else if (this.settings.APIConnections.mistral.mistralModels.includes(this.settings.general.model)) {
-                await fetchMistralResponse(this.plugin, this.settings, index);
+                await fetchMistralResponse(this.plugin, this.settings, index, this);
             }
             else if (this.settings.APIConnections.googleGemini.geminiModels.includes(this.settings.general.model)) {
-                await fetchGoogleGeminiResponse(this.plugin, this.settings, index);
+                await fetchGoogleGeminiResponse(this.plugin, this.settings, index, this);
             }
             else if (this.settings.APIConnections.openAI.openAIBaseModels.includes(this.settings.general.model)) {
-                await fetchOpenAIAPIResponse(this.plugin, this.settings, index); 
+                await fetchOpenAIAPIResponse(this.plugin, this.settings, index, this); 
             }
             else if (this.settings.APIConnections.openRouter.openRouterModels.includes(this.settings.general.model)){
-                await fetchOpenRouterResponse(this.plugin, this.settings, index);
+                await fetchOpenRouterResponse(this.plugin, this.settings, index, this);
             }
             else {
                 const errorMessage = 'Connection not found.';
@@ -536,7 +536,7 @@ export class DocscribeView extends ItemView {
             addMessage(this.plugin, messageDiv, 'userMessage', this.settings, index).catch((error) => {
                 console.error('Error adding message:', error);
             });
-            const userMessageDiv = displayUserMessage(this.plugin, this.settings, message);
+            const userMessageDiv = displayUserMessage(this.plugin, this.settings, message, this);
             messageContainer.appendChild(userMessageDiv);
             await this.Docscribechatbot();
         }

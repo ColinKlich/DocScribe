@@ -9,28 +9,6 @@ export async function fetchOllamaResponseEditor(settings: DocscribeSettings, pro
         return;
     }
 
-    // Extract image links from the input
-    const imageMatch = prompt.match(/!?\[\[(.*?)\]\]/g);
-    const imageLink = imageMatch 
-    ? imageMatch
-        .map(item => item.startsWith('!') ? item.slice(3, -2) : item.slice(2, -2))
-        .filter(link => /\.(jpg|jpeg|png|gif|webp|bmp|tiff|tif|svg)$/i.test(link))
-    : [];
-
-    // // Initialize an array to hold the absolute URLs
-    const imagesVaultPath: Uint8Array[] | string[] | null = [];
-
-    // Loop through each image link to get the full path
-    if (imageLink.length > 0) {
-        imageLink.forEach(link => {
-            const imageFile = this.app.metadataCache.getFirstLinkpathDest(link, '');
-            const image = imageFile ? this.app.vault.adapter.getFullPath(imageFile.path) : null;
-            if (image) {
-                imagesVaultPath.push(image);
-            }
-        });
-    }
-
     try {
         const response = await requestUrl({
             url: ollamaRESTAPIURL + '/api/generate',
@@ -42,7 +20,6 @@ export async function fetchOllamaResponseEditor(settings: DocscribeSettings, pro
                 model: model || settings.general.model,
                 system: settings.editor.systen_role,
                 prompt: prompt,
-                images: imagesVaultPath,
                 stream: false,
                 keep_alive: parseInt(settings.OllamaConnection.ollamaParameters.keep_alive),
                 options: {
@@ -51,17 +28,12 @@ export async function fetchOllamaResponseEditor(settings: DocscribeSettings, pro
                 },
             }),
         });
-        const data = response.json;
+        const data: { response: string; } = JSON.parse(response.text);
         const message = data.response.trim();
 
         return message;
     } catch (error) {
-        if (error.name === 'AbortError') {
-            // console.log('Request aborted');
-        } else {
-            console.error('Ollama request:', error);
-            throw error;
-        }
+        throw Error('Error making API request: ' + error);
     }
 }
 
@@ -90,13 +62,12 @@ export async function fetchRESTAPIURLDataEditor(settings: DocscribeSettings, pro
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = response.json;
-        const message = data.choices[0].message.content.trim();
+        const data: { choices: { message: { content: string; }; }[]; } = response.json;
+        const message = data.choices[0]?.message.content.trim();
         return message;
 
     } catch (error) {
-        console.error('Error making API request:', error);
-        throw error;
+        throw Error('Error making API request: '+ error);
     }
 }
 
@@ -122,7 +93,8 @@ export async function fetchAnthropicResponseEditor(settings: DocscribeSettings, 
             }),
         });
 
-        const message = response.json.content[0].text.trim();
+        const data: { content: { text: string; }[]; } = response.json;
+        const message = data.content[0]?.text.trim();
         return message;
 
     } catch (error) {
@@ -156,8 +128,8 @@ export async function fetchGoogleGeminiDataEditor(settings: DocscribeSettings, p
             }),
         });
 
-        const data = response.json;
-        const message = data.candidates[0].content.parts[0].text.trim();
+        const data: { candidates: { content: { parts: { text: string; }[]; }; }[]; } = response.json;
+        const message = data.candidates[0]?.content.parts[0]?.text.trim();
         return message;
     } catch (error) {
         console.error(error);
@@ -185,8 +157,8 @@ export async function fetchMistralDataEditor(settings: DocscribeSettings, prompt
             }),
         });
         
-        const data = response.json;
-        const message = data.choices[0].message.content.trim();
+        const data: { choices: { message: { content: string; }; }[]; } = response.json;
+        const message = data.choices[0]?.message.content.trim();
         return message;
 
     } catch (error) {
@@ -215,8 +187,8 @@ export async function fetchOpenAIBaseAPIResponseEditor(settings: DocscribeSettin
         }),
     });
       
-    const data = response.json;
-    const message = data.choices[0].message.content || '';
+    const data: { choices: { message: { content: string; }; }[]; } = response.json;
+    const message = data.choices[0]?.message.content || '';
 
     return message;
 }
@@ -242,8 +214,8 @@ export async function fetchOpenRouterEditor(settings: DocscribeSettings, prompt:
             }),
         });
         
-        const data = response.json;
-        const message = data.choices[0].message.content.trim();
+        const data: { choices: { message: { content: string; }; }[]; } = response.json;
+        const message = data.choices[0]?.message.content.trim();
         return message;
 
     } catch (error) {

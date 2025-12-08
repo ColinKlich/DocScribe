@@ -1,11 +1,11 @@
-import { MarkdownRenderer, Modal, Notice, TFile, setIcon } from 'obsidian';
+import { Component, MarkdownRenderer, Modal, Notice, TFile, setIcon } from 'obsidian';
 import DocscribeGPT, { DocscribeSettings, checkActiveFile } from 'src/main';
 import { ANTHROPIC_MODELS, OPENAI_MODELS, activeEditor, fileNameMessageHistoryJson, lastCursorPosition, lastCursorPositionFile, messageHistory } from 'src/view';
 import { fetchOpenAIAPIResponse, fetchOllamaResponse, fetchAnthropicResponse, fetchRESTAPIURLResponse, fetchMistralResponse, fetchGoogleGeminiResponse, fetchOpenRouterResponse } from '../FetchModelResponse';
 import { getActiveFileContent } from '../editor/ReferenceCurrentNote';
 import { addParagraphBreaks } from './Message';
 
-export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSettings) {
+export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSettings, component: Component) {
     const regenerateButton = document.createElement('button');
     regenerateButton.textContent = 'Regenerate';
     setIcon(regenerateButton, 'refresh-ccw');
@@ -36,7 +36,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
             ;
             if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
                 try {
-                    await fetchOpenAIAPIResponse(plugin, settings, index);
+                    await fetchOpenAIAPIResponse(plugin, settings, index, component);
                 }
                 catch (error) {
                     new Notice('Error occurred while fetching completion: ' + error.message);
@@ -44,17 +44,17 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
                 }
             }
             else if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
-                await fetchOllamaResponse(plugin, settings, index);
+                await fetchOllamaResponse(plugin, settings, index, component);
             }
             else if (settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
-                await fetchRESTAPIURLResponse(plugin, settings, index);
+                await fetchRESTAPIURLResponse(plugin, settings, index, component);
             }
             else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
-                await fetchOpenRouterResponse(plugin, settings, index);
+                await fetchOpenRouterResponse(plugin, settings, index, component);
             }
             else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
                 try {
-                    await fetchMistralResponse(plugin, settings, index);
+                    await fetchMistralResponse(plugin, settings, index, component);
                 }
                 catch (error) {
                     console.error('Mistral error:', error);
@@ -62,7 +62,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
             }
             else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
                 try {
-                    await fetchGoogleGeminiResponse(plugin, settings, index);
+                    await fetchGoogleGeminiResponse(plugin, settings, index, component);
                 }
                 catch (error) {
                     console.error('Google Gemini error:', error);
@@ -71,7 +71,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
             }
             else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
                 try {
-                    await fetchAnthropicResponse(plugin, settings, index);
+                    await fetchAnthropicResponse(plugin, settings, index, component);
                 }
                 catch (error) {
                     console.error('Anthropic error:', error);
@@ -85,7 +85,7 @@ export function regenerateUserButton(plugin: DocscribeGPT, settings: DocscribeSe
     return regenerateButton;
 }
 
-export function displayUserEditButton (plugin: DocscribeGPT, settings: DocscribeSettings, userPre: HTMLPreElement) {
+export function displayUserEditButton (plugin: DocscribeGPT, settings: DocscribeSettings, userPre: HTMLPreElement, component: Component) {
     const editButton = document.createElement('button');
     editButton.textContent = 'Edit';
     setIcon(editButton, 'edit'); // Assuming setIcon is defined elsewhere
@@ -137,7 +137,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     ;
 
                     // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
-                    const regex = /(!?)\[\[(.*?)\]\]/g;
+                    const regex = /(!?)!!\[\[(.*?)\]\]/g;
                     let matches;
                     let inputModified = messageHistory[index].content;
 
@@ -223,7 +223,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     }
 
                     // Remove duplicates in the final output
-                    inputModified = inputModified.replace(/(<note-rendered>File cannot be read.<\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
+                    inputModified = inputModified.replace(/(<note-rendered>File cannot be read. <\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
 
 
                     // // console.log(`Modified input: ${inputModified}`);
@@ -231,14 +231,14 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
 
 
                     if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
-                        await fetchOllamaResponse(plugin, settings, index);
+                        await fetchOllamaResponse(plugin, settings, index, component);
                     }
                     else if (settings.RESTAPIURLConnection.RESTAPIURLModels.includes(settings.general.model)){
-                        await fetchRESTAPIURLResponse(plugin, settings, index);
+                        await fetchRESTAPIURLResponse(plugin, settings, index, component);
                     }
                     else if (ANTHROPIC_MODELS.includes(settings.general.model)) {
                         try {
-                            await fetchAnthropicResponse(plugin, settings, index);
+                            await fetchAnthropicResponse(plugin, settings, index, component);
                         }
                         catch (error) {
                             console.error('Anthropic error:', error);
@@ -246,7 +246,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     }
                     else if (settings.APIConnections.googleGemini.geminiModels.includes(settings.general.model)) {
                         try {
-                            await fetchGoogleGeminiResponse(plugin, settings, index);
+                            await fetchGoogleGeminiResponse(plugin, settings, index, component);
                         }
                         catch (error) {
                             console.error('Google Gemini error:', error);
@@ -255,7 +255,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     }
                     else if (settings.APIConnections.mistral.mistralModels.includes(settings.general.model)) {
                         try {
-                            await fetchMistralResponse(plugin, settings, index);
+                            await fetchMistralResponse(plugin, settings, index, component);
                         }
                         catch (error) {
                             console.error('Mistral error:', error);
@@ -263,7 +263,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                     }
                     else if (OPENAI_MODELS.includes(settings.general.model) || settings.APIConnections.openAI.openAIBaseModels.includes(settings.general.model)) {
                         try {
-                            await fetchOpenAIAPIResponse(plugin, settings, index);
+                            await fetchOpenAIAPIResponse(plugin, settings, index, component);
                         }
                         catch (error) {
                             new Notice('Error occurred while fetching completion: ' + error.message);
@@ -271,7 +271,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
                         }
                     }
                     else if (settings.APIConnections.openRouter.openRouterModels.includes(settings.general.model)){
-                        await fetchOpenRouterResponse(plugin, settings, index);
+                        await fetchOpenRouterResponse(plugin, settings, index, component);
                     }
                 }
                 else {
@@ -296,7 +296,7 @@ export function displayUserEditButton (plugin: DocscribeGPT, settings: Docscribe
     return editButton;
 }
 
-export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
+export function displayBotEditButton (plugin: DocscribeGPT, message: string, component: Component) {
     const editButton = document.createElement('button');
     editButton.textContent = 'Edit';
     setIcon(editButton, 'edit');
@@ -351,7 +351,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
             messageBlock.className = 'messageBlock';
             lastClickedElement?.appendChild(messageBlock);
 
-            await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', plugin);
+            await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', component);
             addParagraphBreaks(messageBlock);
 
             const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;
@@ -366,7 +366,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
 
                 if (index !== -1) {
                     // Check if the input contains any internal links and replace them with the content of the linked file ([[]], ![[]], [[#]])
-                    const regex = /(!?)\[\[(.*?)\]\]/g;
+                    const regex = /(!?)!!\[\[(.*?)\]\]/g;
                     let matches;
                     let inputModified = textArea.value;
 
@@ -452,7 +452,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
                     }
 
                     // Remove duplicates in the final output
-                    inputModified = inputModified.replace(/(<note-rendered>File cannot be read.<\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
+                    inputModified = inputModified.replace(/(<note-rendered>File cannot be read. <\/note-rendered>)+/g, '<note-rendered>File cannot be read.</note-rendered>');
 
 
                     // // console.log(`Modified input: ${inputModified}`);
@@ -488,7 +488,7 @@ export function displayBotEditButton (plugin: DocscribeGPT, message: string) {
             const regexRenderedNote = /<note-rendered>[\s\S]*?<\/note-rendered>/g;
             message = message.replace(regexRenderedNote, '').trim();
 
-            await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', plugin);
+            await MarkdownRenderer.render(plugin.app, message, messageBlock as HTMLElement, '/', component);
             addParagraphBreaks(messageBlock);
             
             const copyCodeBlocks = messageBlock.querySelectorAll('.copy-code-button') as NodeListOf<HTMLElement>;

@@ -15,7 +15,7 @@ export function addOpenRouterConnectionSettings(containerEl: HTMLElement, plugin
     settingsContainer.classList.toggle('hidden', !initialState);
 
     // Toggle visibility
-    toggleSettingContainer.addEventListener('click', async () => {
+    toggleSettingContainer.addEventListener('click', () => {
         const isOpen = !settingsContainer.classList.contains('hidden');
         if (isOpen) {
             setIcon(chevronIcon, 'chevron-right'); // Close state
@@ -34,7 +34,7 @@ export function addOpenRouterConnectionSettings(containerEl: HTMLElement, plugin
     .setName('OpenRouter API key')
     .setDesc('Insert OpenRouter API key.')
     .addText(text => text
-        .setPlaceholder('insert-api-key')
+        .setPlaceholder('Insert-API-key')
         .setValue(plugin.settings.APIConnections.openRouter.APIKey ? `${plugin.settings.APIConnections.openRouter.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.openRouter.APIKey.slice(-4)}` : '')
         .onChange(async (value) => {
             plugin.settings.APIConnections.openAI.openAIBaseModels = [];
@@ -44,14 +44,16 @@ export function addOpenRouterConnectionSettings(containerEl: HTMLElement, plugin
             }
             else {
                 const models = await fetchOpenRouterModels(plugin);
+                if (models) {
                 models.forEach((model: string) => {
                     if (!plugin.settings.APIConnections.openRouter.openRouterModels.includes(model)) {
                         plugin.settings.APIConnections.openRouter.openRouterModels.push(model);
                     }
                 });
+                }
             }
         })
-        .inputEl.addEventListener('focusout', async () => {
+        .inputEl.addEventListener('focusout', () => {
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             void SettingTab.display();
         })
