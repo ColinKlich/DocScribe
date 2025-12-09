@@ -1,4 +1,4 @@
-import { DataWriteOptions, Plugin, TFile} from 'obsidian';
+import { DataWriteOptions, Plugin, TFile, Menu, MenuItem, TAbstractFile } from 'obsidian';
 import { DocscribeView, VIEW_TYPE_CHATBOT, populateModelDropdown } from './view';
 import { DocscribeSettingTab } from './settings';
 import { promptSelectGenerateCommand, renameTitleCommand } from './components/editor/EditorCommands';
@@ -148,7 +148,7 @@ export interface ProfileFrontmatter {
     ollama_top_p?: number;
     ollama_min_p?: number;
     ollama_keep_alive?: string;
-    [key: string]: any;
+    [key: string]: string | number | boolean | string[] | undefined;
 }
 
 export const DEFAULT_SETTINGS: DocscribeSettings = {
@@ -561,13 +561,13 @@ export default class DocscribeGPT extends Plugin {
         });
 
 		this.registerEvent(
-			this.app.workspace.on('file-menu', (menu, file) => {
+			this.app.workspace.on('file-menu', (menu: Menu, file: TAbstractFile) => {
 				if (!(file instanceof TFile)) {
 					return;
 				}
 
 				if (file.extension === 'pptx') {
-					menu.addItem((item) => {
+					menu.addItem((item: MenuItem) => {
 						item
 							.setTitle('DocScribe: extract notes from pptx')
 							.onClick(async () => {
@@ -584,7 +584,7 @@ export default class DocscribeGPT extends Plugin {
 				}
 
 				if (file.extension === 'pdf') {
-					menu.addItem((item) => {
+					menu.addItem((item: MenuItem) => {
 						item
 							.setTitle('DocScribe: extract notes from pdf')
 							.onClick(async () => {
@@ -600,7 +600,7 @@ export default class DocscribeGPT extends Plugin {
 					});
 				}
 	
-				menu.addItem((item) => {
+				menu.addItem((item: MenuItem) => {
 					item
 						.setTitle('DocScribe: generate new title')
 						.onClick(() => renameTitleCommand(this, this.settings));
@@ -1184,7 +1184,8 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					}
 				}
 
-				const intValue = parseInt(frontmatter.ollama_mirostat as any, 10);
+				if (frontmatter.ollama_mirostat != undefined){
+				const intValue = frontmatter.ollama_mirostat;
 
 				if (isNaN(intValue)) {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat =
@@ -1198,8 +1199,9 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 
 					frontmatter.ollama_mirostat = intValue;
 				}
+			}
 
-				if (isNaN(parseFloat(frontmatter.ollama_mirostat_eta as any))) {
+				if (typeof frontmatter.ollama_mirostat_eta !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta;
 
@@ -1207,9 +1209,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta =
-						parseFloat(frontmatter.ollama_mirostat_eta as any)
-							.toFixed(2)
-							.toString();
+						frontmatter.ollama_mirostat_eta.toFixed(2);
 
 					frontmatter.ollama_mirostat_eta = parseFloat(
 						plugin.settings.OllamaConnection.ollamaParameters
@@ -1217,7 +1217,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseFloat(frontmatter.ollama_mirostat_tau as any))) {
+				if (typeof frontmatter.ollama_mirostat_tau !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau;
 
@@ -1225,9 +1225,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau =
-						parseFloat(frontmatter.ollama_mirostat_tau as any)
-							.toFixed(2)
-							.toString();
+						frontmatter.ollama_mirostat_tau.toFixed(2);
 
 					frontmatter.ollama_mirostat_tau = parseFloat(
 						plugin.settings.OllamaConnection.ollamaParameters
@@ -1235,7 +1233,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_num_ctx as any, 10))) {
+				if (typeof frontmatter.ollama_num_ctx !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.num_ctx =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx;
 
@@ -1243,7 +1241,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.num_ctx, 10);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.num_ctx =
-						parseInt(frontmatter.ollama_num_ctx as any, 10).toString();
+						frontmatter.ollama_num_ctx.toString();
 
 					frontmatter.ollama_num_ctx = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters
@@ -1251,12 +1249,12 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_num_gqa as any, 10))) {
+				if (typeof frontmatter.ollama_num_gqa !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.num_gqa =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa;
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.num_gqa =
-						parseInt(frontmatter.ollama_num_gqa as any, 10).toString();
+						frontmatter.ollama_num_gqa.toString();
 
 					frontmatter.ollama_num_gqa = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters
@@ -1264,12 +1262,12 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_num_thread as any, 10))) {
+				if (typeof frontmatter.ollama_num_thread !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.num_thread =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread;
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.num_thread =
-						parseInt(frontmatter.ollama_num_thread as any, 10).toString();
+						frontmatter.ollama_num_thread.toString();
 
 					frontmatter.ollama_num_thread = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters
@@ -1277,7 +1275,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_repeat_last_n as any, 10))) {
+				if (typeof frontmatter.ollama_repeat_last_n !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n;
 
@@ -1285,7 +1283,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n, 10);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n =
-						parseInt(frontmatter.ollama_repeat_last_n as any, 10).toString();
+						frontmatter.ollama_repeat_last_n.toString();
 
 					frontmatter.ollama_repeat_last_n = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters
@@ -1293,7 +1291,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseFloat(frontmatter.ollama_repeat_penalty as any))) {
+				if (typeof frontmatter.ollama_repeat_penalty !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty;
 
@@ -1301,9 +1299,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty =
-						parseFloat(frontmatter.ollama_repeat_penalty as any)
-							.toFixed(2)
-							.toString();
+						frontmatter.ollama_repeat_penalty.toFixed(2);
 
 					frontmatter.ollama_repeat_penalty = parseFloat(
 						plugin.settings.OllamaConnection.ollamaParameters
@@ -1311,12 +1307,12 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_seed as any, 10))) {
+				if (typeof frontmatter.ollama_seed !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.seed =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.seed;
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.seed =
-						parseInt(frontmatter.ollama_seed as any, 10).toString();
+						frontmatter.ollama_seed.toString();
 
 					frontmatter.ollama_seed = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters.seed, 10
@@ -1326,7 +1322,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 				plugin.settings.OllamaConnection.ollamaParameters.stop =
 					frontmatter.ollama_stop ?? [];
 
-				if (isNaN(parseFloat(frontmatter.ollama_tfs_z as any))) {
+				if (typeof frontmatter.ollama_tfs_z !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.tfs_z =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.tfs_z;
 
@@ -1334,16 +1330,14 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.tfs_z);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.tfs_z =
-						parseFloat(frontmatter.ollama_tfs_z as any)
-							.toFixed(2)
-							.toString();
+						frontmatter.ollama_tfs_z.toFixed(2);
 
 					frontmatter.ollama_tfs_z = parseFloat(
 						plugin.settings.OllamaConnection.ollamaParameters.tfs_z
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_top_k as any, 10))) {
+				if (typeof frontmatter.ollama_top_k !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.top_k =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k;
 
@@ -1351,14 +1345,14 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.top_k, 10);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.top_k =
-						parseInt(frontmatter.ollama_top_k as any, 10).toString();
+						frontmatter.ollama_top_k.toString();
 
 					frontmatter.ollama_top_k = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters.top_k, 10
 					);
 				}
 
-				if (isNaN(parseFloat(frontmatter.ollama_top_p as any))) {
+				if (typeof frontmatter.ollama_top_p !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.top_p =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p;
 
@@ -1366,16 +1360,14 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.top_p);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.top_p =
-						parseFloat(frontmatter.ollama_top_p as any)
-							.toFixed(2)
-							.toString();
+						frontmatter.ollama_top_p.toFixed(2);
 
 					frontmatter.ollama_top_p = parseFloat(
 						plugin.settings.OllamaConnection.ollamaParameters.top_p
 					);
 				}
 
-				if (isNaN(parseFloat(frontmatter.ollama_min_p as any))) {
+				if (typeof frontmatter.ollama_min_p !== 'number') {
 					plugin.settings.OllamaConnection.ollamaParameters.min_p =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p;
 
@@ -1383,9 +1375,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						plugin.settings.OllamaConnection.ollamaParameters.min_p);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.min_p =
-						parseFloat(frontmatter.ollama_min_p as any)
-							.toFixed(2)
-							.toString();
+						frontmatter.ollama_min_p.toFixed(2);
 
 					frontmatter.ollama_min_p = parseFloat(
 						plugin.settings.OllamaConnection.ollamaParameters.min_p
