@@ -35,9 +35,9 @@ export function addEditorSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .setDesc('System role for DocScribe generate and \'prompt select generate\' command.')
         .addTextArea(text => text
             .setPlaceholder('You are a helpful assistant.')
-            .setValue(plugin.settings.editor.systen_role !== undefined ? plugin.settings.editor.systen_role : DEFAULT_SETTINGS.editor.systen_role)
+            .setValue(plugin.settings.editor.system_role !== undefined ? plugin.settings.editor.system_role : DEFAULT_SETTINGS.editor.system_role)
             .onChange( (value) => {
-                plugin.settings.editor.systen_role = value !== undefined ? value : DEFAULT_SETTINGS.editor.systen_role;
+                plugin.settings.editor.system_role = value !== undefined ? value : DEFAULT_SETTINGS.editor.system_role;
                 plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             })
         );

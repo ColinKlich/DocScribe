@@ -108,7 +108,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
-            .onClick(async () => {
+            .onClick(() => {
                 const defaultValue = colorToHex(defaultChatbotContainerBackgroundColor);
                 colorPicker1.setValue(defaultValue);
 
@@ -152,7 +152,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
-        .onClick(async () => {
+        .onClick(() => {
             const defaultValue = colorToHex(defaultMessageContainerBackgroundColor);
             colorPicker2.setValue(defaultValue);
 
@@ -192,7 +192,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
-            .onClick(async () => {
+            .onClick(() => {
                 const defaultValue = colorToHex(defaultUserMessageFontColor);
                 colorPicker3.setValue(defaultValue);
 
@@ -240,7 +240,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
-            .onClick(async () => {
+            .onClick(() => {
                 const defaultValue = colorToHex(defaultUserMessageBackgroundColor);
                 colorPicker4.setValue(defaultValue);
     
@@ -288,7 +288,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
-        .onClick(async () => {
+        .onClick(() => {
             const defaultValue = colorToHex(defaultBotMessageFontColor);
             colorPicker5.setValue(defaultValue);
 
@@ -336,7 +336,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
-            .onClick(async () => {
+            .onClick(() => {
                 const defaultValue = colorToHex(defaultBotMessageBackgroundColor);
                 colorPicker6.setValue(defaultValue);
     
@@ -383,7 +383,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
-        .onClick(async () => {
+        .onClick(() => {
             const defaultValue = colorToHex(defaultChatBoxFontColor);
             colorPicker7.setValue(defaultValue);
             
@@ -425,7 +425,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
-        .onClick(async () => {
+        .onClick(() => {
             const defaultValue = colorToHex(defaultChatBoxBackgroundColor);
             colorPicker8.setValue(defaultValue);
             
@@ -500,7 +500,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
-        .onClick(async () => {
+        .onClick(() => {
             colorPicker9.setValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor);
             
             const containers = document.querySelectorAll('.docscribe-code-block-container');
@@ -536,7 +536,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         .setButtonText('Restore default')
         .setIcon('rotate-cw')
         .setClass('clickable-icon')
-        .onClick(async () => {
+        .onClick(() => {
             const defaultValue = colorToHex(defaultDocscribeGenerateFontColor);
             colorPicker10.setValue(defaultValue);
             

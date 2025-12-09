@@ -41,7 +41,7 @@ export interface DocscribeSettings {
 		promptFolderPath: string,
 	},
 	editor: {
-		systen_role: string,
+		system_role: string,
 	},
 	chatHistory: {
 		chatHistoryPath: string,
@@ -114,6 +114,43 @@ export interface DocscribeSettings {
 	toggleAdvancedSettings: boolean,
 }
 
+export interface ProfileFrontmatter {
+    model?: string;
+    max_tokens?: number;
+    temperature?: number;
+    enable_reference_current_note?: boolean;
+    prompt?: string;
+    user_name?: string;
+    enable_header?: boolean;
+    chatbot_container_background_color?: string;
+    message_container_background_color?: string;
+    user_message_font_color?: string;
+    user_message_background_color?: string;
+    bot_message_font_color?: string;
+    chatbot_message_background_color?: string;
+    chatbox_font_color?: string;
+    chatbox_background_color?: string;
+    Docscribe_generate_background_color?: string;
+    Docscribe_generate_font_color?: string;
+    system_role?: string;
+    ollama_mirostat?: number;
+    ollama_mirostat_eta?: number;
+    ollama_mirostat_tau?: number;
+    ollama_num_ctx?: number;
+    ollama_num_gqa?: number;
+    ollama_num_thread?: number;
+    ollama_repeat_last_n?: number;
+    ollama_repeat_penalty?: number;
+    ollama_seed?: number;
+    ollama_stop?: string[];
+    ollama_tfs_z?: number;
+    ollama_top_k?: number;
+    ollama_top_p?: number;
+    ollama_min_p?: number;
+    ollama_keep_alive?: string;
+    [key: string]: any;
+}
+
 export const DEFAULT_SETTINGS: DocscribeSettings = {
 	profiles: {
 		profile: 'Docscribe.md',
@@ -149,7 +186,7 @@ export const DEFAULT_SETTINGS: DocscribeSettings = {
 		promptFolderPath: 'Docscribe/Prompts',
 	},
 	editor: {
-		systen_role: 'You are a helpful assistant.',
+		system_role: 'You are a helpful assistant.',
 	},
 	chatHistory: {
 		chatHistoryPath: 'Docscribe/History',
@@ -302,17 +339,24 @@ export default class DocscribeGPT extends Plugin {
 
 		this.registerEvent(
 			this.app.vault.on('delete', async (file: TFile) => {
+				if (!(file instanceof TFile)) {
+					return;
+				}
+
+				const folderPath = this.settings.profiles.profileFolderPath || DEFAULT_SETTINGS.profiles.profileFolderPath;
+				const defaultFilePath = `${folderPath}/${DEFAULT_SETTINGS.profiles.profile}`;
+
 				// Fetching files from the specified folder (profiles)
-				const profileFiles = this.app.vault.getFiles().filter((file) => file.path.startsWith(this.settings.profiles.profileFolderPath));
+				const profileFiles = this.app.vault.getFiles().filter((f) => f.path.startsWith(this.settings.profiles.profileFolderPath));
 
 				// Sorting the files array alphabetically by file name
 				profileFiles.sort((a, b) => a.name.localeCompare(b.name));
 
-				if (file instanceof TFile && file.path.startsWith(this.settings.chatHistory.chatHistoryPath)) {
+				if (file.path.startsWith(this.settings.chatHistory.chatHistoryPath)) {
 					const currentProfile = this.settings.profiles.profile.replace(/\.[^/.]+$/, ''); // Removing the file extension
 					
 					// Finding the index of the currentProfile in the profileFiles array
-					const profileIndex = profileFiles.findIndex((file) => file.basename === currentProfile);
+					const profileIndex = profileFiles.findIndex((f) => f.basename === currentProfile);
 
 					const currentIndex = this.settings.profiles.lastLoadedChatHistory.indexOf(file.path);
 
@@ -325,51 +369,60 @@ export default class DocscribeGPT extends Plugin {
 					}
 				}
 
-				if (file instanceof TFile && file.path.startsWith(folderPath)) {
+				if (file.path.startsWith(folderPath)) {
 					const filenameMessageHistory = this.app.vault.configDir + '/plugins/docscribe/data/' + 'messageHistory_' + file.name.replace('.md', '.json');
 					this.app.vault.adapter.remove(filenameMessageHistory).catch((error) => {
 						console.error('Error handling delete event:', error);
 					});
 
-					const profileIndex = profileFiles.findIndex((profileFile) => profileFile.name > file.name);
+					const allFileNames = [...profileFiles.map(f => f.name), file.name].sort();
+					const deletedFileIndex = allFileNames.indexOf(file.name);
 
-					this.settings.profiles.lastLoadedChatHistory.splice(profileIndex, 1);
+					if (deletedFileIndex > -1) {
+						this.settings.profiles.lastLoadedChatHistory.splice(deletedFileIndex, 1);
+					}
 
 					if (file.path === defaultFilePath) {
 						this.settings = DEFAULT_SETTINGS;
 						this.app.vault.create(defaultFilePath, '').catch((error) => {
 							console.error('Error creating default profile:', error);
 						});
-						await updateSettingsFromFrontMatter(this, defaultProfile);
+						const defaultProfile = this.app.vault.getAbstractFileByPath(defaultFilePath);
+						if (defaultProfile instanceof TFile) {
+							await updateSettingsFromFrontMatter(this, defaultProfile);
+						}
 					}
 					else {
 						if (this.settings.profiles.profile === file.name) {
 							this.settings.profiles.profile = DEFAULT_SETTINGS.profiles.profile;
 
 							// Fetching files from the specified folder (profiles)
-							const profileFiles = this.app.vault.getFiles().filter((file) => file.path.startsWith(this.settings.profiles.profileFolderPath));
+							const profileFilesAfterDelete = this.app.vault.getFiles().filter((f) => f.path.startsWith(this.settings.profiles.profileFolderPath));
 
 							// Sorting the files array alphabetically by file name
-							profileFiles.sort((a, b) => a.name.localeCompare(b.name));
+							profileFilesAfterDelete.sort((a, b) => a.name.localeCompare(b.name));
 					
 							const currentProfile = this.settings.profiles.profile.replace(/\.[^/.]+$/, ''); // Removing the file extension
 					
 							// Finding the index of the currentProfile in the profileFiles array
-							const profileIndex = profileFiles.findIndex((file) => file.basename === currentProfile);
+							const profileIndex = profileFilesAfterDelete.findIndex((f) => f.basename === currentProfile);
 
 							if (this.settings.profiles.lastLoadedChatHistoryPath !== null) {
 								this.settings.profiles.lastLoadedChatHistoryPath = this.settings.profiles.lastLoadedChatHistory[profileIndex];
 							}
 
-							const fileContent = (await this.app.vault.read(defaultProfile)).replace(/^---\s*[\s\S]*?---/, '').trim();
-							this.settings.general.system_role = fileContent;
-							await updateSettingsFromFrontMatter(this, defaultProfile);
+							const defaultProfile = this.app.vault.getAbstractFileByPath(defaultFilePath);
+							if (defaultProfile instanceof TFile) {
+								const fileContent = (await this.app.vault.read(defaultProfile)).replace(/^---\s*[\s\S]*?---/, '').trim();
+								this.settings.general.system_role = fileContent;
+								await updateSettingsFromFrontMatter(this, defaultProfile);
+							}
 						}
 					}
 				}
 				await this.saveSettings();
-			}
-		));
+			})
+		);
 
 		// Update frontmatter when the profile file is modified
 		this.registerEvent(
@@ -618,7 +671,7 @@ export default class DocscribeGPT extends Plugin {
 	
 			setTimeout(() => {
 				textarea.focus();
-				textarea.addClass("visible");
+				textarea.classList.add("visible");
 				//style.setProperty('opacity', '1');
 			}, 50);
 		}
@@ -670,11 +723,20 @@ export default class DocscribeGPT extends Plugin {
 
 export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
     // Define a callback function to modify the frontmatter
-    const setDefaultFrontMatter = (frontmatter: Record<string, any>) => {
+    const setDefaultFrontMatter = (frontmatter: ProfileFrontmatter) => {
         // Add or modify properties in the frontmatter
         frontmatter.model = DEFAULT_SETTINGS.general.model;
-        frontmatter.max_tokens = parseInt(DEFAULT_SETTINGS.general.max_tokens);
-        frontmatter.temperature = parseFloat(DEFAULT_SETTINGS.general.temperature);
+
+        const maxTokens = parseInt(DEFAULT_SETTINGS.general.max_tokens, 10);
+        if (!isNaN(maxTokens)) {
+            frontmatter.max_tokens = maxTokens;
+        }
+
+        const temperature = parseFloat(DEFAULT_SETTINGS.general.temperature);
+        if (!isNaN(temperature)) {
+            frontmatter.temperature = temperature;
+        }
+
         frontmatter.enable_reference_current_note = DEFAULT_SETTINGS.general.enableReferenceCurrentNote;
 		frontmatter.prompt = DEFAULT_SETTINGS.prompts.prompt;
 		frontmatter.user_name = DEFAULT_SETTINGS.appearance.userName;
@@ -690,21 +752,75 @@ export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
 		frontmatter.chatbox_background_color = DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor.replace(/^#/, '');
 		frontmatter.Docscribe_generate_background_color = DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor.replace(/^#/, '');
 		frontmatter.Docscribe_generate_font_color = DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor.replace(/^#/, '');
-		frontmatter.systen_role = DEFAULT_SETTINGS.editor.systen_role;
-		frontmatter.ollama_mirostat = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat);
-		frontmatter.ollama_mirostat_eta = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta);
-		frontmatter.ollama_mirostat_tau = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau);
-		frontmatter.ollama_num_ctx = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx);
-		frontmatter.ollama_num_gqa = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa);
-		frontmatter.ollama_num_thread = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread);
-		frontmatter.ollama_repeat_last_n = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n);
-		frontmatter.ollama_repeat_penalty = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty);
-		frontmatter.ollama_seed = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.seed);
+		frontmatter.system_role = DEFAULT_SETTINGS.editor.system_role;
+
+        const ollamaMirostat = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat);
+        if (!isNaN(ollamaMirostat)) {
+		    frontmatter.ollama_mirostat = ollamaMirostat;
+        }
+
+        const ollamaMirostatEta = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta);
+        if (!isNaN(ollamaMirostatEta)) {
+		    frontmatter.ollama_mirostat_eta = ollamaMirostatEta;
+        }
+
+        const ollamaMirostatTau = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau);
+        if (!isNaN(ollamaMirostatTau)) {
+		    frontmatter.ollama_mirostat_tau = ollamaMirostatTau;
+        }
+
+        const ollamaNumCtx = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx, 10);
+        if (!isNaN(ollamaNumCtx)) {
+		    frontmatter.ollama_num_ctx = ollamaNumCtx;
+        }
+
+        const ollamaNumGqa = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa, 10);
+        if (!isNaN(ollamaNumGqa)) {
+		    frontmatter.ollama_num_gqa = ollamaNumGqa;
+        }
+
+        const ollamaNumThread = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread, 10);
+        if (!isNaN(ollamaNumThread)) {
+		    frontmatter.ollama_num_thread = ollamaNumThread;
+        }
+
+        const ollamaRepeatLastN = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n, 10);
+        if (!isNaN(ollamaRepeatLastN)) {
+		    frontmatter.ollama_repeat_last_n = ollamaRepeatLastN;
+        }
+
+        const ollamaRepeatPenalty = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty);
+        if (!isNaN(ollamaRepeatPenalty)) {
+		    frontmatter.ollama_repeat_penalty = ollamaRepeatPenalty;
+        }
+
+        const ollamaSeed = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.seed, 10);
+        if (!isNaN(ollamaSeed)) {
+		    frontmatter.ollama_seed = ollamaSeed;
+        }
+
 		frontmatter.ollama_stop = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.stop;
-		frontmatter.ollama_tfs_z = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.tfs_z);
-		frontmatter.ollama_top_k = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k);
-		frontmatter.ollama_top_p = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p);
-		frontmatter.ollama_min_p = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p);
+
+        const ollamaTfsZ = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.tfs_z);
+        if (!isNaN(ollamaTfsZ)) {
+		    frontmatter.ollama_tfs_z = ollamaTfsZ;
+        }
+
+        const ollamaTopK = parseInt(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k, 10);
+        if (!isNaN(ollamaTopK)) {
+		    frontmatter.ollama_top_k = ollamaTopK;
+        }
+
+        const ollamaTopP = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p);
+        if (!isNaN(ollamaTopP)) {
+		    frontmatter.ollama_top_p = ollamaTopP;
+        }
+
+        const ollamaMinP = parseFloat(DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p);
+        if (!isNaN(ollamaMinP)) {
+		    frontmatter.ollama_min_p = ollamaMinP;
+        }
+
 		frontmatter.ollama_keep_alive = DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.keep_alive;
     };
 
@@ -727,42 +843,63 @@ export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
 
 export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: TFile){
     // Define a callback function to modify the frontmatter
-    const updateSettings = (frontmatter: Record<string, any>) => {
+    const updateSettings = (frontmatter: ProfileFrontmatter) => {
         // Add or modify properties in the frontmatter
-        plugin.settings.general.model = frontmatter.model;
-		plugin.settings.general.max_tokens = frontmatter.max_tokens;
-		plugin.settings.general.temperature = frontmatter.temperature;
-		plugin.settings.general.enableReferenceCurrentNote = frontmatter.enable_reference_current_note;
-		plugin.settings.prompts.prompt = frontmatter.prompt;
-		plugin.settings.appearance.userName = frontmatter.user_name;
+        plugin.settings.general.model = frontmatter.model ?? DEFAULT_SETTINGS.general.model;
+		plugin.settings.general.max_tokens = frontmatter.max_tokens?.toString() ?? DEFAULT_SETTINGS.general.max_tokens;
+		plugin.settings.general.temperature = frontmatter.temperature?.toString() ?? DEFAULT_SETTINGS.general.temperature;
+		plugin.settings.general.enableReferenceCurrentNote = frontmatter.enable_reference_current_note ?? DEFAULT_SETTINGS.general.enableReferenceCurrentNote;
+		plugin.settings.prompts.prompt = frontmatter.prompt ?? DEFAULT_SETTINGS.prompts.prompt;
+		plugin.settings.appearance.userName = frontmatter.user_name ?? DEFAULT_SETTINGS.appearance.userName;
 		plugin.settings.appearance.chatbotName = file.basename;
-		plugin.settings.appearance.enableHeader = frontmatter.enable_header;
-		plugin.settings.appearance.chatbotContainerBackgroundColor = '#' + frontmatter.chatbot_container_background_color;
-		plugin.settings.appearance.messageContainerBackgroundColor = '#' + frontmatter.message_container_background_color;
-		plugin.settings.appearance.userMessageFontColor = '#' + frontmatter.user_message_font_color;
-		plugin.settings.appearance.userMessageBackgroundColor = '#' + frontmatter.user_message_background_color;
-		plugin.settings.appearance.botMessageFontColor = '#' + frontmatter.bot_message_font_color;
-		plugin.settings.appearance.botMessageBackgroundColor = '#' + frontmatter.chatbot_message_background_color;
-		plugin.settings.appearance.chatBoxFontColor = '#' + frontmatter.chatbox_font_color;
-		plugin.settings.appearance.chatBoxBackgroundColor = '#' + frontmatter.chatbox_background_color;
-		plugin.settings.appearance.DocscribeGenerateBackgroundColor = '#' + frontmatter.Docscribe_generate_background_color;
-		plugin.settings.appearance.DocscribeGenerateFontColor = '#' + frontmatter.Docscribe_generate_font_color;
-		plugin.settings.editor.systen_role = frontmatter.systen_role;
-		plugin.settings.OllamaConnection.ollamaParameters.mirostat = frontmatter.ollama_mirostat;
-		plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta = frontmatter.ollama_mirostat_eta;
-		plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau = frontmatter.ollama_mirostat_tau;
-		plugin.settings.OllamaConnection.ollamaParameters.num_ctx = frontmatter.ollama_num_ctx;
-		plugin.settings.OllamaConnection.ollamaParameters.num_gqa = frontmatter.ollama_num_gqa;
-		plugin.settings.OllamaConnection.ollamaParameters.num_thread = frontmatter.ollama_num_thread;
-		plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n = frontmatter.ollama_repeat_last_n;
-		plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty = frontmatter.ollama_repeat_penalty;
-		plugin.settings.OllamaConnection.ollamaParameters.seed = frontmatter.ollama_seed;
-		plugin.settings.OllamaConnection.ollamaParameters.stop = frontmatter.ollama_stop;
-		plugin.settings.OllamaConnection.ollamaParameters.tfs_z = frontmatter.ollama_tfs_z;
-		plugin.settings.OllamaConnection.ollamaParameters.top_k = frontmatter.ollama_top_k;
-		plugin.settings.OllamaConnection.ollamaParameters.top_p = frontmatter.ollama_top_p;
-		plugin.settings.OllamaConnection.ollamaParameters.min_p = frontmatter.ollama_min_p;
-		plugin.settings.OllamaConnection.ollamaParameters.keep_alive = frontmatter.ollama_keep_alive;
+		plugin.settings.appearance.enableHeader = frontmatter.enable_header ?? DEFAULT_SETTINGS.appearance.enableHeader;
+
+        const CbContainerBg = frontmatter.chatbot_container_background_color ?? DEFAULT_SETTINGS.appearance.chatbotContainerBackgroundColor;
+        plugin.settings.appearance.chatbotContainerBackgroundColor = CbContainerBg.startsWith('--') ? CbContainerBg : '#' + CbContainerBg;
+
+        const MsgContainerBg = frontmatter.message_container_background_color ?? DEFAULT_SETTINGS.appearance.messageContainerBackgroundColor;
+		plugin.settings.appearance.messageContainerBackgroundColor = MsgContainerBg.startsWith('--') ? MsgContainerBg : '#' + MsgContainerBg;
+
+        const UserMsgFont = frontmatter.user_message_font_color ?? DEFAULT_SETTINGS.appearance.userMessageFontColor;
+		plugin.settings.appearance.userMessageFontColor = UserMsgFont.startsWith('--') ? UserMsgFont : '#' + UserMsgFont;
+
+        const UserMsgBg = frontmatter.user_message_background_color ?? DEFAULT_SETTINGS.appearance.userMessageBackgroundColor;
+		plugin.settings.appearance.userMessageBackgroundColor = UserMsgBg.startsWith('--') ? UserMsgBg : '#' + UserMsgBg;
+
+        const BotMsgFont = frontmatter.bot_message_font_color ?? DEFAULT_SETTINGS.appearance.botMessageFontColor;
+		plugin.settings.appearance.botMessageFontColor = BotMsgFont.startsWith('--') ? BotMsgFont : '#' + BotMsgFont;
+
+        const BotMsgBg = frontmatter.chatbot_message_background_color ?? DEFAULT_SETTINGS.appearance.botMessageBackgroundColor;
+		plugin.settings.appearance.botMessageBackgroundColor = BotMsgBg.startsWith('--') ? BotMsgBg : '#' + BotMsgBg;
+
+        const ChatboxFont = frontmatter.chatbox_font_color ?? DEFAULT_SETTINGS.appearance.chatBoxFontColor;
+		plugin.settings.appearance.chatBoxFontColor = ChatboxFont.startsWith('--') ? ChatboxFont : '#' + ChatboxFont;
+
+        const ChatboxBg = frontmatter.chatbox_background_color ?? DEFAULT_SETTINGS.appearance.chatBoxBackgroundColor;
+		plugin.settings.appearance.chatBoxBackgroundColor = ChatboxBg.startsWith('--') ? ChatboxBg : '#' + ChatboxBg;
+
+        const GenBg = frontmatter.Docscribe_generate_background_color ?? DEFAULT_SETTINGS.appearance.DocscribeGenerateBackgroundColor;
+		plugin.settings.appearance.DocscribeGenerateBackgroundColor = GenBg.startsWith('--') ? GenBg : '#' + GenBg;
+
+        const GenFont = frontmatter.Docscribe_generate_font_color ?? DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor;
+		plugin.settings.appearance.DocscribeGenerateFontColor = GenFont.startsWith('--') ? GenFont : '#' + GenFont;
+
+		plugin.settings.editor.system_role = frontmatter.system_role ?? DEFAULT_SETTINGS.editor.system_role;
+		plugin.settings.OllamaConnection.ollamaParameters.mirostat = frontmatter.ollama_mirostat?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat;
+		plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta = frontmatter.ollama_mirostat_eta?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta;
+		plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau = frontmatter.ollama_mirostat_tau?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau;
+		plugin.settings.OllamaConnection.ollamaParameters.num_ctx = frontmatter.ollama_num_ctx?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx;
+		plugin.settings.OllamaConnection.ollamaParameters.num_gqa = frontmatter.ollama_num_gqa?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa;
+		plugin.settings.OllamaConnection.ollamaParameters.num_thread = frontmatter.ollama_num_thread?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread;
+		plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n = frontmatter.ollama_repeat_last_n?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n;
+		plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty = frontmatter.ollama_repeat_penalty?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty;
+		plugin.settings.OllamaConnection.ollamaParameters.seed = frontmatter.ollama_seed?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.seed;
+		plugin.settings.OllamaConnection.ollamaParameters.stop = frontmatter.ollama_stop ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.stop;
+		plugin.settings.OllamaConnection.ollamaParameters.tfs_z = frontmatter.ollama_tfs_z?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.tfs_z;
+		plugin.settings.OllamaConnection.ollamaParameters.top_k = frontmatter.ollama_top_k?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k;
+		plugin.settings.OllamaConnection.ollamaParameters.top_p = frontmatter.ollama_top_p?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p;
+		plugin.settings.OllamaConnection.ollamaParameters.min_p = frontmatter.ollama_min_p?.toString() ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p;
+		plugin.settings.OllamaConnection.ollamaParameters.keep_alive = frontmatter.ollama_keep_alive ?? DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.keep_alive;
     };
 
     // Optional: Specify data write options
@@ -787,11 +924,20 @@ export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: 
 
 export async function updateFrontMatter(plugin: DocscribeGPT, file: TFile){
     // Define a callback function to modify the frontmatter
-    const modifyFrontMatter = (frontmatter: Record<string, any>) => {
+    const modifyFrontMatter = (frontmatter: ProfileFrontmatter) => {
         // Add or modify properties in the frontmatter
         frontmatter.model = plugin.settings.general.model;
-        frontmatter.max_tokens = parseInt(plugin.settings.general.max_tokens);
-        frontmatter.temperature = parseFloat(plugin.settings.general.temperature);
+
+        const maxTokens = parseInt(plugin.settings.general.max_tokens, 10);
+        if (!isNaN(maxTokens)) {
+            frontmatter.max_tokens = maxTokens;
+        }
+
+        const temperature = parseFloat(plugin.settings.general.temperature);
+        if (!isNaN(temperature)) {
+            frontmatter.temperature = temperature;
+        }
+
         frontmatter.enable_reference_current_note = plugin.settings.general.enableReferenceCurrentNote;
 		frontmatter.prompt = plugin.settings.prompts.prompt.replace('.md', '');
 		frontmatter.user_name = plugin.settings.appearance.userName;
@@ -807,21 +953,75 @@ export async function updateFrontMatter(plugin: DocscribeGPT, file: TFile){
 		frontmatter.chatbox_background_color = plugin.settings.appearance.chatBoxBackgroundColor.replace(/^#/, '');
 		frontmatter.Docscribe_generate_background_color = plugin.settings.appearance.DocscribeGenerateBackgroundColor.replace(/^#/, '');
 		frontmatter.Docscribe_generate_font_color = plugin.settings.appearance.DocscribeGenerateFontColor.replace(/^#/, '');
-		frontmatter.systen_role = plugin.settings.editor.systen_role;
-		frontmatter.ollama_mirostat = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat);
-		frontmatter.ollama_mirostat_eta = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta);
-		frontmatter.ollama_mirostat_tau = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau);
-		frontmatter.ollama_num_ctx = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_ctx);
-		frontmatter.ollama_num_gqa = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_gqa);
-		frontmatter.ollama_num_thread = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_thread);
-		frontmatter.ollama_repeat_last_n = parseInt(plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n);
-		frontmatter.ollama_repeat_penalty = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty);
-		frontmatter.ollama_seed = parseInt(plugin.settings.OllamaConnection.ollamaParameters.seed);
+		frontmatter.system_role = plugin.settings.editor.system_role;
+
+        const ollamaMirostat = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat);
+        if (!isNaN(ollamaMirostat)) {
+		    frontmatter.ollama_mirostat = ollamaMirostat;
+        }
+
+        const ollamaMirostatEta = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta);
+        if (!isNaN(ollamaMirostatEta)) {
+		    frontmatter.ollama_mirostat_eta = ollamaMirostatEta;
+        }
+
+        const ollamaMirostatTau = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau);
+        if (!isNaN(ollamaMirostatTau)) {
+		    frontmatter.ollama_mirostat_tau = ollamaMirostatTau;
+        }
+
+        const ollamaNumCtx = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_ctx, 10);
+        if (!isNaN(ollamaNumCtx)) {
+		    frontmatter.ollama_num_ctx = ollamaNumCtx;
+        }
+
+        const ollamaNumGqa = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_gqa, 10);
+        if (!isNaN(ollamaNumGqa)) {
+		    frontmatter.ollama_num_gqa = ollamaNumGqa;
+        }
+
+        const ollamaNumThread = parseInt(plugin.settings.OllamaConnection.ollamaParameters.num_thread, 10);
+        if (!isNaN(ollamaNumThread)) {
+		    frontmatter.ollama_num_thread = ollamaNumThread;
+        }
+
+        const ollamaRepeatLastN = parseInt(plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n, 10);
+        if (!isNaN(ollamaRepeatLastN)) {
+		    frontmatter.ollama_repeat_last_n = ollamaRepeatLastN;
+        }
+
+        const ollamaRepeatPenalty = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty);
+        if (!isNaN(ollamaRepeatPenalty)) {
+		    frontmatter.ollama_repeat_penalty = ollamaRepeatPenalty;
+        }
+
+        const ollamaSeed = parseInt(plugin.settings.OllamaConnection.ollamaParameters.seed, 10);
+        if (!isNaN(ollamaSeed)) {
+		    frontmatter.ollama_seed = ollamaSeed;
+        }
+
 		frontmatter.ollama_stop = plugin.settings.OllamaConnection.ollamaParameters.stop;
-		frontmatter.ollama_tfs_z = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.tfs_z);
-		frontmatter.ollama_top_k = parseInt(plugin.settings.OllamaConnection.ollamaParameters.top_k);
-		frontmatter.ollama_top_p = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.top_p);
-		frontmatter.ollama_min_p = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.min_p);
+
+        const ollamaTfsZ = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.tfs_z);
+        if (!isNaN(ollamaTfsZ)) {
+		    frontmatter.ollama_tfs_z = ollamaTfsZ;
+        }
+
+        const ollamaTopK = parseInt(plugin.settings.OllamaConnection.ollamaParameters.top_k, 10);
+        if (!isNaN(ollamaTopK)) {
+		    frontmatter.ollama_top_k = ollamaTopK;
+        }
+
+        const ollamaTopP = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.top_p);
+        if (!isNaN(ollamaTopP)) {
+		    frontmatter.ollama_top_p = ollamaTopP;
+        }
+
+        const ollamaMinP = parseFloat(plugin.settings.OllamaConnection.ollamaParameters.min_p);
+        if (!isNaN(ollamaMinP)) {
+		    frontmatter.ollama_min_p = ollamaMinP;
+        }
+        
 		frontmatter.ollama_keep_alive = plugin.settings.OllamaConnection.ollamaParameters.keep_alive;
     };
 
@@ -845,7 +1045,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 	try {
 		await plugin.app.fileManager.processFrontMatter(
 			file,
-			(frontmatter: Record<string, any>) => {
+			(frontmatter: ProfileFrontmatter) => {
 				plugin.settings.general.model =
 					frontmatter.model || DEFAULT_SETTINGS.general.model;
 
@@ -853,9 +1053,13 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					plugin.settings.general.max_tokens =
 						frontmatter.max_tokens.toString();
 
-					frontmatter.max_tokens = parseInt(
-						plugin.settings.general.max_tokens
+					const maxTokens = parseInt(
+						plugin.settings.general.max_tokens, 10
 					);
+                    if (!isNaN(maxTokens)) {
+                        frontmatter.max_tokens = maxTokens;
+                    }
+
 				} else {
 					plugin.settings.general.max_tokens =
 						DEFAULT_SETTINGS.general.max_tokens;
@@ -863,12 +1067,12 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 
 				if (frontmatter.temperature) {
 					if (frontmatter.temperature < 0) {
-						frontmatter.temperature = "0.00";
+						frontmatter.temperature = 0.00;
 					} else if (frontmatter.temperature > 2) {
-						frontmatter.temperature = "2.00";
+						frontmatter.temperature = 2.00;
 					} else {
 						plugin.settings.general.temperature = parseFloat(
-							frontmatter.temperature
+							frontmatter.temperature.toString()
 						)
 							.toFixed(2)
 							.toString();
@@ -881,16 +1085,16 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					plugin.settings.general.temperature =
 						DEFAULT_SETTINGS.general.temperature;
 
-					frontmatter.temperature =
-						DEFAULT_SETTINGS.general.temperature;
+					frontmatter.temperature = parseFloat(
+						DEFAULT_SETTINGS.general.temperature);
 				}
 
 				plugin.settings.general.enableReferenceCurrentNote =
-					frontmatter.enable_reference_current_note;
+					frontmatter.enable_reference_current_note ?? false;
 
 				const referenceCurrentNoteElement = document.getElementById(
 					"referenceCurrentNote"
-				) as HTMLElement;
+				);
 
 				if (referenceCurrentNoteElement) {
 					referenceCurrentNoteElement.classList.remove(
@@ -945,50 +1149,49 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 
 				updateStyles(frontmatter, plugin.settings);
 
-				plugin.settings.editor.systen_role = frontmatter.systen_role;
+				plugin.settings.editor.system_role = frontmatter.system_role ?? DEFAULT_SETTINGS.editor.system_role;
 
 				plugin.settings.appearance.enableHeader =
-					frontmatter.enable_header;
+					frontmatter.enable_header ?? true;
+
+				const header = document.querySelector(
+					"#header"
+				) as HTMLElement;
 
 				if (frontmatter.enable_header === true) {
-					const header = document.querySelector(
-						"#header"
-					) as HTMLElement;
-
 					if (header) {
-						header.addClass("visible");
-
-						referenceCurrentNoteElement.addClass("referenceCurrentNote");
+						header.classList.add("visible");
+						if (referenceCurrentNoteElement) {
+							referenceCurrentNoteElement.classList.add("referenceCurrentNote");
+						}
 						//style.setProperty("margin", "1rem 0 0.5rem 0");
 					}
 				} else {
-					const header = document.querySelector(
-						"#header"
-					) as HTMLElement;
-
 					const messageContainer = document.querySelector(
 						"#messageContainer"
 					) as HTMLElement;
 
 					if (header) {
-						header.addClass("hidden");
-						messageContainer.addClass('message-container');
+						header.classList.add("hidden");
+						if (messageContainer) {
+							messageContainer.classList.add('message-container');
+						}
 						//style.setProperty('max-height', 'calc(100% - 60px)');
-						referenceCurrentNoteElement.addClass("referenceCurrentNote");
+						if (referenceCurrentNoteElement) {
+							referenceCurrentNoteElement.classList.add("referenceCurrentNote");
+						}
 						//style.setProperty("margin", "-0.5rem 0 0.5rem 0");
 					}
 				}
 
-				const intValue = parseInt(frontmatter.ollama_mirostat, 10); // 10 is the radix parameter to ensure parsing is done in base 10
-
-				// Check if the parsed value is a valid integer, if not, fallback to the default URL
+				const intValue = parseInt(frontmatter.ollama_mirostat as any, 10);
 
 				if (isNaN(intValue)) {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat;
 
-					frontmatter.ollama_mirostat =
-						plugin.settings.OllamaConnection.ollamaParameters.mirostat;
+					frontmatter.ollama_mirostat = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.mirostat);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat =
 						intValue.toString();
@@ -996,15 +1199,15 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					frontmatter.ollama_mirostat = intValue;
 				}
 
-				if (isNaN(parseFloat(frontmatter.ollama_mirostat_eta))) {
+				if (isNaN(parseFloat(frontmatter.ollama_mirostat_eta as any))) {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta;
 
-					frontmatter.ollama_mirostat_eta =
-						plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta;
+					frontmatter.ollama_mirostat_eta = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta =
-						parseFloat(frontmatter.ollama_mirostat_eta)
+						parseFloat(frontmatter.ollama_mirostat_eta as any)
 							.toFixed(2)
 							.toString();
 
@@ -1014,15 +1217,15 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseFloat(frontmatter.ollama_mirostat_tau))) {
+				if (isNaN(parseFloat(frontmatter.ollama_mirostat_tau as any))) {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau;
 
-					frontmatter.ollama_mirostat_tau =
-						plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau;
+					frontmatter.ollama_mirostat_tau = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau =
-						parseFloat(frontmatter.ollama_mirostat_tau)
+						parseFloat(frontmatter.ollama_mirostat_tau as any)
 							.toFixed(2)
 							.toString();
 
@@ -1032,73 +1235,73 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_num_ctx))) {
+				if (isNaN(parseInt(frontmatter.ollama_num_ctx as any, 10))) {
 					plugin.settings.OllamaConnection.ollamaParameters.num_ctx =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx;
 
-					frontmatter.ollama_num_ctx =
-						plugin.settings.OllamaConnection.ollamaParameters.num_ctx;
+					frontmatter.ollama_num_ctx = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters.num_ctx, 10);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.num_ctx =
-						parseInt(frontmatter.ollama_num_ctx).toString();
+						parseInt(frontmatter.ollama_num_ctx as any, 10).toString();
 
 					frontmatter.ollama_num_ctx = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters
-							.num_ctx
+							.num_ctx, 10
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_num_gqa))) {
+				if (isNaN(parseInt(frontmatter.ollama_num_gqa as any, 10))) {
 					plugin.settings.OllamaConnection.ollamaParameters.num_gqa =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa;
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.num_gqa =
-						parseInt(frontmatter.ollama_num_gqa).toString();
+						parseInt(frontmatter.ollama_num_gqa as any, 10).toString();
 
 					frontmatter.ollama_num_gqa = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters
-							.num_gqa
+							.num_gqa, 10
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_num_thread))) {
+				if (isNaN(parseInt(frontmatter.ollama_num_thread as any, 10))) {
 					plugin.settings.OllamaConnection.ollamaParameters.num_thread =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread;
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.num_thread =
-						parseInt(frontmatter.ollama_num_thread).toString();
+						parseInt(frontmatter.ollama_num_thread as any, 10).toString();
 
 					frontmatter.ollama_num_thread = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters
-							.num_thread
+							.num_thread, 10
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_repeat_last_n))) {
+				if (isNaN(parseInt(frontmatter.ollama_repeat_last_n as any, 10))) {
 					plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n;
 
-					frontmatter.ollama_repeat_last_n =
-						plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n;
+					frontmatter.ollama_repeat_last_n = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n, 10);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n =
-						parseInt(frontmatter.ollama_repeat_last_n).toString();
+						parseInt(frontmatter.ollama_repeat_last_n as any, 10).toString();
 
 					frontmatter.ollama_repeat_last_n = parseInt(
 						plugin.settings.OllamaConnection.ollamaParameters
-							.repeat_last_n
+							.repeat_last_n, 10
 					);
 				}
 
-				if (isNaN(parseFloat(frontmatter.ollama_repeat_penalty))) {
+				if (isNaN(parseFloat(frontmatter.ollama_repeat_penalty as any))) {
 					plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty;
 
-					frontmatter.ollama_repeat_penalty =
-						plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty;
+					frontmatter.ollama_repeat_penalty = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty =
-						parseFloat(frontmatter.ollama_repeat_penalty)
+						parseFloat(frontmatter.ollama_repeat_penalty as any)
 							.toFixed(2)
 							.toString();
 
@@ -1108,30 +1311,30 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_seed))) {
+				if (isNaN(parseInt(frontmatter.ollama_seed as any, 10))) {
 					plugin.settings.OllamaConnection.ollamaParameters.seed =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.seed;
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.seed =
-						parseInt(frontmatter.ollama_seed).toString();
+						parseInt(frontmatter.ollama_seed as any, 10).toString();
 
 					frontmatter.ollama_seed = parseInt(
-						plugin.settings.OllamaConnection.ollamaParameters.seed
+						plugin.settings.OllamaConnection.ollamaParameters.seed, 10
 					);
 				}
 
 				plugin.settings.OllamaConnection.ollamaParameters.stop =
-					frontmatter.ollama_stop;
+					frontmatter.ollama_stop ?? [];
 
-				if (isNaN(parseFloat(frontmatter.ollama_tfs_z))) {
+				if (isNaN(parseFloat(frontmatter.ollama_tfs_z as any))) {
 					plugin.settings.OllamaConnection.ollamaParameters.tfs_z =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.tfs_z;
 
-					frontmatter.ollama_tfs_z =
-						plugin.settings.OllamaConnection.ollamaParameters.tfs_z;
+					frontmatter.ollama_tfs_z = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.tfs_z);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.tfs_z =
-						parseFloat(frontmatter.ollama_tfs_z)
+						parseFloat(frontmatter.ollama_tfs_z as any)
 							.toFixed(2)
 							.toString();
 
@@ -1140,30 +1343,30 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_top_k))) {
+				if (isNaN(parseInt(frontmatter.ollama_top_k as any, 10))) {
 					plugin.settings.OllamaConnection.ollamaParameters.top_k =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k;
 
-					frontmatter.ollama_top_k =
-						plugin.settings.OllamaConnection.ollamaParameters.top_k;
+					frontmatter.ollama_top_k = parseInt(
+						plugin.settings.OllamaConnection.ollamaParameters.top_k, 10);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.top_k =
-						parseInt(frontmatter.ollama_top_k).toString();
+						parseInt(frontmatter.ollama_top_k as any, 10).toString();
 
 					frontmatter.ollama_top_k = parseInt(
-						plugin.settings.OllamaConnection.ollamaParameters.top_k
+						plugin.settings.OllamaConnection.ollamaParameters.top_k, 10
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_top_p))) {
+				if (isNaN(parseFloat(frontmatter.ollama_top_p as any))) {
 					plugin.settings.OllamaConnection.ollamaParameters.top_p =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p;
 
-					frontmatter.ollama_top_p =
-						plugin.settings.OllamaConnection.ollamaParameters.top_p;
+					frontmatter.ollama_top_p = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.top_p);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.top_p =
-						parseFloat(frontmatter.ollama_top_p)
+						parseFloat(frontmatter.ollama_top_p as any)
 							.toFixed(2)
 							.toString();
 
@@ -1172,15 +1375,15 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				if (isNaN(parseInt(frontmatter.ollama_min_p))) {
+				if (isNaN(parseFloat(frontmatter.ollama_min_p as any))) {
 					plugin.settings.OllamaConnection.ollamaParameters.min_p =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p;
 
-					frontmatter.ollama_min_p =
-						plugin.settings.OllamaConnection.ollamaParameters.min_p;
+					frontmatter.ollama_min_p = parseFloat(
+						plugin.settings.OllamaConnection.ollamaParameters.min_p);
 				} else {
 					plugin.settings.OllamaConnection.ollamaParameters.min_p =
-						parseFloat(frontmatter.ollama_min_p)
+						parseFloat(frontmatter.ollama_min_p as any)
 							.toFixed(2)
 							.toString();
 
@@ -1189,18 +1392,14 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 					);
 				}
 
-				// Regular expression to validate the input value and capture the number and unit
-
 				const match = String(frontmatter.ollama_keep_alive).match(
 					/^(-?\d+)(m|hr|h)?$/
 				);
 
 				if (match) {
-					const num = parseInt(match[1]);
+					const num = parseInt(match[1], 10);
 
 					const unit = match[2];
-
-					// Convert to seconds based on the unit
 
 					let seconds;
 
@@ -1212,15 +1411,12 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 						seconds = num; // Assume it's already in seconds if no unit
 					}
 
-					// Store the value in seconds
-
 					plugin.settings.OllamaConnection.ollamaParameters.keep_alive =
 						seconds.toString();
 
 					frontmatter.ollama_keep_alive =
 						plugin.settings.OllamaConnection.ollamaParameters.keep_alive;
 				} else {
-					// If the input is invalid, revert to the default setting
 
 					plugin.settings.OllamaConnection.ollamaParameters.keep_alive =
 						DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.keep_alive;
@@ -1237,7 +1433,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 
 
 
-function updateStyles(frontmatter: Record<string, any>, settings: DocscribeSettings) {
+function updateStyles(frontmatter: ProfileFrontmatter, settings: DocscribeSettings) {
 	/*
 	const root = document.documentElement;
 

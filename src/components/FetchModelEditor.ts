@@ -18,7 +18,7 @@ export async function fetchOllamaResponseEditor(settings: DocscribeSettings, pro
             },
             body: JSON.stringify({
                 model: model || settings.general.model,
-                system: settings.editor.systen_role,
+                system: settings.editor.system_role,
                 prompt: prompt,
                 stream: false,
                 keep_alive: parseInt(settings.OllamaConnection.ollamaParameters.keep_alive),
@@ -50,7 +50,7 @@ export async function fetchRESTAPIURLDataEditor(settings: DocscribeSettings, pro
             body: JSON.stringify({
                 model: model || settings.general.model,
                 messages: [
-                    { role: 'system', content: settings.editor.systen_role || 'You are a helpful assistant.' },
+                    { role: 'system', content: settings.editor.system_role || 'You are a helpful assistant.' },
                     { role: 'user', content: prompt }
                 ],
                 max_tokens: parseInt(maxTokens || settings.general.max_tokens || '-1'),
@@ -84,7 +84,7 @@ export async function fetchAnthropicResponseEditor(settings: DocscribeSettings, 
             },
             body: JSON.stringify({
                 model: model || settings.general.model,
-                system: settings.editor.systen_role,
+                system: settings.editor.system_role,
                 messages: [
                     { role: 'user', content: prompt}
                 ],
@@ -115,7 +115,7 @@ export async function fetchGoogleGeminiDataEditor(settings: DocscribeSettings, p
                 contents: [
                     {
                         parts: [
-                            { text: settings.editor.systen_role + prompt },
+                            { text: settings.editor.system_role + prompt },
                             { text: `\n\n[cache_buster: ${Date.now()}]` }
                         ]
                     }
@@ -149,7 +149,7 @@ export async function fetchMistralDataEditor(settings: DocscribeSettings, prompt
             body: JSON.stringify({
               model: model || settings.general.model,
               messages: [
-                { role: 'system', content: settings.editor.systen_role },
+                { role: 'system', content: settings.editor.system_role },
                 { role: 'user', content: prompt }
               ],
               max_tokens: parseInt(maxTokens || settings.general.max_tokens),
@@ -181,7 +181,7 @@ export async function fetchOpenAIBaseAPIResponseEditor(settings: DocscribeSettin
           temperature: parseFloat(temperature || settings.general.temperature),
           stream: false,
           messages: [
-            { role: 'system', content: settings.editor.systen_role },
+            { role: 'system', content: settings.editor.system_role },
             { role: 'user', content: prompt}
         ],
         }),
@@ -206,7 +206,7 @@ export async function fetchOpenRouterEditor(settings: DocscribeSettings, prompt:
             body: JSON.stringify({
                 model: model || settings.general.model,
                 messages: [
-                    { role: 'system', content: settings.editor.systen_role },
+                    { role: 'system', content: settings.editor.system_role },
                     { role: 'user', content: prompt}
                 ],
                 max_tokens: parseInt(maxTokens || settings.general.max_tokens),

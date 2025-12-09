@@ -63,7 +63,7 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
             .setButtonText('Restore default')
             .setIcon('rotate-cw')
             .setClass('clickable-icon')
-            .onClick(async () => {
+            .onClick(() => {
                 plugin.settings.APIConnections.openAI.openAIBaseModels = [];
                 plugin.settings.APIConnections.openAI.openAIBaseUrl = DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl;
                 plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
