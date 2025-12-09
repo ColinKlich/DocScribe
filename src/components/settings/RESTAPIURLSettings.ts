@@ -38,7 +38,7 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
     .addText(text => text
         .setPlaceholder('Insert-API-key')
         .setValue(plugin.settings.RESTAPIURLConnection.APIKey ? `${plugin.settings.RESTAPIURLConnection.APIKey.slice(0, 6)}-...${plugin.settings.RESTAPIURLConnection.APIKey.slice(-4)}` : '')
-        .onChange(async (value) => {
+        .onChange( (value) => {
             plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = [];
             plugin.settings.RESTAPIURLConnection.APIKey = value;
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});

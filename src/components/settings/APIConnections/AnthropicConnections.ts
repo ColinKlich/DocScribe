@@ -36,7 +36,7 @@ export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin:
     .addText(text => text
         .setPlaceholder('Insert-API-key')
         .setValue(plugin.settings.APIConnections.anthropic.APIKey ? `${plugin.settings.APIConnections.anthropic.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.anthropic.APIKey.slice(-4)}` : '')
-        .onChange(async (value) => {
+        .onChange( (value) => {
             plugin.settings.APIConnections.anthropic.anthropicModels = [];
             plugin.settings.APIConnections.anthropic.APIKey = value;
             if (plugin.settings.APIConnections.anthropic.APIKey === '') {

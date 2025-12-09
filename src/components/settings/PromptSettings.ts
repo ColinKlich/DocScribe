@@ -61,7 +61,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
 
         dropdown
         .setValue(plugin.settings.prompts.prompt || DEFAULT_SETTINGS.prompts.prompt)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             plugin.settings.prompts.prompt = value ? value : DEFAULT_SETTINGS.prompts.prompt;
             plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
         })
@@ -74,7 +74,7 @@ export function addPromptSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .addText(text => text
             .setPlaceholder('DocScribe prompts')
             .setValue(plugin.settings.prompts.promptFolderPath || DEFAULT_SETTINGS.prompts.promptFolderPath)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 plugin.settings.prompts.promptFolderPath = value ? value : DEFAULT_SETTINGS.prompts.promptFolderPath;
                 if (value) {
                     let folderPath = plugin.settings.prompts.promptFolderPath.trim() || DEFAULT_SETTINGS.prompts.promptFolderPath;

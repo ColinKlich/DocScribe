@@ -74,7 +74,7 @@ export function addGeneralSettings(containerEl: HTMLElement, plugin: DocscribeGP
             }
         });
     
-        dropdown.onChange(async (value) => {
+        dropdown.onChange( (value) => {
             plugin.settings.general.model = value;
             // fire-and-forget with error handling — listener itself returns void
             plugin.saveSettings().catch(err => {
@@ -149,7 +149,7 @@ export function addGeneralSettings(containerEl: HTMLElement, plugin: DocscribeGP
         .addText(text => text
             .setPlaceholder('4096')
             .setValue(plugin.settings.general.max_tokens)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 plugin.settings.general.max_tokens = value;
                 // fire-and-forget with error handling — listener itself returns void
                 plugin.saveSettings().catch(err => {
@@ -164,7 +164,7 @@ export function addGeneralSettings(containerEl: HTMLElement, plugin: DocscribeGP
         .addText(text => text
             .setPlaceholder('1.00')
             .setValue(plugin.settings.general.temperature)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 const floatValue = parseFloat(value); // 10 is the radix parameter to ensure parsing is done in base 10
 
                 // Determine if the float value is an integer

@@ -66,7 +66,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         .addText(text => text
             .setPlaceholder('Enter user name')
             .setValue(plugin.settings.appearance.userName || DEFAULT_SETTINGS.appearance.userName)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 plugin.settings.appearance.userName = value ? value : DEFAULT_SETTINGS.appearance.userName;
                 text.inputEl.maxLength = 30;
                 plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
@@ -132,7 +132,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             }
 
             color.setValue(defaultValue)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 const hexValue = colorToHex(value);
                 plugin.settings.appearance.chatbotContainerBackgroundColor = hexValue;
                 const chatbotContainer = document.querySelector('.chatbotContainer') as HTMLElement;
@@ -174,7 +174,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         }
 
         color.setValue(defaultValue)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             const hexValue = colorToHex(value);
             plugin.settings.appearance.messageContainerBackgroundColor = hexValue;
             const messageContainer = document.querySelector('#messageContainer') as HTMLElement;
@@ -217,7 +217,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             }
 
             color.setValue(defaultValue)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 const hexValue = colorToHex(value);
                 plugin.settings.appearance.userMessageFontColor = hexValue;
                 const messageContainer = document.querySelector('#messageContainer');
@@ -265,7 +265,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             }
 
             color.setValue(defaultValue)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 const hexValue = colorToHex(value);
                 plugin.settings.appearance.userMessageBackgroundColor = hexValue;
                 const messageContainer = document.querySelector('#messageContainer');
@@ -313,7 +313,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         }
 
         color.setValue(defaultValue)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             const hexValue = colorToHex(value);
             plugin.settings.appearance.botMessageFontColor = hexValue;
             const messageContainer = document.querySelector('#messageContainer');
@@ -361,7 +361,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
             }
 
             color.setValue(defaultValue)
-                .onChange(async (value) => {
+                .onChange( (value) => {
                     const hexValue = colorToHex(value);
                     plugin.settings.appearance.botMessageBackgroundColor = hexValue;
                     const messageContainer = document.querySelector('#messageContainer');
@@ -405,7 +405,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         }
         
         color.setValue(defaultValue)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 const hexValue = colorToHex(value);
                 plugin.settings.appearance.chatBoxFontColor = hexValue;
                 
@@ -447,7 +447,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         }
         
         color.setValue(defaultValue)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 const hexValue = colorToHex(value);
                 plugin.settings.appearance.chatBoxBackgroundColor = hexValue;
                 
@@ -516,7 +516,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         const defaultValue = plugin.settings.appearance.DocscribeGenerateBackgroundColor;
         
         color.setValue(defaultValue)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 const hexValue = colorToHex(value);
                 plugin.settings.appearance.DocscribeGenerateBackgroundColor = hexValue;
                 
@@ -559,7 +559,7 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
         }
         
         color.setValue(defaultValue)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 const hexValue = colorToHex(value);
                 plugin.settings.appearance.DocscribeGenerateFontColor = hexValue;
                 

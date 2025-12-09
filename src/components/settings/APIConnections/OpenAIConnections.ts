@@ -73,7 +73,7 @@ export function addOpenAIConnectionSettings(containerEl: HTMLElement, plugin: Do
         .addText(text => text
             .setPlaceholder('https://api.openai.com/v1')
             .setValue(plugin.settings.APIConnections.openAI.openAIBaseUrl || DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                     plugin.settings.APIConnections.openAI.openAIBaseUrl = value ? value : DEFAULT_SETTINGS.APIConnections.openAI.openAIBaseUrl;
                     plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
                 })

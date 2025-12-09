@@ -36,7 +36,7 @@ export function addEditorSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .addTextArea(text => text
             .setPlaceholder('You are a helpful assistant.')
             .setValue(plugin.settings.editor.systen_role !== undefined ? plugin.settings.editor.systen_role : DEFAULT_SETTINGS.editor.systen_role)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 plugin.settings.editor.systen_role = value !== undefined ? value : DEFAULT_SETTINGS.editor.systen_role;
                 plugin.saveSettings().catch(err => {console.error('Failed to save settings:', err);});
             })

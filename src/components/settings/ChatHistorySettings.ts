@@ -35,7 +35,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
         .addText(text => text
             .setPlaceholder('DocScribe history')
             .setValue(plugin.settings.chatHistory.chatHistoryPath || DEFAULT_SETTINGS.chatHistory.chatHistoryPath)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 plugin.settings.chatHistory.chatHistoryPath = value ? value : DEFAULT_SETTINGS.chatHistory.chatHistoryPath;
                 if (value) {
                     let folderPath = plugin.settings.chatHistory.chatHistoryPath.trim() || DEFAULT_SETTINGS.chatHistory.chatHistoryPath;
@@ -67,7 +67,7 @@ export function addChatHistorySettings(containerEl: HTMLElement, plugin: Docscri
         .addText(text => text
             .setPlaceholder('templates/Docscribe.md')
             .setValue(plugin.settings.chatHistory.templateFilePath || DEFAULT_SETTINGS.chatHistory.templateFilePath)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 plugin.settings.chatHistory.templateFilePath = value ? value : DEFAULT_SETTINGS.chatHistory.templateFilePath;
                 if (value) {
                     // Check if the provided file path ends with '.md', if not, append it

@@ -670,7 +670,7 @@ export default class DocscribeGPT extends Plugin {
 
 export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
     // Define a callback function to modify the frontmatter
-    const setDefaultFrontMatter = (frontmatter: any) => {
+    const setDefaultFrontMatter = (frontmatter: Record<string, any>) => {
         // Add or modify properties in the frontmatter
         frontmatter.model = DEFAULT_SETTINGS.general.model;
         frontmatter.max_tokens = parseInt(DEFAULT_SETTINGS.general.max_tokens);
@@ -727,7 +727,7 @@ export async function defaultFrontMatter(plugin: DocscribeGPT, file: TFile) {
 
 export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: TFile){
     // Define a callback function to modify the frontmatter
-    const updateSettings = (frontmatter: any) => {
+    const updateSettings = (frontmatter: Record<string, any>) => {
         // Add or modify properties in the frontmatter
         plugin.settings.general.model = frontmatter.model;
 		plugin.settings.general.max_tokens = frontmatter.max_tokens;
@@ -787,7 +787,7 @@ export async function updateSettingsFromFrontMatter(plugin: DocscribeGPT, file: 
 
 export async function updateFrontMatter(plugin: DocscribeGPT, file: TFile){
     // Define a callback function to modify the frontmatter
-    const modifyFrontMatter = (frontmatter: any) => {
+    const modifyFrontMatter = (frontmatter: Record<string, any>) => {
         // Add or modify properties in the frontmatter
         frontmatter.model = plugin.settings.general.model;
         frontmatter.max_tokens = parseInt(plugin.settings.general.max_tokens);
@@ -845,7 +845,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 	try {
 		await plugin.app.fileManager.processFrontMatter(
 			file,
-			(frontmatter: any) => {
+			(frontmatter: Record<string, any>) => {
 				plugin.settings.general.model =
 					frontmatter.model || DEFAULT_SETTINGS.general.model;
 
@@ -1237,7 +1237,7 @@ export async function updateProfile(plugin: DocscribeGPT, file: TFile) {
 
 
 
-function updateStyles(frontmatter: any, settings: DocscribeSettings) {
+function updateStyles(frontmatter: Record<string, any>, settings: DocscribeSettings) {
 	/*
 	const root = document.documentElement;
 

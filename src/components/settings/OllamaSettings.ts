@@ -101,7 +101,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .addText(text => text
             .setPlaceholder('0')
             .setValue(plugin.settings.OllamaConnection.ollamaParameters.mirostat || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat)
-            .onChange(async (value) => {
+            .onChange( (value) => {
                 // Parse the input value as an integer
                 const intValue = parseInt(value, 10); // 10 is the radix parameter to ensure parsing is done in base 10
                 
@@ -128,7 +128,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('0.1')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.mirostat_eta || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_eta)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const floatValue = parseFloat(value); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -156,7 +156,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('5.00')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.mirostat_tau || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.mirostat_tau)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const floatValue = parseFloat(value); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -184,7 +184,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('2048')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.num_ctx || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_ctx)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const intValue = parseInt(value, 10); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -211,7 +211,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.num_gqa || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_gqa)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const intValue = parseInt(value, 10); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -238,7 +238,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.num_thread || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const intValue = parseInt(value, 10); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -265,7 +265,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('64')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.repeat_last_n || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_last_n)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const intValue = parseInt(value, 10); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -292,7 +292,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('1.1')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.repeat_penalty || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.repeat_penalty)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const floatValue = parseFloat(value); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -320,7 +320,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.seed || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.seed)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const intValue = parseInt(value, 10); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -349,7 +349,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.stop && Array.isArray(plugin.settings.OllamaConnection.ollamaParameters.stop) 
                    ? plugin.settings.OllamaConnection.ollamaParameters.stop.join(', ') 
                    : DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.stop.join(', '))
-        .onChange(async (value) => {
+        .onChange( (value) => {
                 // Split the input string by commas, trim whitespace, and ensure it's always stored as an array
                 const stopsArray = value ? value.split(',').map(s => s.trim()) : [...DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.stop];
                 plugin.settings.OllamaConnection.ollamaParameters.stop = stopsArray;
@@ -371,7 +371,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('1.0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.tfs_z || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.tfs_z)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const floatValue = parseFloat(value); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -398,7 +398,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('40')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.top_k || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_k)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const intValue = parseInt(value, 10); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -425,7 +425,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('1.0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.top_p || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.top_p)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const floatValue = parseFloat(value); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -452,7 +452,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('0.0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.min_p || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.min_p)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Parse the input value as an integer
             const floatValue = parseFloat(value); // 10 is the radix parameter to ensure parsing is done in base 10
             
@@ -479,7 +479,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
     .addText(text => text
         .setPlaceholder('30s')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.keep_alive || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.keep_alive)
-        .onChange(async (value) => {
+        .onChange( (value) => {
             // Regular expression to validate the input value and capture the number and unit
             const match = value.match(/^(-?\d+)(m|hr|h)?$/);
             
