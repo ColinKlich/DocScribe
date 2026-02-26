@@ -32,9 +32,9 @@ export function addAnthropicConnectionSettings(containerEl: HTMLElement, plugin:
 
     new Setting(settingsContainer)
     .setName('Anthropic API key')
-    .setDesc('Insert Anthropic API key.')
+    .setDesc('Insert Anthropic api key.')
     .addText(text => text
-        .setPlaceholder('Insert-API-key')
+        .setPlaceholder('Insert-api-key')
         .setValue(plugin.settings.APIConnections.anthropic.APIKey ? `${plugin.settings.APIConnections.anthropic.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.anthropic.APIKey.slice(-4)}` : '')
         .onChange( (value) => {
             plugin.settings.APIConnections.anthropic.anthropicModels = [];

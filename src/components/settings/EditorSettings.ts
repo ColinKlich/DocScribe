@@ -32,7 +32,7 @@ export function addEditorSettings(containerEl: HTMLElement, plugin: DocscribeGPT
 
     new Setting(settingsContainer)
         .setName('Editor system role')
-        .setDesc('System role for DocScribe generate and \'prompt select generate\' command.')
+        .setDesc('System role for Docscribe generate and \'prompt select generate\' command.')
         .addTextArea(text => text
             .setPlaceholder('You are a helpful assistant.')
             .setValue(plugin.settings.editor.system_role !== undefined ? plugin.settings.editor.system_role : DEFAULT_SETTINGS.editor.system_role)

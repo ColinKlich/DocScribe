@@ -599,7 +599,7 @@ export function displayAppendButton(plugin: DocscribeGPT, settings: DocscribeSet
                 }
             }
             else {
-                new Notice('No active markdown file detected.');
+                new Notice('No active Markdown file detected.');
             }
         })().catch(err => {
             console.error("Error in click handler:", err);

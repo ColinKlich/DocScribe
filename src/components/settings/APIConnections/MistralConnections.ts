@@ -31,10 +31,10 @@ export function addMistralConnectionSettings(containerEl: HTMLElement, plugin: D
     });
 
     new Setting(settingsContainer)
-    .setName('Mistral API key')
-    .setDesc('Insert Mistral API key.')
+    .setName('Mistral api key')
+    .setDesc('Insert Mistral api key.')
     .addText(text => text
-        .setPlaceholder('Insert-API-key')
+        .setPlaceholder('Insert-api-key')
         .setValue(plugin.settings.APIConnections.mistral.APIKey ? `${plugin.settings.APIConnections.mistral.APIKey.slice(0, 6)}-...${plugin.settings.APIConnections.mistral.APIKey.slice(-4)}` : '')
         .onChange(async (value) => {
             plugin.settings.APIConnections.mistral.mistralModels = [];

@@ -528,7 +528,7 @@ export default class DocscribeGPT extends Plugin {
 			(leaf) => new DocscribeView(leaf, this.settings, this)
 		);
 
-		this.addRibbonIcon('bot', 'DocScribe chatbot', () => {
+		this.addRibbonIcon('bot', 'Docscribe chatbot', () => {
 			this.activateView().catch((error) => {
 				console.error('Error activating view:', error);
 			})
@@ -569,7 +569,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pptx') {
 					menu.addItem((item: MenuItem) => {
 						item
-							.setTitle('DocScribe: extract notes from pptx')
+							.setTitle('Docscribe: extract notes from pptx')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractStructuredText(arrayBuffer);
@@ -586,7 +586,7 @@ export default class DocscribeGPT extends Plugin {
 				if (file.extension === 'pdf') {
 					menu.addItem((item: MenuItem) => {
 						item
-							.setTitle('DocScribe: extract notes from pdf')
+							.setTitle('Docscribe: extract notes from pdf')
 							.onClick(async () => {
 								const arrayBuffer = await this.app.vault.readBinary(file);
 								const extractedText = await extractTextFromPdf(arrayBuffer, 5000);
@@ -602,7 +602,7 @@ export default class DocscribeGPT extends Plugin {
 	
 				menu.addItem((item: MenuItem) => {
 					item
-						.setTitle('DocScribe: generate new title')
+						.setTitle('Docscribe: generate new title')
 						.onClick(() => renameTitleCommand(this, this.settings));
 				});
 			})

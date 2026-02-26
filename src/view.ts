@@ -56,7 +56,7 @@ export class DocscribeView extends ItemView {
     }
 
     getDisplayText() {
-        return 'DocScribe chatbot';
+        return 'Docscribe chatbot';
     }
     
     async onOpen(): Promise<void> {

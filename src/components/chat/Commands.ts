@@ -807,7 +807,7 @@ export async function commandAppend(plugin: DocscribeGPT, settings: DocscribeSet
     new Notice('Appended conversation.');
   }
   else {
-    new Notice('No active markdown file detected.');
+    new Notice('No active Markdown file detected.');
   }
 }
 

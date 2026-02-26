@@ -18,7 +18,7 @@ class ConfirmationModal extends Modal {
     onOpen() {
         const { contentEl } = this;
         contentEl.createEl('h2', { text: 'Are you sure?' });
-        contentEl.createEl('p', { text: 'This will reset all DocScribe settings to their default values.' });
+        contentEl.createEl('p', { text: 'This will reset all Docscribe settings to their default values.' });
 
         new Setting(contentEl)
             .addButton(btn => btn
@@ -53,8 +53,8 @@ export class DocscribeSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		//containerEl.createEl('h1', { text: 'DocScribe settings' });
 		new Setting(containerEl)
-			.setName('DocScribe settings')
-			.setDesc('Configure DocScribe settings to customize your experience.');
+			.setName('Docscribe settings')
+			.setDesc('Configure Docscribe settings to customize your experience.');
 
 		// Create a container for the links		
 		const linkContainer = containerEl.createEl('div', { cls: 'settings-links' });

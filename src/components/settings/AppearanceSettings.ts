@@ -494,8 +494,8 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     const defaultDocscribeGenerateFontColor = getComputedStyle(document.body).getPropertyValue(DEFAULT_SETTINGS.appearance.DocscribeGenerateFontColor).trim();
 
     new Setting(settingsContainer)
-    .setName('DocScribe generate background color')
-    .setDesc('Modify the background color of DocScribe generate.')
+    .setName('Docscribe generate background color')
+    .setDesc('Modify the background color of Docscribe generate.')
     .addButton(button => button
         .setButtonText('Restore default')
         .setIcon('rotate-cw')
@@ -530,8 +530,8 @@ export function addAppearanceSettings(containerEl: HTMLElement, plugin: Docscrib
     });
 
     new Setting(settingsContainer)
-    .setName('DocScribe generate font color')
-    .setDesc('Modify the font color of DocScribe generate.')
+    .setName('Docscribe generate font color')
+    .setDesc('Modify the font color of Docscribe generate.')
     .addButton(button => button
         .setButtonText('Restore default')
         .setIcon('rotate-cw')

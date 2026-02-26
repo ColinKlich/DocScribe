@@ -39,7 +39,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
         .setName('Ollama REST API URL')
         .setDesc(addDescriptionLink('Enter your REST API URL. Update ', 'https://ollama.com/', 'to version >=0.1.42 to avoid CORS restriction.', 'Ollama'))
         .addText(text => text
-            .setPlaceholder("Https://localhost:11434")
+            .setPlaceholder("https://localhost:11434")
             .setValue(plugin.settings.OllamaConnection.RESTAPIURL || DEFAULT_SETTINGS.OllamaConnection.RESTAPIURL)
             .onChange(async (value) => {
                     plugin.settings.OllamaConnection.ollamaModels = [];
@@ -234,7 +234,7 @@ export function addOllamaSettings(containerEl: HTMLElement, plugin: DocscribeGPT
 
     new Setting(advancedSettingsContainer)
     .setName('Num thread')
-    .setDesc('Sets the number of threads to use during computation. By default, Ollama will detect this for optimal performance. It is recommended to set this value to the number of physical cpu cores your system has (as opposed to the logical number of cores).')
+    .setDesc('This sets the number of threads to use during computation. By default, Ollama will detect this for optimal performance. It is recommended to set this value to the number of physical cpu cores your system has (as opposed to the logical number of cores).')
     .addText(text => text
         .setPlaceholder('0')
         .setValue(plugin.settings.OllamaConnection.ollamaParameters.num_thread || DEFAULT_SETTINGS.OllamaConnection.ollamaParameters.num_thread)

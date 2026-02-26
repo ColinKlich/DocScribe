@@ -91,7 +91,7 @@ export function addProfileSettings(containerEl: HTMLElement, plugin: DocscribeGP
         .setName('Profile folder path')
         .setDesc('Select a profile from a specified folder.')
         .addText(text => text
-            .setPlaceholder('DocScribe profiles')
+            .setPlaceholder('Docscribe profiles')
             .setValue(plugin.settings.profiles.profileFolderPath || DEFAULT_SETTINGS.profiles.profileFolderPath)
             .onChange( (value) => {
                 plugin.settings.profiles.profileFolderPath = value ? value : DEFAULT_SETTINGS.profiles.profileFolderPath;

@@ -36,7 +36,7 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
     .setName('API key')
     .setDesc('Insert API key (optional).')
     .addText(text => text
-        .setPlaceholder('Insert-API-key')
+        .setPlaceholder('Insert-api-key')
         .setValue(plugin.settings.RESTAPIURLConnection.APIKey ? `${plugin.settings.RESTAPIURLConnection.APIKey.slice(0, 6)}-...${plugin.settings.RESTAPIURLConnection.APIKey.slice(-4)}` : '')
         .onChange( (value) => {
             plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = [];
@@ -52,7 +52,7 @@ export function addRESTAPIURLSettings(containerEl: HTMLElement, plugin: Docscrib
     .setName('REST API URL')
     .setDesc(addDescriptionLink('Enter your REST API URL.', 'Https://github.com/colinklich/docscribe/wiki/How-to-setup-with-LM-Studio', '', '[Instructions]'))
     .addText(text => text
-        .setPlaceholder('Http://localhost:1234/v1')
+        .setPlaceholder('https://localhost:1234/v1')
         .setValue(plugin.settings.RESTAPIURLConnection.RESTAPIURL || DEFAULT_SETTINGS.RESTAPIURLConnection.RESTAPIURL)
         .onChange(async (value) => {
                 plugin.settings.RESTAPIURLConnection.RESTAPIURLModels = [];
